@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Mapper</title>
+    <title>MY MAP</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -12,6 +12,8 @@
             --success-dark: #27ae60;
             --danger: #e74c3c;
             --danger-dark: #c0392b;
+            --info: #8e44ad;
+            --info-dark: #732d91;
             --bg-light: #f5f7fa;
             --text-dark: #2c3e50;
         }
@@ -31,7 +33,7 @@
             margin-bottom: 20px;
         }
 
-        @media (min-width: 768px) {
+        @media (min-width: 900px) {
             .header {
                 flex-direction: row;
                 justify-content: space-between;
@@ -49,23 +51,27 @@
             display: flex;
             gap: 10px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
+        /* STACKED LAYOUT: REGISTER TOP, MAP BOTTOM */
         .container {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            width: 100%;
         }
 
-        @media (min-width: 1024px) {
-            .container {
-                flex-direction: row;
-                align-items: flex-start;
-            }
+        .sidebar {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .map-panel {
-            flex: 1.5;
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -99,9 +105,10 @@
             justify-content: center;
         }
 
+        /* Fixed viewport for Map Zoom only */
         .map-area {
             position: relative;
-            max-height: 65vh;
+            height: 500px;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -122,19 +129,6 @@
             -webkit-user-drag: none;
         }
 
-        .sidebar {
-            flex: 1.8;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            width: 100%;
-            box-sizing: border-box;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        /* Responsive Scrollable Table Container */
         .table-container {
             width: 100%;
             overflow-x: auto;
@@ -146,7 +140,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 800px; /* Forces horizontal scrolling on mobile to protect inputs */
+            min-width: 850px; 
         }
 
         th, td {
@@ -161,12 +155,19 @@
             font-weight: 600;
         }
 
+        .required-star {
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
         .input-cell {
             width: 90%;
             padding: 5px 8px;
             border: 1px solid #cbd5e1;
             border-radius: 4px;
             font-size: 13px;
+            text-transform: uppercase; 
+            box-sizing: border-box;
         }
 
         .input-cell:focus {
@@ -174,16 +175,16 @@
             border-color: var(--primary);
         }
 
-        /* Markers */
+        /* Map Markers */
         .marker {
             position: absolute;
-            width: 26px;
-            height: 26px;
+            width: 24px;
+            height: 24px;
             background-color: var(--primary);
             color: white;
             border-radius: 50%;
             text-align: center;
-            line-height: 26px;
+            line-height: 24px;
             font-size: 11px;
             font-weight: bold;
             transform: translate(-50%, -50%);
@@ -191,6 +192,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             border: 2px solid white;
             user-select: none;
+            z-index: 5;
         }
 
         .marker:hover {
@@ -198,7 +200,7 @@
             background-color: var(--danger);
         }
 
-        /* Progress Overlay & Spinner */
+        /* Spinner Overlay */
         .overlay {
             display: none;
             position: fixed;
@@ -245,7 +247,7 @@
             transition: width 0.1s ease-out;
         }
 
-        /* Buttons Styling */
+        /* Buttons */
         button {
             padding: 8px 14px;
             border-radius: 4px;
@@ -261,13 +263,82 @@
         .btn-load:hover { background-color: var(--primary-dark); }
         .btn-clear { background-color: var(--danger); color: white; }
         .btn-clear:hover { background-color: var(--danger-dark); }
+        .btn-print { background-color: var(--info); color: white; }
+        .btn-print:hover { background-color: var(--info-dark); }
         .btn-zoom { background-color: #64748b; color: white; padding: 5px 10px; }
         .btn-zoom:hover { background-color: #475569; }
+
+        /* ========================================================
+           PRINT STYLES
+           ======================================================== */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button {
+                display: none !important;
+            }
+            .container {
+                display: flex !important;
+                flex-direction: column !important;
+                width: 100% !important;
+                gap: 10px !important;
+            }
+            .map-panel, .sidebar {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                background: transparent !important;
+            }
+            .map-area {
+                overflow: visible !important;
+                border: none !important;
+                background: transparent !important;
+            }
+            .map-wrapper {
+                width: 100% !important;
+            }
+            table {
+                min-width: 100% !important;
+            }
+            input, select {
+                border: none !important;
+                background: transparent !important;
+                padding: 2px !important;
+                appearance: none; /* Hide dropdown arrow on paper */
+            }
+
+            body.print-mode-a4 {
+                width: 100%;
+            }
+            body.print-mode-a4 .container {
+                page-break-inside: avoid;
+            }
+            body.print-mode-a4 .map-area {
+                height: 300px !important; 
+            }
+
+            body.print-mode-a3 {
+                width: 100%;
+            }
+            body.print-mode-a3 .sidebar {
+                display: none !important;
+            }
+            body.print-mode-a3 .map-area {
+                height: 100% !important;
+                max-height: none !important;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <!-- Busy Spinner & Progress Slide Overlay -->
+    <!-- Busy Spinner Overlay -->
     <div id="loading-overlay" class="overlay">
         <div class="spinner"></div>
         <div id="status-text" style="font-weight: 600; margin-bottom: 10px; font-size: 15px;">Saving Data...</div>
@@ -278,22 +349,51 @@
     </div>
 
     <div class="header">
-        <h2>My Portal</h2>
+        <h2>MY MAP</h2>
         <div class="button-group">
-            <button onclick="loadFromCloud()" class="btn-load">Sync from Sheet</button>
-            <button onclick="saveToCloud()" class="btn-save">Save to Sheet</button>
+            <button onclick="loadFromCloud()" class="btn-load">Sync..</button>
+            <button onclick="saveToCloud()" class="btn-save">Save..</button>
+            <button onclick="printA4()" class="btn-print">Print A4</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Prin A3</button>
         </div>
     </div>
 
     <div class="container">
-        <!-- Map Panel -->
+        <!-- Building Register Form (TOP) -->
+        <div class="sidebar">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 1.2rem;">Register</h3>
+                <button onclick="clearAll()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Local</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 6%">Sl No</th>
+                            <th style="width: 20%">Name<span class="required-star">*</span></th>
+                            <th style="width: 14%">Phone (10 Digits)<span class="required-star">*</span></th>
+                            <th style="width: 10%">Bldg No<span class="required-star">*</span></th>
+                            <th style="width: 10%">CN No (0001 Format)<span class="required-star">*</span></th>
+                            <th style="width: 18%">Pucca/Katcha/Others<span class="required-star">*</span></th>
+                            <th style="width: 22%">Remarks<span class="required-star">*</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="register-body">
+                        <!-- Rows generated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Map Panel (BOTTOM) -->
         <div class="map-panel">
             <div class="map-controls">
-                <span style="font-size: 12px; font-weight: 600; color: #64748b; text-align: center;">
-                    Click map to mark. Double-click marker to delete.
+                <span style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
+                    Click map to mark. Double-click marker to delete. Zoom strictly scales map view only.
                 </span>
                 <div class="zoom-controls">
-                    <strong>Zoom:</strong>
+                    <strong>Zoom Map:</strong>
                     <button onclick="zoomOut()" class="btn-zoom">-</button>
                     <span id="zoom-text" style="font-size: 13px; font-weight: bold; min-width: 45px; text-align: center;">100%</span>
                     <button onclick="zoomIn()" class="btn-zoom">+</button>
@@ -304,35 +404,18 @@
             <div class="map-area" id="map-scroll-container">
                 <div class="map-wrapper" id="map-wrapper">
                     <img id="map-image" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiThD8osmhs81FJK2Leasb2ZLwbOMXuVZiI09fRwcmpqlDul-vVEBtXGj4ldqv8DYhpfCCrIum1j_eJVcxGFVY2G1RU7Xb_ie2dFjxyLdKzb1-qUxeTfIY44ipuGgslS9GZvIiCnS_qJQQMBOBTe7AvV4FHxYemNwlpBfLB1PxTsZZczlEAMwyj3Lk4aEDe/s1600/D.png" alt="HLB Map Boundary" onerror="this.src='https://via.placeholder.com/800x500.png?text=Please+upload+your+map.png+to+GitHub'">
+                    
+                    <svg id="arrow-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="14" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#e74c3c" />
+                            </marker>
+                        </defs>
+                        <g id="svg-paths"></g>
+                    </svg>
+
                     <div id="marker-layer"></div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Building Register Sidebar Form -->
-        <div class="sidebar">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
-                <button onclick="clearAll()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Local</button>
-            </div>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 6%">Sl No</th>
-                            <th style="width: 20%">Name</th>
-                            <th style="width: 15%">Phone</th>
-                            <th style="width: 12%">Bldg No</th>
-                            <th style="width: 12%">CN No</th>
-                            <th style="width: 15%">Notes/Type</th>
-                            <th style="width: 20%">Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="register-body">
-                        <!-- Dynamic rows are inserted here -->
-                    </tbody>
-                </table>
             </div>
         </div>
     </div>
@@ -348,8 +431,8 @@
         const markerLayer = document.getElementById('marker-layer');
         const registerBody = document.getElementById('register-body');
         const zoomText = document.getElementById('zoom-text');
+        const svgPaths = document.getElementById('svg-paths');
         
-        // Progress Overlay elements
         const loadingOverlay = document.getElementById('loading-overlay');
         const statusText = document.getElementById('status-text');
         const progressBar = document.getElementById('progress-bar');
@@ -387,7 +470,7 @@
             zoomText.innerText = `${currentZoom}%`;
         }
 
-        // BUSY SPINNER & SLIDE PROGRESS SIMULATION
+        // BUSY SPINNER & SLIDE PROGRESS
         function showBusyProgress(title, onFinishedAction) {
             loadingOverlay.style.display = 'flex';
             statusText.innerText = title;
@@ -395,7 +478,6 @@
             percentageText.innerText = '0%';
             
             let percent = 0;
-            // Simulated incremental progress
             const interval = setInterval(() => {
                 if (percent < 90) {
                     percent += Math.floor(Math.random() * 8) + 2; 
@@ -405,10 +487,8 @@
                 }
             }, 100);
 
-            // Trigger actual network/process action
             onFinishedAction().then(() => {
                 clearInterval(interval);
-                // Force to 100% on complete
                 progressBar.style.width = '100%';
                 percentageText.innerText = '100%';
                 setTimeout(() => {
@@ -421,22 +501,52 @@
             });
         }
 
+        // SINGLE-PAGE PRINT UTILITY
+        function triggerPrint(sizeClass, pageSize) {
+            const printStyle = document.createElement('style');
+            printStyle.id = "print-page-style";
+            printStyle.innerHTML = `@media print { @page { size: ${pageSize} landscape; margin: 5mm; } }`;
+            document.head.appendChild(printStyle);
+
+            document.body.classList.add(sizeClass);
+
+            setTimeout(() => {
+                window.print();
+                document.body.classList.remove(sizeClass);
+                const styleToRemove = document.getElementById("print-page-style");
+                if (styleToRemove) styleToRemove.remove();
+            }, 250);
+        }
+
+        function printA4() {
+            if (!validateAllFields()) return;
+            triggerPrint('print-mode-a4', 'A4');
+        }
+
+        function printA3() {
+            triggerPrint('print-mode-a3', 'A3');
+        }
+
         // ADD MARKER ON CLICK
         mapImage.addEventListener('click', function(e) {
             const rect = mapImage.getBoundingClientRect();
             const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
             const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
 
+            const nextIndex = markers.length + 1;
+            // Pad index with leading zeros to meet 0001 format
+            const formattedCN = String(nextIndex).padStart(4, '0');
+
             const newMarker = {
                 id: markerCounter,
                 x: xPercent,
                 y: yPercent,
-                slNo: markers.length + 1,
+                slNo: nextIndex,
                 name: '',
                 phone: '',
-                buildingNo: `${markers.length + 1}`,
-                cnNo: '',
-                note: '',
+                buildingNo: `${nextIndex}`,
+                cnNo: formattedCN, // Default format 0001 (editable)
+                note: '', // Maps to Pucca/Katcha/Others dropdown value
                 remarks: ''
             };
 
@@ -445,16 +555,59 @@
             render();
         });
 
+        // VALIDATION CHECK FOR COMPULSORY FIELDS
+        function validateAllFields() {
+            if (markers.length === 0) {
+                alert("There are no registered buildings to validate.");
+                return false;
+            }
+
+            for (let i = 0; i < markers.length; i++) {
+                const m = markers[i];
+                const row = i + 1;
+
+                if (!m.name || m.name.trim() === "") {
+                    alert(`Save Blocked: Sl No ${row} is missing 'Owner Name'.`);
+                    return false;
+                }
+                if (!m.phone || m.phone.trim() === "") {
+                    alert(`Save Blocked: Sl No ${row} is missing 'Phone Number'.`);
+                    return false;
+                }
+                if (m.phone.length !== 10) {
+                    alert(`Save Blocked: Sl No ${row} has an invalid Phone Number. It must be exactly 10 digits.`);
+                    return false;
+                }
+                if (!m.buildingNo || m.buildingNo.trim() === "") {
+                    alert(`Save Blocked: Sl No ${row} is missing 'Building No'.`);
+                    return false;
+                }
+                if (!m.cnNo || m.cnNo.trim() === "") {
+                    alert(`Save Blocked: Sl No ${row} is missing 'CN No'.`);
+                    return false;
+                }
+                if (!m.note || m.note.trim() === "") {
+                    alert(`Save Blocked: Sl No ${row} is missing 'Pucca/Katcha/Others' selection.`);
+                    return false;
+                }
+                if (!m.remarks || m.remarks.trim() === "") {
+                    alert(`Save Blocked: Sl No ${row} is missing 'Remarks'.`);
+                    return false;
+                }
+            }
+            return true;
+        }
+
         // RENDER METHOD
         function render() {
             markerLayer.innerHTML = '';
             registerBody.innerHTML = '';
+            svgPaths.innerHTML = ''; 
 
             markers.forEach((marker, index) => {
-                // Update sequential Sl No
                 marker.slNo = index + 1;
 
-                // Create Marker Element
+                // 1. Draw Map Marker Element
                 const markerEl = document.createElement('div');
                 markerEl.className = 'marker';
                 markerEl.style.left = `${marker.x}%`;
@@ -469,61 +622,114 @@
 
                 markerLayer.appendChild(markerEl);
 
-                // Create Table Row
+                // 2. Draw SVG Route Line (Narrow stroke: 0.2 viewBox scale)
+                if (index < markers.length - 1) {
+                    const nextMarker = markers[index + 1];
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", marker.x);
+                    line.setAttribute("y1", marker.y);
+                    line.setAttribute("x2", nextMarker.x);
+                    line.setAttribute("y2", nextMarker.y);
+                    line.setAttribute("stroke", "#e74c3c");
+                    line.setAttribute("stroke-width", "0.2");
+                    line.setAttribute("marker-end", "url(#arrow)");
+                    svgPaths.appendChild(line);
+                }
+
+                // 3. Create Table Row
                 const row = document.createElement('tr');
 
-                // 1. Sl No
+                // Sl No
                 const cellSl = document.createElement('td');
                 cellSl.style.fontWeight = "bold";
                 cellSl.innerText = marker.slNo;
 
-                // 2. Name
+                // Name (Forced to Capitals)
                 const cellName = document.createElement('td');
                 const inputName = document.createElement('input');
                 inputName.className = 'input-cell';
                 inputName.value = marker.name || '';
-                inputName.addEventListener('input', (e) => marker.name = e.target.value);
+                inputName.placeholder = 'OWNER NAME';
+                inputName.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    marker.name = e.target.value;
+                });
                 cellName.appendChild(inputName);
 
-                // 3. Phone
+                // Phone (Numeric filter + 10-Digit limit)
                 const cellPhone = document.createElement('td');
                 const inputPhone = document.createElement('input');
                 inputPhone.className = 'input-cell';
-                inputPhone.type = 'tel';
+                inputPhone.type = 'text';
+                inputPhone.maxLength = 10;
                 inputPhone.value = marker.phone || '';
-                inputPhone.addEventListener('input', (e) => marker.phone = e.target.value);
+                inputPhone.placeholder = '10 DIGITS';
+                inputPhone.addEventListener('input', (e) => {
+                    let digits = e.target.value.replace(/[^0-9]/g, ''); 
+                    e.target.value = digits;
+                    marker.phone = digits;
+                });
                 cellPhone.appendChild(inputPhone);
 
-                // 4. Building No
+                // Building No (Forced to Capitals)
                 const cellBldg = document.createElement('td');
                 const inputBldg = document.createElement('input');
                 inputBldg.className = 'input-cell';
                 inputBldg.value = marker.buildingNo || '';
-                inputBldg.addEventListener('input', (e) => marker.buildingNo = e.target.value);
+                inputBldg.placeholder = 'BUILDING NO';
+                inputBldg.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    marker.buildingNo = e.target.value;
+                });
                 cellBldg.appendChild(inputBldg);
 
-                // 5. CN No
+                // CN No (Automatic Default Format 0001 & Editable)
                 const cellCN = document.createElement('td');
                 const inputCN = document.createElement('input');
                 inputCN.className = 'input-cell';
                 inputCN.value = marker.cnNo || '';
-                inputCN.addEventListener('input', (e) => marker.cnNo = e.target.value);
+                inputCN.placeholder = '0001';
+                inputCN.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    marker.cnNo = e.target.value;
+                });
                 cellCN.appendChild(inputCN);
 
-                // 6. Notes / Type
+                // Pucca/Katcha/Others Select Dropdown (Stored in marker.note)
                 const cellNote = document.createElement('td');
-                const inputNote = document.createElement('input');
-                inputNote.className = 'input-cell';
-                inputNote.value = marker.note || '';
-                inputNote.addEventListener('input', (e) => marker.note = e.target.value);
-                cellNote.appendChild(inputNote);
+                const selectNote = document.createElement('select');
+                selectNote.className = 'input-cell';
+                
+                const optDefault = document.createElement('option');
+                optDefault.value = '';
+                optDefault.innerText = '-- SELECT --';
+                selectNote.appendChild(optDefault);
 
-                // 7. Remarks
+                ['PUCCA', 'KATCHA', 'OTHERS'].forEach(val => {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.innerText = val;
+                    if (marker.note === val) {
+                        opt.selected = true;
+                    }
+                    selectNote.appendChild(opt);
+                });
+
+                selectNote.addEventListener('change', (e) => {
+                    marker.note = e.target.value;
+                });
+                cellNote.appendChild(selectNote);
+
+                // Remarks (Forced to Capitals)
                 const cellRemarks = document.createElement('td');
                 const inputRemarks = document.createElement('input');
                 inputRemarks.className = 'input-cell';
                 inputRemarks.value = marker.remarks || '';
-                inputRemarks.addEventListener('input', (e) => marker.remarks = e.target.value);
+                inputRemarks.placeholder = 'REMARKS';
+                inputRemarks.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    marker.remarks = e.target.value;
+                });
                 cellRemarks.appendChild(inputRemarks);
 
                 row.appendChild(cellSl);
@@ -558,6 +764,8 @@
                 return;
             }
 
+            if (!validateAllFields()) return; 
+
             const sendAction = () => {
                 return fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
@@ -569,7 +777,7 @@
                 });
             };
 
-            showBusyProgress("Saving Changes...", sendAction);
+            showBusyProgress("Saving Changes to Google Sheets...", sendAction);
         }
 
         // LOAD DATA (GET)
@@ -588,7 +796,7 @@
                     });
             };
 
-            showBusyProgress("Fetching Data...", fetchAction);
+            showBusyProgress("Fetching Data from Google Sheets...", fetchAction);
         }
     </script>
 </body>
