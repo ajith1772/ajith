@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Census HLB Register & Mapper</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .map-area {
+            flex: 2;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .map-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        #map-image {
+            width: 100%;
+            display: block;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .sidebar {
+            flex: 1.2;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        /* Markers */
+        .marker {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background-color: #2980b9;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 26px;
+            font-size: 11px;
+            font-weight: bold;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            border: 2px solid white;
+            user-select: none;
+        }
+        .marker:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background-color: #c0392b;
+        }
+        /* Buttons and Form Fields */
+        button {
+            padding: 8px 14px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .btn-save { background-color: #2ecc71; color: white; }
+        .btn-save:hover { background-color: #27ae60; }
+        .btn-load { background-color: #3498db; color: white; }
+        .btn-load:hover { background-color: #2980b9; }
+        .btn-clear { background-color: #e74c3c; color: white; }
+        .btn-clear:hover { background-color: #c0392b; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+        th { background-color: #f8f9fa; }
+        .input-cell {
+            width: 95%;
+            padding: 4px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h2>HLB Map Digitization Portal</h2>
+        <div class="button-group">
+            <button onclick="loadFromCloud()" class="btn-load">Sync from Sheet</button>
+            <button onclick="saveToCloud()" class="btn-save">Save to Sheet</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Map Panel -->
+        <div class="map-area">
+            <h4>Instructions: Click on the map to add a house marker. Double-click a marker to delete it.</h4>
+            <div class="map-wrapper" id="map-wrapper">
+                <!-- Loads 'map.png' from your GitHub repository by default -->
+                <img id="map-image" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiThD8osmhs81FJK2Leasb2ZLwbOMXuVZiI09fRwcmpqlDul-vVEBtXGj4ldqv8DYhpfCCrIum1j_eJVcxGFVY2G1RU7Xb_ie2dFjxyLdKzb1-qUxeTfIY44ipuGgslS9GZvIiCnS_qJQQMBOBTe7AvV4FHxYemNwlpBfLB1PxTsZZczlEAMwyj3Lk4aEDe/s1600/D.png" alt="HLB Map Boundary" onerror="this.src='https://via.placeholder.com/800x500.png?text=Please+upload+your+map.png+to+GitHub'">
+                <div id="marker-layer"></div>
+            </div>
+        </div>
+
+        <!-- Building Register Form -->
+        <div class="sidebar">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3>Building Register</h3>
+                <button onclick="clearAll()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Local</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 10%">No.</th>
+                        <th style="width: 30%">Owner Name</th>
+                        <th style="width: 30%">Phone No</th>
+                        <th style="width: 30%">Notes/Type</th>
+                    </tr>
+                </thead>
+                <tbody id="register-body">
+                    <!-- Rows generated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwdlHtsZ9Nk9FW-IRtLRRQ7qYee-xo8ZttXSoHrrzQGSFl3slZGTqpK2OlnroLpB6Y5eQ/exec";
+        // ==========================================
+
+        const mapImage = document.getElementById('map-image');
+        const markerLayer = document.getElementById('marker-layer');
+        const registerBody = document.getElementById('register-body');
+
+        let markers = [];
+        let markerCounter = 1;
+
+        // Auto-load data from Google Sheet on startup
+        window.onload = function() {
+            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
+                console.warn("Please replace 'YOUR_DEPLOYED_WEB_APP_URL_HERE' with your actual Google Script URL.");
+            } else {
+                loadFromCloud();
+            }
+        };
+
+        // Add marker when clicking the map image
+        mapImage.addEventListener('click', function(e) {
+            const rect = mapImage.getBoundingClientRect();
+            const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+            const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+
+            const newMarker = {
+                id: markerCounter,
+                x: xPercent,
+                y: yPercent,
+                buildingNo: `${markerCounter}`,
+                name: '',
+                phone: '',
+                note: ''
+            };
+
+            markers.push(newMarker);
+            markerCounter++;
+            render();
+        });
+
+        // Render markers and update table
+        function render() {
+            markerLayer.innerHTML = '';
+            registerBody.innerHTML = '';
+
+            markers.forEach((marker, index) => {
+                // Render Map Marker
+                const markerEl = document.createElement('div');
+                markerEl.className = 'marker';
+                markerEl.style.left = `${marker.x}%`;
+                markerEl.style.top = `${marker.y}%`;
+                markerEl.innerText = index + 1;
+                markerEl.title = `Double-click to delete Building ${index + 1}`;
+                
+                // Double click to remove marker
+                markerEl.addEventListener('dblclick', (e) => {
+                    e.stopPropagation();
+                    removeMarker(index);
+                });
+
+                markerLayer.appendChild(markerEl);
+
+                // Render Table Row
+                const row = document.createElement('tr');
+
+                // Building Number
+                const cellBldgNo = document.createElement('td');
+                cellBldgNo.innerText = index + 1;
+                marker.buildingNo = index + 1;
+
+                // Owner Name Input
+                const cellName = document.createElement('td');
+                const inputName = document.createElement('input');
+                inputName.type = 'text';
+                inputName.className = 'input-cell';
+                inputName.value = marker.name || '';
+                inputName.placeholder = 'Name';
+                inputName.addEventListener('input', (e) => marker.name = e.target.value);
+                cellName.appendChild(inputName);
+
+                // Phone Input
+                const cellPhone = document.createElement('td');
+                const inputPhone = document.createElement('input');
+                inputPhone.type = 'tel';
+                inputPhone.className = 'input-cell';
+                inputPhone.value = marker.phone || '';
+                inputPhone.placeholder = 'Phone No';
+                inputPhone.addEventListener('input', (e) => marker.phone = e.target.value);
+                cellPhone.appendChild(inputPhone);
+
+                // Notes Input
+                const cellNote = document.createElement('td');
+                const inputNote = document.createElement('input');
+                inputNote.type = 'text';
+                inputNote.className = 'input-cell';
+                inputNote.value = marker.note || '';
+                inputNote.placeholder = 'Notes/Remarks';
+                inputNote.addEventListener('input', (e) => marker.note = e.target.value);
+                cellNote.appendChild(inputNote);
+
+                row.appendChild(cellBldgNo);
+                row.appendChild(cellName);
+                row.appendChild(cellPhone);
+                row.appendChild(cellNote);
+
+                registerBody.appendChild(row);
+            });
+        }
+
+        function removeMarker(index) {
+            markers.splice(index, 1);
+            render();
+        }
+
+        function clearAll() {
+            if (confirm("Reset current unsaved local changes? This does not delete data from the online Sheet unless you save.")) {
+                markers = [];
+                markerCounter = 1;
+                render();
+            }
+        }
+
+        // Send Data to Google Sheet
+        function saveToCloud() {
+            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
+                alert("Please configure your GOOGLE_SCRIPT_URL inside the code first.");
+                return;
+            }
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(markers)
+            })
+            .then(() => {
+                alert("Data successfully saved to Google Sheets!");
+            })
+            .catch(err => {
+                alert("Could not connect to Google Sheet: " + err);
+            });
+        }
+
+        // Fetch Data from Google Sheet
+        function loadFromCloud() {
+            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
+
+            fetch(GOOGLE_SCRIPT_URL)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    markers = data;
+                    // Find max ID to keep auto-numbering continuous
+                    markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
+                    render();
+                }
+            })
+            .catch(err => {
+                console.error("Failed to fetch data from Google Sheet:", err);
+            });
+        }
+    </script>
+</body>
+</html>
