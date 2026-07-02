@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Census HLB Register & Mapper</title>
+    <title>My Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -264,8 +264,8 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            width: 90%;
+            max-width: 400px;
+            width: 85%;
             text-align: center;
             color: var(--text-dark);
             animation: modalFadeIn 0.25s cubic-bezier(0.25, 1, 0.5, 1);
@@ -540,12 +540,13 @@
                 <input type="text" id="form-name" placeholder="ENTER OWNER NAME">
             </div>
             
+            <!-- Forces mobile device numeric keyboard strictly on select -->
             <div class="form-group">
-                <label>PHONE NO (10 DIGITS) *</label>
+                <label>PHONE </label>
                 <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER 10-DIGIT MOBILE NUMBER">
             </div>
             <div class="form-group">
-                <label>BUILDING NO</label>
+                <label>BLDING NO</label>
                 <input type="text" id="form-building-no" placeholder="BUILDING NUMBER">
             </div>
 
@@ -587,10 +588,10 @@
 
     <!-- Simplified Header with Print Options only -->
     <div class="header">
-        <h2>HLB Map Digitization Portal</h2>
+        <h2>MY MAP</h2>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Portrait)</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Portrait)</button>
+            <button onclick="printA4()" class="btn-print">Print A4</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
 
@@ -627,7 +628,7 @@
             
             <div class="map-area" id="map-scroll-container">
                 <div class="map-wrapper" id="map-wrapper">
-                    <img id="map-image" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiThD8osmhs81FJK2Leasb2ZLwbOMXuVZiI09fRwcmpqlDul-vVEBtXGj4ldqv8DYhpfCCrIum1j_eJVcxGFVY2G1RU7Xb_ie2dFjxyLdKzb1-qUxeTfIY44ipuGgslS9GZvIiCnS_qJQQMBOBTe7AvV4FHxYemNwlpBfLB1PxTsZZczlEAMwyj3Lk4aEDe/s1600/D.png" alt="HLB Map Boundary" onerror="this.src='https://via.placeholder.com/800x500.png?text=Please+upload+your+map.png+to+GitHub'">
+                    <img id="map-image" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEinz79snxzBFHlipN2d7mMdrTxMI6dZmvR6SN9RLk5fFN3eERIG7rn5Owr_U2vHdPSNXococZEtMSYlx9h1n6SoWkF-9NeftbmOlwVq2kmVj1zzA8vebYvz6grOCRO45QcACPiuG2RLFXhj5AjYhKiJO2QUaiVHD0eVykEKLFtNIpX2mdNQEjyEImErj1lP/s1600/D.png" alt="HLB Map Boundary" onerror="this.src='https://via.placeholder.com/800x500.png?text=Please+upload+your+map.png+to+GitHub'">
                     
                     <svg id="arrow-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <defs>
@@ -647,11 +648,11 @@
         <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Register</h3>
                 <div class="button-group">
-                    <button onclick="loadFromCloud()" class="btn-load">Sync from Sheet</button>
-                    <button onclick="saveToCloud()" class="btn-save">Save to Sheet</button>
-                    <button onclick="clearAll()" class="btn-clear">Reset Local</button>
+                    <button onclick="loadFromCloud()" class="btn-load">Sync</button>
+                    <button onclick="saveToCloud()" class="btn-save">Save</button>
+                    <button onclick="clearAll()" class="btn-clear">Reset</button>
                 </div>
             </div>
             
@@ -660,11 +661,11 @@
                     <thead>
                         <tr>
                             <th style="width: 6%">Sl No</th>
-                            <th style="width: 20%">Name<span class="required-star">*</span></th>
-                            <th style="width: 14%">Phone (10 Digits)<span class="required-star">*</span></th>
+                            <th style="width: 20%">Name</th>
+                            <th style="width: 14%">Phone</span></th>
                             <th style="width: 10%">Bldg No</th>
                             <th style="width: 12%">CN No</th>
-                            <th style="width: 18%">Pucca/Katcha/Others</th>
+                            <th style="width: 18%">Type</th>
                             <th style="width: 20%">Remarks</th>
                         </tr>
                     </thead>
@@ -717,7 +718,6 @@
         const formName = document.getElementById('form-name');
         const formPhone = document.getElementById('form-phone');
         const formBuildingNo = document.getElementById('form-building-no');
-        const btnAddHouse = document.getElementById('btn-add-house');
         const housesSection = document.getElementById('houses-section');
         const entrySave = document.getElementById('entry-save');
         const entryCancel = document.getElementById('entry-cancel');
@@ -743,80 +743,7 @@
             }
         };
 
-        // INTERACTIVE TOOL MODE CONTROLLER
-        function setToolMode(mode) {
-            currentToolMode = mode;
-            if (mode === "building") {
-                btnModeBuilding.style.backgroundColor = "var(--success)";
-                btnModeRoad.style.backgroundColor = "#64748b";
-                roadTools.style.display = "none";
-                instructionHint.innerText = "Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.";
-            } else {
-                btnModeBuilding.style.backgroundColor = "#64748b";
-                btnModeRoad.style.backgroundColor = "var(--danger)";
-                roadTools.style.display = "flex";
-                instructionHint.innerText = "Click sequential points on the map to draw roads/paths. Click 'New Road' to draw separate segments.";
-            }
-            renderRoads(); 
-        }
-
-        // ROAD DRAWING UTILITIES
-        function startNewRoad() {
-            if (roads.length === 0 || roads[roads.length - 1].length > 0) {
-                roads.push([]); 
-            }
-        }
-
-        function undoLastRoadNode() {
-            if (roads.length > 0) {
-                const active = roads[roads.length - 1];
-                if (active.length > 0) {
-                    active.pop();
-                } else {
-                    roads.pop(); 
-                    undoLastRoadNode(); 
-                }
-                renderRoads();
-            }
-        }
-
-        async function clearRoads() {
-            const confirmed = await showCustomConfirm("Are you sure you want to clear all drawn roads?", "Reset Roads");
-            if (confirmed) {
-                roads = [];
-                renderRoads();
-            }
-        }
-
-        function renderRoads() {
-            svgRoads.innerHTML = '';
-            roads.forEach(road => {
-                if (road.length >= 2) {
-                    const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-                    const pointsStr = road.map(pt => `${pt.x},${pt.y}`).join(' ');
-                    polyline.setAttribute("points", pointsStr);
-                    polyline.setAttribute("stroke", "#34495e"); 
-                    polyline.setAttribute("stroke-width", "0.35");
-                    polyline.setAttribute("fill", "none");
-                    polyline.setAttribute("stroke-linejoin", "round");
-                    polyline.setAttribute("stroke-linecap", "round");
-                    svgRoads.appendChild(polyline);
-                }
-
-                if (currentToolMode === "road") {
-                    road.forEach(pt => {
-                        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                        circle.setAttribute("cx", pt.x);
-                        circle.setAttribute("cy", pt.y);
-                        circle.setAttribute("r", "0.4");
-                        circle.setAttribute("fill", "#7f8c8d");
-                        svgRoads.appendChild(circle);
-                    });
-                }
-            });
-        }
-
-        // GLOBAL GESTURE BLOCKING
+        // GLOBAL GESTURE BLOCKING (Strictly blocks document-level viewport pinch/stretch zoom)
         document.addEventListener('touchmove', function (event) {
             if (event.scale !== undefined && event.scale !== 1) { 
                 event.preventDefault(); 
@@ -827,12 +754,12 @@
         document.addEventListener('touchend', function (event) {
             const now = (new Date()).getTime();
             if (now - lastTouchEnd <= 300) {
-                event.preventDefault(); 
+                event.preventDefault(); // Blocks rapid double-tap webpage zoom
             }
             lastTouchEnd = now;
         }, false);
 
-        // DISABLE CONTEXT MENU GLOBALLY 
+        // DISABLE CONTEXT MENU GLOBALLY (Right Click & Mobile long-press menus)
         document.addEventListener('contextmenu', function (e) {
             e.preventDefault();
         });
@@ -869,7 +796,7 @@
 
         mapScrollContainer.addEventListener('touchmove', function (e) {
             if (isPinching && e.touches.length === 2) {
-                e.preventDefault(); 
+                e.preventDefault(); // Lock viewport scrolling while pinching map
                 
                 const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
                 const scale = currentDistance / startDistance;
@@ -962,7 +889,7 @@
             });
         }
 
-        // BUSY PROGRESS
+        // BUSY PROGRESS (spinner removed, only bar and % animate)
         function showBusyProgress(title, onFinishedAction) {
             loadingOverlay.style.display = 'flex';
             statusText.innerText = title;
@@ -1010,6 +937,7 @@
             }, 250);
         }
 
+        // RE-DESERIALIZE CHECK TO ENSURE SYNC VALIDATIONS RUN WITHOUT ERRORS
         async function printA4() {
             const isValid = await validateAllFields();
             if (!isValid) return;
@@ -1028,6 +956,79 @@
         formPhone.addEventListener('input', (e) => {
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
+
+        // INTERACTIVE TOOL MODE CONTROLLER
+        function setToolMode(mode) {
+            currentToolMode = mode;
+            if (mode === "building") {
+                btnModeBuilding.style.backgroundColor = "var(--success)";
+                btnModeRoad.style.backgroundColor = "#64748b";
+                roadTools.style.display = "none";
+                instructionHint.innerText = "Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.";
+            } else {
+                btnModeBuilding.style.backgroundColor = "#64748b";
+                btnModeRoad.style.backgroundColor = "var(--danger)";
+                roadTools.style.display = "flex";
+                instructionHint.innerText = "Click sequential points on the map to draw roads/paths. Click 'New Road' to draw separate segments.";
+            }
+            renderRoads(); 
+        }
+
+        // ROAD DRAWING UTILITIES
+        function startNewRoad() {
+            if (roads.length === 0 || roads[roads.length - 1].length > 0) {
+                roads.push([]); 
+            }
+        }
+
+        function undoLastRoadNode() {
+            if (roads.length > 0) {
+                const active = roads[roads.length - 1];
+                if (active.length > 0) {
+                    active.pop();
+                } else {
+                    roads.pop(); 
+                    undoLastRoadNode(); 
+                }
+                renderRoads();
+            }
+        }
+
+        async function clearRoads() {
+            const confirmed = await showCustomConfirm("Are you sure you want to clear all drawn roads?", "Reset Roads");
+            if (confirmed) {
+                roads = [];
+                renderRoads();
+            }
+        }
+
+        function renderRoads() {
+            svgRoads.innerHTML = '';
+            roads.forEach(road => {
+                if (road.length >= 2) {
+                    const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+                    const pointsStr = road.map(pt => `${pt.x},${pt.y}`).join(' ');
+                    polyline.setAttribute("points", pointsStr);
+                    polyline.setAttribute("stroke", "#34495e"); 
+                    polyline.setAttribute("stroke-width", "0.35");
+                    polyline.setAttribute("fill", "none");
+                    polyline.setAttribute("stroke-linejoin", "round");
+                    polyline.setAttribute("stroke-linecap", "round");
+                    svgRoads.appendChild(polyline); // Correctly appends to svgRoads ONLY
+                }
+
+                if (currentToolMode === "road") {
+                    road.forEach(pt => {
+                        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        circle.setAttribute("cx", pt.x);
+                        circle.setAttribute("cy", pt.y);
+                        circle.setAttribute("r", "0.4");
+                        circle.setAttribute("fill", "#7f8c8d");
+                        svgRoads.appendChild(circle);
+                    });
+                }
+            });
+        }
 
         // CALCULATE TOTAL HOUSES IN THE ACTIVE SESSION
         function countTotalHousesInSession(excludeId = -1) {
@@ -1131,7 +1132,6 @@
                 if (markerData.censusHouses && markerData.censusHouses.length > 0) {
                     modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
                 } else {
-                    // Fallback configuration if none exists
                     modalHouses = [{
                         cnNo: markerData.cnNo || '0001',
                         type: markerData.note || '',
@@ -1142,12 +1142,13 @@
                 // Render dynamic houses rows
                 renderModalHouses(isViewOnly);
 
-                // Setup "+ Add Census House" button
-                btnAddHouse.style.display = isViewOnly ? 'none' : 'inline-block';
+                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY
+                const btnAddHouseElement = document.getElementById('btn-add-house');
+                btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
                 
-                // Clear any old click listeners from the Add button
-                const newBtnAddHouse = btnAddHouse.cloneNode(true);
-                btnAddHouse.parentNode.replaceChild(newBtnAddHouse, btnAddHouse);
+                // Clone the active element currently inside the DOM
+                const newBtnAddHouse = btnAddHouseElement.cloneNode(true);
+                btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
                 
                 newBtnAddHouse.addEventListener('click', () => {
                     const totalExisting = countTotalHousesInSession(markerData.id);
@@ -1174,20 +1175,7 @@
                     const name = formName.value.trim();
                     const phone = formPhone.value.trim();
 
-                    // Compulsory check name/phone inside form before closing
-                    if (name === "") {
-                        await showCustomAlert("Save Blocked: 'Owner Name' is compulsory.", "Form Error");
-                        return;
-                    }
-                    if (phone === "") {
-                        await showCustomAlert("Save Blocked: 'Phone Number' is compulsory.", "Form Error");
-                        return;
-                    }
-                    if (phone.length !== 10) {
-                        await showCustomAlert("Save Blocked: Phone number must be exactly 10 digits.", "Form Error");
-                        return;
-                    }
-
+                    
                     // Enforce that all listed Census Houses have a valid CN No
                     for (let i = 0; i < modalHouses.length; i++) {
                         if (!modalHouses[i].cnNo || modalHouses[i].cnNo.trim() === "") {
@@ -1204,7 +1192,7 @@
                     // Save back the serialized census houses array
                     markerData.censusHouses = JSON.parse(JSON.stringify(modalHouses));
 
-                    // Keep flat fields populated with first house value for compatibility checks
+                    // Keep flat fields populated with first house value for compatibility checks (Fixes FormCNNo reference error)
                     markerData.cnNo = modalHouses[0].cnNo;
                     markerData.note = modalHouses[0].type;
                     markerData.remarks = modalHouses[0].remarks;
@@ -1255,7 +1243,6 @@
                     }]
                 };
 
-                // Open Entry popup form immediately
                 const saved = await openEntryModal(draftMarker, nextIndex, false);
                 if (saved) {
                     markers.push(draftMarker);
@@ -1480,7 +1467,7 @@
             // Serialize 1-to-many censusHouses arrays into newline-separated flat columns to preserve Google Sheets schema compatibility
             payload.forEach(m => {
                 if (m.censusHouses && m.censusHouses.length > 0) {
-                    m.cnNo = m.censusHouses.map(ch => ch.cnNo).join("\n");
+                    m.cnNo = m.censusHouses.map(ch => ch.cnNo).join("\n"); 
                     m.note = m.censusHouses.map(ch => ch.type).join("\n");
                     m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
@@ -1571,7 +1558,7 @@
                     });
             };
 
-            showBusyProgress("Fetching Data from Google Sheets...", fetchAction);
+            showBusyProgress("Lov❤️ding...", fetchAction);
         }
     </script>
 </body>
