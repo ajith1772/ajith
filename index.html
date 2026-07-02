@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Viewport configured to block page-level zooming on mobile devices -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MY MAP</title>
     <style>
         :root {
@@ -24,6 +25,7 @@
             padding: 15px;
             background-color: var(--bg-light);
             color: var(--text-dark);
+            overscroll-behavior: contain; 
         }
 
         .header {
@@ -175,7 +177,7 @@
             border-color: var(--primary);
         }
 
-        /* COMPACT MAP MARKER STYLE (SUITABLE FOR SMALL DEVICES) */
+        /* Compact Map Marker Style */
         .marker {
             position: absolute;
             width: 18px;       
@@ -282,10 +284,8 @@
                 display: none !important;
             }
             .container {
-                display: flex !important;
-                flex-direction: column !important;
+                display: block !important;
                 width: 100% !important;
-                gap: 0px !important;
             }
             .map-panel, .sidebar {
                 box-shadow: none !important;
@@ -296,12 +296,8 @@
                 background: transparent !important;
             }
             .map-area {
-                overflow: visible !important;
                 border: none !important;
                 background: transparent !important;
-            }
-            .map-wrapper {
-                width: 100% !important;
             }
             table {
                 min-width: 100% !important;
@@ -312,36 +308,80 @@
                 padding: 2px !important;
             }
 
-            /* Option A: A4 Landscape Single-Page Map, Register follows on next page */
+            /* Compulsory Single-Page A4 Portrait Map, Register follows */
             body.print-mode-a4 {
                 width: 100%;
             }
             body.print-mode-a4 .map-panel {
-                page-break-after: always; /* Force register to start on page 2 */
-                height: 92vh !important;  /* Fit map beautifully inside Page 1 */
+                width: 100% !important;
+                height: 95vh !important;  /* Fills exactly Page 1 viewport height */
+                page-break-after: always !important; 
+                page-break-inside: avoid !important;
                 box-sizing: border-box;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
             }
             body.print-mode-a4 .map-area {
+                width: 100% !important;
                 height: 85vh !important;  
+                overflow: hidden !important; /* Block scrollbars in printout */
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+            }
+            body.print-mode-a4 .map-wrapper {
+                width: auto !important;
+                height: 100% !important; /* Scale proportionally down to fit page height */
+                max-width: 100% !important;
+                display: inline-block;
+            }
+            body.print-mode-a4 #map-image {
+                width: auto !important;
+                height: 100% !important;
+                max-width: 100% !important;
             }
             body.print-mode-a4 .sidebar {
-                page-break-before: always;
+                page-break-before: always !important; /* Forces register table to page 2 */
                 display: block !important;
+                width: 100% !important;
+                margin-top: 20px !important;
             }
 
-            /* Option B: A3 Landscape Single-Page Map Only */
+            /* Compulsory Single-Page A3 Portrait Map Only (No Register) */
             body.print-mode-a3 {
                 width: 100%;
             }
             body.print-mode-a3 .sidebar {
-                display: none !important; /* Hide register table entirely */
+                display: none !important; /* Hide register entirely */
             }
             body.print-mode-a3 .map-panel {
-                height: 92vh !important;  /* Stretch map cleanly to fill exactly one A3 sheet */
+                width: 100% !important;
+                height: 95vh !important;  /* Locks map exactly to single A3 Portrait page */
+                page-break-inside: avoid !important;
                 box-sizing: border-box;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
             }
             body.print-mode-a3 .map-area {
+                width: 100% !important;
                 height: 85vh !important;
+                overflow: hidden !important;
+                display: flex !important;
+                justify-content: center;
+                align-items: center;
+            }
+            body.print-mode-a3 .map-wrapper {
+                width: auto !important;
+                height: 100% !important;
+                max-width: 100% !important;
+                display: inline-block;
+            }
+            body.print-mode-a3 #map-image {
+                width: auto !important;
+                height: 100% !important;
+                max-width: 100% !important;
             }
         }
     </style>
@@ -362,9 +402,9 @@
         <h2>MY MAP</h2>
         <div class="button-group">
             <button onclick="loadFromCloud()" class="btn-load">Sync...</button>
-            <button onclick="saveToCloud()" class="btn-save">Save...</button>
-            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Landscape)</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Landscape)</button>
+            <button onclick="saveToCloud()" class="btn-save">Save..</button>
+            <button onclick="printA4()" class="btn-print">Print A4</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
 
@@ -372,7 +412,7 @@
         <!-- Building Register Form (TOP) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Register</h3>
                 <button onclick="clearAll()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Local</button>
             </div>
             
@@ -380,13 +420,13 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 6%">Sl No</th>
+                            <th style="width: 6%">Sl </th>
                             <th style="width: 20%">Name<span class="required-star">*</span></th>
                             <th style="width: 14%">Phone (10 Digits)<span class="required-star">*</span></th>
-                            <th style="width: 10%">Bldg No<span class="required-star">*</span></th>
-                            <th style="width: 10%">CN No (0001 Format)<span class="required-star">*</span></th>
-                            <th style="width: 18%">Pucca/Katcha/Others<span class="required-star">*</span></th>
-                            <th style="width: 22%">Remarks<span class="required-star">*</span></th>
+                            <th style="width: 10%">Bldg No</th>
+                            <th style="width: 10%">CN No (0001 Format)</th>
+                            <th style="width: 18%">Pucca/Katcha/Others</th>
+                            <th style="width: 22%">Remarks</th>
                         </tr>
                     </thead>
                     <tbody id="register-body">
@@ -417,7 +457,6 @@
                     
                     <svg id="arrow-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <defs>
-                            <!-- Narrow refX (11) stops arrowhead nicely at the edge of the smaller 18px marker circle -->
                             <marker id="arrow" viewBox="0 0 10 10" refX="11" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
                                 <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#e74c3c" />
                             </marker>
@@ -459,7 +498,23 @@
             }
         };
 
-        // ZOOM CONTROLS
+        // GESTURE BLOCKING (Strictly prevents mobile viewport pinching/stretching)
+        document.addEventListener('touchmove', function (event) {
+            if (event.scale !== undefined && event.scale !== 1) { 
+                event.preventDefault(); 
+            }
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault(); // Blocks rapid double-tap zooming
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // ZOOM CONTROLS (Only targets .map-wrapper inside the viewport)
         function zoomIn() {
             if (currentZoom < 500) {
                 currentZoom += 25;
@@ -516,7 +571,7 @@
         function triggerPrint(sizeClass, pageSize) {
             const printStyle = document.createElement('style');
             printStyle.id = "print-page-style";
-            printStyle.innerHTML = `@media print { @page { size: ${pageSize} landscape; margin: 5mm; } }`;
+            printStyle.innerHTML = `@media print { @page { size: ${pageSize} portrait; margin: 5mm; } }`;
             document.head.appendChild(printStyle);
 
             document.body.classList.add(sizeClass);
@@ -565,7 +620,7 @@
             render();
         });
 
-        // VALIDATION CHECK FOR COMPULSORY FIELDS (Safely converts numeric values to string first)
+        // VALIDATION CHECK FOR COMPULSORY FIELDS (Only Name and Phone are compulsory)
         function validateAllFields() {
             if (markers.length === 0) {
                 alert("There are no registered buildings to validate.");
@@ -578,10 +633,6 @@
 
                 const nameVal = String(m.name || "").trim();
                 const phoneVal = String(m.phone || "").trim();
-                const bldgVal = String(m.buildingNo || "").trim();
-                const cnVal = String(m.cnNo || "").trim();
-                const noteVal = String(m.note || "").trim();
-                const remarksVal = String(m.remarks || "").trim();
 
                 if (nameVal === "") {
                     alert(`Save Blocked: Sl No ${row} is missing 'Owner Name'.`);
@@ -593,22 +644,6 @@
                 }
                 if (phoneVal.length !== 10) {
                     alert(`Save Blocked: Sl No ${row} has an invalid Phone Number (${phoneVal}). It must be exactly 10 digits.`);
-                    return false;
-                }
-                if (bldgVal === "") {
-                    alert(`Save Blocked: Sl No ${row} is missing 'Building No'.`);
-                    return false;
-                }
-                if (cnVal === "") {
-                    alert(`Save Blocked: Sl No ${row} is missing 'CN No'.`);
-                    return false;
-                }
-                if (noteVal === "") {
-                    alert(`Save Blocked: Sl No ${row} is missing 'Pucca/Katcha/Others' selection.`);
-                    return false;
-                }
-                if (remarksVal === "") {
-                    alert(`Save Blocked: Sl No ${row} is missing 'Remarks'.`);
                     return false;
                 }
             }
@@ -661,7 +696,7 @@
                 cellSl.style.fontWeight = "bold";
                 cellSl.innerText = marker.slNo;
 
-                // Name (Forced to Capitals)
+                // Name (Forced to Capitals) - COMPULSORY
                 const cellName = document.createElement('td');
                 const inputName = document.createElement('input');
                 inputName.className = 'input-cell';
@@ -673,7 +708,7 @@
                 });
                 cellName.appendChild(inputName);
 
-                // Phone (Numeric filter + 10-Digit limit)
+                // Phone (Numeric filter + 10-Digit limit) - COMPULSORY
                 const cellPhone = document.createElement('td');
                 const inputPhone = document.createElement('input');
                 inputPhone.className = 'input-cell';
@@ -688,7 +723,7 @@
                 });
                 cellPhone.appendChild(inputPhone);
 
-                // Building No (Forced to Capitals)
+                // Building No (Forced to Capitals) - OPTIONAL
                 const cellBldg = document.createElement('td');
                 const inputBldg = document.createElement('input');
                 inputBldg.className = 'input-cell';
@@ -700,7 +735,7 @@
                 });
                 cellBldg.appendChild(inputBldg);
 
-                // CN No (Automatic Default Format 0001 & Editable)
+                // CN No (Automatic Default Format 0001 & Editable) - OPTIONAL
                 const cellCN = document.createElement('td');
                 const inputCN = document.createElement('input');
                 inputCN.className = 'input-cell';
@@ -712,7 +747,7 @@
                 });
                 cellCN.appendChild(inputCN);
 
-                // Pucca/Katcha/Others Select Dropdown (Stored in marker.note)
+                // Pucca/Katcha/Others Select Dropdown (Stored in marker.note) - OPTIONAL
                 const cellNote = document.createElement('td');
                 const selectNote = document.createElement('select');
                 selectNote.className = 'input-cell';
@@ -737,7 +772,7 @@
                 });
                 cellNote.appendChild(selectNote);
 
-                // Remarks (Forced to Capitals)
+                // Remarks (Forced to Capitals) - OPTIONAL
                 const cellRemarks = document.createElement('td');
                 const inputRemarks = document.createElement('input');
                 inputRemarks.className = 'input-cell';
@@ -813,7 +848,7 @@
                     });
             };
 
-            showBusyProgress("Fetching Data from Google Sheets...", fetchAction);
+            showBusyProgress("Fetching Data...", fetchAction);
         }
     </script>
 </body>
