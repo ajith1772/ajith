@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport configured to block page-level zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MY Mapper</title>
+    <title>Census HLB Register & Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -17,6 +16,23 @@
             --info-dark: #732d91;
             --bg-light: #f5f7fa;
             --text-dark: #2c3e50;
+        }
+
+        /* STRICT GLOBAL COPY PROTECTION */
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none; 
+        }
+
+        /* Allow typing/editing strictly inside form inputs */
+        input, select, textarea {
+            -webkit-user-select: auto !important;
+            -moz-user-select: auto !important;
+            -ms-user-select: auto !important;
+            user-select: auto !important;
         }
 
         body {
@@ -115,7 +131,6 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             background: #e9ecef;
-            /* Prevents browser handling pinch gestures over map area directly */
             touch-action: pan-x pan-y; 
         }
 
@@ -123,7 +138,7 @@
             position: relative;
             display: inline-block;
             width: 100%;
-            transition: width 0.1s ease-out; /* Slightly faster transition for gestures */
+            transition: width 0.1s ease-out; 
         }
 
         #map-image {
@@ -204,7 +219,7 @@
             background-color: var(--danger);
         }
 
-        /* Spinner Overlay */
+        /* Spinner & Dialog Overlays */
         .overlay {
             display: none;
             position: fixed;
@@ -249,6 +264,43 @@
             height: 100%;
             background-color: #3498db;
             transition: width 0.1s ease-out;
+        }
+
+        /* CUSTOM DIALOG BOX SYSTEM */
+        .dialog-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 85%;
+            text-align: center;
+            color: var(--text-dark);
+            animation: modalFadeIn 0.2s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        #dialog-title {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        #dialog-message {
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .dialog-btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
         }
 
         /* Buttons */
@@ -300,6 +352,9 @@
             .map-area {
                 border: none !important;
                 background: transparent !important;
+            }
+            .map-wrapper {
+                width: 100% !important;
             }
             table {
                 min-width: 100% !important;
@@ -400,13 +455,25 @@
         <div id="percentage-text" style="font-size: 14px; font-weight: bold;">0%</div>
     </div>
 
+    <!-- Custom Alert/Confirm HTML Dialog Box -->
+    <div id="custom-dialog" class="overlay" style="z-index: 10000; background: rgba(15, 23, 42, 0.75);">
+        <div class="dialog-box">
+            <h3 id="dialog-title">Notification</h3>
+            <p id="dialog-message">Message text...</p>
+            <div class="dialog-btn-group">
+                <button id="dialog-ok" class="btn-save">OK</button>
+                <button id="dialog-cancel" class="btn-clear" style="display: none;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div class="header">
-        <h2>MY MAP</h2>
+        <h2>HLB Map Digitization Portal</h2>
         <div class="button-group">
-            <button onclick="loadFromCloud()" class="btn-load">Sync</button>
-            <button onclick="saveToCloud()" class="btn-save">Save</button>
-            <button onclick="printA4()" class="btn-print">Print A4</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
+            <button onclick="loadFromCloud()" class="btn-load">Sync from Sheet</button>
+            <button onclick="saveToCloud()" class="btn-save">Save to Sheet</button>
+            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Portrait)</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Portrait)</button>
         </div>
     </div>
 
@@ -414,7 +481,7 @@
         <!-- Building Register Form (TOP) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Register</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
                 <button onclick="clearAll()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Local</button>
             </div>
             
@@ -422,7 +489,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 6%">No</th>
+                            <th style="width: 6%">Sl No</th>
                             <th style="width: 20%">Name<span class="required-star">*</span></th>
                             <th style="width: 14%">Phone (10 Digits)<span class="required-star">*</span></th>
                             <th style="width: 10%">Bldg No</th>
@@ -442,7 +509,7 @@
         <div class="map-panel">
             <div class="map-controls">
                 <span style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
-                    Click map to mark. Use two-finger pinch gesture on the map viewport to zoom.
+                    Click map to mark. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold a marker to delete it.
                 </span>
                 <div class="zoom-controls">
                     <strong>Zoom Map:</strong>
@@ -491,6 +558,13 @@
         const progressBar = document.getElementById('progress-bar');
         const percentageText = document.getElementById('percentage-text');
 
+        // Custom modal elements
+        const customDialog = document.getElementById('custom-dialog');
+        const dialogTitle = document.getElementById('dialog-title');
+        const dialogMessage = document.getElementById('dialog-message');
+        const dialogOk = document.getElementById('dialog-ok');
+        const dialogCancel = document.getElementById('dialog-cancel');
+
         let markers = [];
         let markerCounter = 1;
         let currentZoom = 100;
@@ -501,7 +575,50 @@
             }
         };
 
-        // GLOBAL GESTURE BLOCKING (Strictly blocks document-level pinch/stretch zoom)
+        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS (Replaces default alerts & confirms)
+        function showCustomAlert(message, title = "Notification") {
+            return new Promise((resolve) => {
+                dialogTitle.innerText = title;
+                dialogMessage.innerText = message;
+                dialogCancel.style.display = 'none'; // Only OK button
+                customDialog.style.display = 'flex';
+
+                const onOk = () => {
+                    customDialog.style.display = 'none';
+                    dialogOk.removeEventListener('click', onOk);
+                    resolve(true);
+                };
+                dialogOk.addEventListener('click', onOk);
+            });
+        }
+
+        function showCustomConfirm(message, title = "Confirmation") {
+            return new Promise((resolve) => {
+                dialogTitle.innerText = title;
+                dialogMessage.innerText = message;
+                dialogCancel.style.display = 'inline-block'; // Show Cancel button
+                customDialog.style.display = 'flex';
+
+                const onOk = () => {
+                    cleanup();
+                    resolve(true);
+                };
+                const onCancel = () => {
+                    cleanup();
+                    resolve(false);
+                };
+                function cleanup() {
+                    customDialog.style.display = 'none';
+                    dialogOk.removeEventListener('click', onOk);
+                    dialogCancel.removeEventListener('click', onCancel);
+                }
+
+                dialogOk.addEventListener('click', onOk);
+                dialogCancel.addEventListener('click', onCancel);
+            });
+        }
+
+        // GLOBAL GESTURE BLOCKING (Strictly blocks document-level viewport pinch/stretch zoom)
         document.addEventListener('touchmove', function (event) {
             if (event.scale !== undefined && event.scale !== 1) { 
                 event.preventDefault(); 
@@ -517,7 +634,31 @@
             lastTouchEnd = now;
         }, false);
 
-        // NATIVE PINCH-TO-ZOOM GESTURE LISTENER (Strictly bound to the map viewport)
+        // DISABLE CONTEXT MENU GLOBALLY (Right Click & Mobile long-press menus)
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        // DISABLE INSPECT / SOURCE KEY SHORTCUTS
+        document.addEventListener('keydown', function (e) {
+            // Disable F12 (code 123)
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable Ctrl+Shift+I (73), Ctrl+Shift+J (74), Ctrl+Shift+C (67)
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+            // Disable Ctrl+U (View Source - code 85)
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // NATIVE PINCH-TO-ZOOM GESTURE LISTENER (Strictly bound to map area)
         let startDistance = 0;
         let startZoom = 100;
         let isPinching = false;
@@ -539,9 +680,8 @@
                 
                 let targetZoom = Math.round(startZoom * scale);
                 
-                // Keep manual gesture zoom within standard viewport boundaries
                 if (targetZoom < 50) targetZoom = 50;
-                if (targetZoom > 500) targetZoom = 500;
+                if (targetZoom > 1000) targetZoom = 1000; // Increased zoom limit to 1000%
                 
                 currentZoom = targetZoom;
                 updateZoom();
@@ -562,7 +702,7 @@
 
         // ZOOM BUTTON CONTROLS 
         function zoomIn() {
-            if (currentZoom < 500) {
+            if (currentZoom < 1000) { // Limit extended to 1000%
                 currentZoom += 25;
                 updateZoom();
             }
@@ -609,7 +749,7 @@
             }).catch((err) => {
                 clearInterval(interval);
                 loadingOverlay.style.display = 'none';
-                alert("Operation failed: " + err);
+                showCustomAlert("Operation failed: " + err, "Error");
             });
         }
 
@@ -630,8 +770,9 @@
             }, 250);
         }
 
-        function printA4() {
-            if (!validateAllFields()) return;
+        async function printA4() {
+            const isValid = await validateAllFields();
+            if (!isValid) return;
             triggerPrint('print-mode-a4', 'A4');
         }
 
@@ -667,9 +808,9 @@
         });
 
         // VALIDATION CHECK FOR COMPULSORY FIELDS (Only Name and Phone are compulsory)
-        function validateAllFields() {
+        async function validateAllFields() {
             if (markers.length === 0) {
-                alert("There are no registered buildings to validate.");
+                await showCustomAlert("There are no registered buildings to validate.", "Validation Alert");
                 return false;
             }
 
@@ -681,15 +822,15 @@
                 const phoneVal = String(m.phone || "").trim();
 
                 if (nameVal === "") {
-                    alert(`Save Blocked: Sl No ${row} is missing 'Owner Name'.`);
+                    await showCustomAlert(`Save Blocked: Sl No ${row} is missing 'Owner Name'.`, "Validation Error");
                     return false;
                 }
                 if (phoneVal === "") {
-                    alert(`Save Blocked: Sl No ${row} is missing 'Phone Number'.`);
+                    await showCustomAlert(`Save Blocked: Sl No ${row} is missing 'Phone Number'.`, "Validation Error");
                     return false;
                 }
                 if (phoneVal.length !== 10) {
-                    alert(`Save Blocked: Sl No ${row} has an invalid Phone Number (${phoneVal}). It must be exactly 10 digits.`);
+                    await showCustomAlert(`Save Blocked: Sl No ${row} has an invalid Phone Number (${phoneVal}). It must be exactly 10 digits.`, "Validation Error");
                     return false;
                 }
             }
@@ -711,12 +852,34 @@
                 markerEl.style.left = `${marker.x}%`;
                 markerEl.style.top = `${marker.y}%`;
                 markerEl.innerText = marker.slNo;
-                markerEl.title = `Double-click to remove Sl No ${marker.slNo}`;
+                markerEl.title = `Press-and-hold to delete Sl No ${marker.slNo}`;
                 
-                markerEl.addEventListener('dblclick', (e) => {
-                    e.stopPropagation();
-                    removeMarker(index);
-                });
+                // PRESS-AND-HOLD GESTURE TO DELETE MARKER (Asynchronously triggers custom HTML confirm box)
+                let pressTimer;
+
+                const startPress = (e) => {
+                    e.stopPropagation(); // Prevents map click trigger underneath
+                    pressTimer = setTimeout(async () => {
+                        const confirmed = await showCustomConfirm(`Do you want to delete Sl No ${marker.slNo}?`, "Confirm Delete");
+                        if (confirmed) {
+                            removeMarker(index);
+                        }
+                    }, 600); // 600 milliseconds long press duration
+                };
+
+                const cancelPress = () => {
+                    clearTimeout(pressTimer);
+                };
+
+                // Mouse Event listeners
+                markerEl.addEventListener('mousedown', startPress);
+                markerEl.addEventListener('mouseup', cancelPress);
+                markerEl.addEventListener('mouseleave', cancelPress);
+
+                // Touch Event listeners
+                markerEl.addEventListener('touchstart', startPress);
+                markerEl.addEventListener('touchend', cancelPress);
+                markerEl.addEventListener('touchcancel', cancelPress);
 
                 markerLayer.appendChild(markerEl);
 
@@ -847,8 +1010,9 @@
             render();
         }
 
-        function clearAll() {
-            if (confirm("Reset local modifications? This clears your screen. Database remains unchanged unless you push to save.")) {
+        async function clearAll() {
+            const confirmed = await showCustomConfirm("Reset local modifications? This clears your screen. Database remains unchanged unless you push to save.", "Reset Progress");
+            if (confirmed) {
                 markers = [];
                 markerCounter = 1;
                 render();
@@ -856,13 +1020,14 @@
         }
 
         // SAVE DATA (POST)
-        function saveToCloud() {
+        async function saveToCloud() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
-                alert("Please write your Apps Script URL into the constant variable first.");
+                await showCustomAlert("Please write your Apps Script URL into the constant variable first.", "Setup Required");
                 return;
             }
 
-            if (!validateAllFields()) return; 
+            const isValid = await validateAllFields();
+            if (!isValid) return; 
 
             const sendAction = () => {
                 return fetch(GOOGLE_SCRIPT_URL, {
@@ -879,7 +1044,7 @@
         }
 
         // LOAD DATA (GET)
-        function loadFromCloud() {
+        async function loadFromCloud() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
 
             const fetchAction = () => {
@@ -894,7 +1059,7 @@
                     });
             };
 
-            showBusyProgress("Loading Data...", fetchAction);
+            showBusyProgress("Loading Data from Google Sheets...", fetchAction);
         }
     </script>
 </body>
