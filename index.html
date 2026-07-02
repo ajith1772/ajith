@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Census HLB Register & Mapper</title>
+    <title>My Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -468,12 +468,12 @@
     </div>
 
     <div class="header">
-        <h2>HLB Map Digitization Portal</h2>
+        <h2>My Map</h2>
         <div class="button-group">
-            <button onclick="loadFromCloud()" class="btn-load">Sync from Sheet</button>
-            <button onclick="saveToCloud()" class="btn-save">Save to Sheet</button>
-            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Portrait)</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Portrait)</button>
+            <button onclick="loadFromCloud()" class="btn-load">Sync</button>
+            <button onclick="saveToCloud()" class="btn-save">Save</button>
+            <button onclick="printA4()" class="btn-print">Print A4</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
 
@@ -489,11 +489,11 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 6%">Sl No</th>
+                            <th style="width: 6%">No</th>
                             <th style="width: 20%">Name<span class="required-star">*</span></th>
-                            <th style="width: 14%">Phone (10 Digits)<span class="required-star">*</span></th>
+                            <th style="width: 14%">Phone<span class="required-star">*</span></th>
                             <th style="width: 10%">Bldg No</th>
-                            <th style="width: 10%">CN No (0001 Format)</th>
+                            <th style="width: 10%">CN No</th>
                             <th style="width: 18%">Pucca/Katcha/Others</th>
                             <th style="width: 22%">Remarks</th>
                         </tr>
@@ -1059,7 +1059,7 @@
                     });
             };
 
-            showBusyProgress("Loading Data from Google Sheets...", fetchAction);
+            showBusyProgress("Loading...", fetchAction);
         }
     </script>
 </body>
