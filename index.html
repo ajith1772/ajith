@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Census HLB Register & Mapper</title>
+    <title>My Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -519,19 +519,19 @@
             
             <!-- Forces mobile device numeric keyboard strictly on select -->
             <div class="form-group">
-                <label>PHONE NO (10 DIGITS) *</label>
+                <label>MOBILE *</label>
                 <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER 10-DIGIT MOBILE NUMBER">
             </div>
             <div class="form-group">
-                <label>BUILDING NO</label>
+                <label>BUIL NO</label>
                 <input type="text" id="form-building-no" placeholder="BUILDING NUMBER">
             </div>
             <div class="form-group">
-                <label>CN NO (0001 FORMAT)</label>
+                <label>CN NO</label>
                 <input type="text" id="form-cn-no" placeholder="0001">
             </div>
             <div class="form-group">
-                <label>TYPE (PUCCA/KATCHA/OTHERS)</label>
+                <label>TYPE</label>
                 <select id="form-note">
                     <option value="">-- SELECT --</option>
                     <option value="PUCCA">PUCCA</option>
@@ -542,7 +542,7 @@
             
             <!-- Remarks Datalist Selection -->
             <div class="form-group">
-                <label>REMARKS (TYPE OPTION OR CHOOSE FROM LIST)</label>
+                <label>REMARKS</label>
                 <input type="text" id="form-remarks" list="remarks-options" placeholder="TYPE OTHER OR SELECT REMARK">
                 <datalist id="remarks-options">
                     <option value="HOME"></option>
@@ -569,10 +569,10 @@
 
     <!-- Simplified Header with Print Options only -->
     <div class="header">
-        <h2>HLB Map Digitization Portal</h2>
+        <h2>MY MAP</h2>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Portrait)</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Portrait)</button>
+            <button onclick="printA4()" class="btn-print">Print A4 </button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3 </button>
         </div>
     </div>
 
@@ -613,11 +613,11 @@
         <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Register</h3>
                 <div class="button-group">
-                    <button onclick="loadFromCloud()" class="btn-load">Sync from Sheet</button>
-                    <button onclick="saveToCloud()" class="btn-save">Save to Sheet</button>
-                    <button onclick="clearAll()" class="btn-clear">Reset Local</button>
+                    <button onclick="loadFromCloud()" class="btn-load">Sync</button>
+                    <button onclick="saveToCloud()" class="btn-save">Save</button>
+                    <button onclick="clearAll()" class="btn-clear">Reset</button>
                 </div>
             </div>
             
@@ -625,12 +625,12 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 6%">Sl No</th>
+                            <th style="width: 6%">No</th>
                             <th style="width: 20%">Name<span class="required-star">*</span></th>
-                            <th style="width: 14%">Phone (10 Digits)<span class="required-star">*</span></th>
+                            <th style="width: 14%">Mobile <span class="required-star">*</span></th>
                             <th style="width: 10%">Bldg No</th>
-                            <th style="width: 10%">CN No (0001 Format)</th>
-                            <th style="width: 18%">Pucca/Katcha/Others</th>
+                            <th style="width: 10%">CN No </th>
+                            <th style="width: 18%">Type</th>
                             <th style="width: 22%">Remarks</th>
                         </tr>
                     </thead>
@@ -1241,7 +1241,7 @@
                     });
             };
 
-            showBusyProgress("Fetching Data from Google Sheets...", fetchAction);
+            showBusyProgress("LOV❤️DING...", fetchAction);
         }
     </script>
 </body>
