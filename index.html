@@ -175,22 +175,22 @@
             border-color: var(--primary);
         }
 
-        /* Map Markers */
+        /* COMPACT MAP MARKER STYLE (SUITABLE FOR SMALL DEVICES) */
         .marker {
             position: absolute;
-            width: 24px;
-            height: 24px;
+            width: 18px;       
+            height: 18px;
             background-color: var(--primary);
             color: white;
             border-radius: 50%;
             text-align: center;
-            line-height: 24px;
-            font-size: 11px;
+            line-height: 18px;
+            font-size: 9px;
             font-weight: bold;
             transform: translate(-50%, -50%);
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border: 1.5px solid white;
             user-select: none;
             z-index: 5;
         }
@@ -269,7 +269,7 @@
         .btn-zoom:hover { background-color: #475569; }
 
         /* ========================================================
-           PRINT STYLES
+           PRINT SYSTEM STYLES
            ======================================================== */
         @media print {
             body {
@@ -285,7 +285,7 @@
                 display: flex !important;
                 flex-direction: column !important;
                 width: 100% !important;
-                gap: 10px !important;
+                gap: 0px !important;
             }
             .map-panel, .sidebar {
                 box-shadow: none !important;
@@ -310,28 +310,38 @@
                 border: none !important;
                 background: transparent !important;
                 padding: 2px !important;
-                appearance: none; /* Hide dropdown arrow on paper */
             }
 
+            /* Option A: A4 Landscape Single-Page Map, Register follows on next page */
             body.print-mode-a4 {
                 width: 100%;
             }
-            body.print-mode-a4 .container {
-                page-break-inside: avoid;
+            body.print-mode-a4 .map-panel {
+                page-break-after: always; /* Force register to start on page 2 */
+                height: 92vh !important;  /* Fit map beautifully inside Page 1 */
+                box-sizing: border-box;
             }
             body.print-mode-a4 .map-area {
-                height: 300px !important; 
+                height: 85vh !important;  
+            }
+            body.print-mode-a4 .sidebar {
+                page-break-before: always;
+                display: block !important;
             }
 
+            /* Option B: A3 Landscape Single-Page Map Only */
             body.print-mode-a3 {
                 width: 100%;
             }
             body.print-mode-a3 .sidebar {
-                display: none !important;
+                display: none !important; /* Hide register table entirely */
+            }
+            body.print-mode-a3 .map-panel {
+                height: 92vh !important;  /* Stretch map cleanly to fill exactly one A3 sheet */
+                box-sizing: border-box;
             }
             body.print-mode-a3 .map-area {
-                height: 100% !important;
-                max-height: none !important;
+                height: 85vh !important;
             }
         }
     </style>
@@ -351,10 +361,10 @@
     <div class="header">
         <h2>MY MAP</h2>
         <div class="button-group">
-            <button onclick="loadFromCloud()" class="btn-load">Sync..</button>
-            <button onclick="saveToCloud()" class="btn-save">Save..</button>
-            <button onclick="printA4()" class="btn-print">Print A4</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Prin A3</button>
+            <button onclick="loadFromCloud()" class="btn-load">Sync...</button>
+            <button onclick="saveToCloud()" class="btn-save">Save...</button>
+            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Landscape)</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Landscape)</button>
         </div>
     </div>
 
@@ -362,7 +372,7 @@
         <!-- Building Register Form (TOP) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Register</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
                 <button onclick="clearAll()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Local</button>
             </div>
             
@@ -407,7 +417,8 @@
                     
                     <svg id="arrow-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <defs>
-                            <marker id="arrow" viewBox="0 0 10 10" refX="14" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                            <!-- Narrow refX (11) stops arrowhead nicely at the edge of the smaller 18px marker circle -->
+                            <marker id="arrow" viewBox="0 0 10 10" refX="11" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
                                 <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#e74c3c" />
                             </marker>
                         </defs>
@@ -534,7 +545,6 @@
             const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
 
             const nextIndex = markers.length + 1;
-            // Pad index with leading zeros to meet 0001 format
             const formattedCN = String(nextIndex).padStart(4, '0');
 
             const newMarker = {
@@ -545,8 +555,8 @@
                 name: '',
                 phone: '',
                 buildingNo: `${nextIndex}`,
-                cnNo: formattedCN, // Default format 0001 (editable)
-                note: '', // Maps to Pucca/Katcha/Others dropdown value
+                cnNo: formattedCN, 
+                note: '', 
                 remarks: ''
             };
 
@@ -555,7 +565,7 @@
             render();
         });
 
-        // VALIDATION CHECK FOR COMPULSORY FIELDS
+        // VALIDATION CHECK FOR COMPULSORY FIELDS (Safely converts numeric values to string first)
         function validateAllFields() {
             if (markers.length === 0) {
                 alert("There are no registered buildings to validate.");
@@ -566,31 +576,38 @@
                 const m = markers[i];
                 const row = i + 1;
 
-                if (!m.name || m.name.trim() === "") {
+                const nameVal = String(m.name || "").trim();
+                const phoneVal = String(m.phone || "").trim();
+                const bldgVal = String(m.buildingNo || "").trim();
+                const cnVal = String(m.cnNo || "").trim();
+                const noteVal = String(m.note || "").trim();
+                const remarksVal = String(m.remarks || "").trim();
+
+                if (nameVal === "") {
                     alert(`Save Blocked: Sl No ${row} is missing 'Owner Name'.`);
                     return false;
                 }
-                if (!m.phone || m.phone.trim() === "") {
+                if (phoneVal === "") {
                     alert(`Save Blocked: Sl No ${row} is missing 'Phone Number'.`);
                     return false;
                 }
-                if (m.phone.length !== 10) {
-                    alert(`Save Blocked: Sl No ${row} has an invalid Phone Number. It must be exactly 10 digits.`);
+                if (phoneVal.length !== 10) {
+                    alert(`Save Blocked: Sl No ${row} has an invalid Phone Number (${phoneVal}). It must be exactly 10 digits.`);
                     return false;
                 }
-                if (!m.buildingNo || m.buildingNo.trim() === "") {
+                if (bldgVal === "") {
                     alert(`Save Blocked: Sl No ${row} is missing 'Building No'.`);
                     return false;
                 }
-                if (!m.cnNo || m.cnNo.trim() === "") {
+                if (cnVal === "") {
                     alert(`Save Blocked: Sl No ${row} is missing 'CN No'.`);
                     return false;
                 }
-                if (!m.note || m.note.trim() === "") {
+                if (noteVal === "") {
                     alert(`Save Blocked: Sl No ${row} is missing 'Pucca/Katcha/Others' selection.`);
                     return false;
                 }
-                if (!m.remarks || m.remarks.trim() === "") {
+                if (remarksVal === "") {
                     alert(`Save Blocked: Sl No ${row} is missing 'Remarks'.`);
                     return false;
                 }
@@ -662,7 +679,7 @@
                 inputPhone.className = 'input-cell';
                 inputPhone.type = 'text';
                 inputPhone.maxLength = 10;
-                inputPhone.value = marker.phone || '';
+                inputPhone.value = marker.phone !== undefined && marker.phone !== null ? String(marker.phone) : '';
                 inputPhone.placeholder = '10 DIGITS';
                 inputPhone.addEventListener('input', (e) => {
                     let digits = e.target.value.replace(/[^0-9]/g, ''); 
@@ -675,7 +692,7 @@
                 const cellBldg = document.createElement('td');
                 const inputBldg = document.createElement('input');
                 inputBldg.className = 'input-cell';
-                inputBldg.value = marker.buildingNo || '';
+                inputBldg.value = marker.buildingNo !== undefined && marker.buildingNo !== null ? String(marker.buildingNo) : '';
                 inputBldg.placeholder = 'BUILDING NO';
                 inputBldg.addEventListener('input', (e) => {
                     e.target.value = e.target.value.toUpperCase();
@@ -687,7 +704,7 @@
                 const cellCN = document.createElement('td');
                 const inputCN = document.createElement('input');
                 inputCN.className = 'input-cell';
-                inputCN.value = marker.cnNo || '';
+                inputCN.value = marker.cnNo !== undefined && marker.cnNo !== null ? String(marker.cnNo) : '';
                 inputCN.placeholder = '0001';
                 inputCN.addEventListener('input', (e) => {
                     e.target.value = e.target.value.toUpperCase();
