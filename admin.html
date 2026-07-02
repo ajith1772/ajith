@@ -72,7 +72,7 @@
             flex-wrap: wrap;
         }
 
-        /* STACKED LAYOUT: REGISTER TOP, MAP BOTTOM */
+        /* STACKED LAYOUT: MAP TOP, REGISTER BOTTOM */
         .container {
             display: flex;
             flex-direction: column;
@@ -80,7 +80,7 @@
             width: 100%;
         }
 
-        .sidebar {
+        .map-panel {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -89,7 +89,7 @@
             box-sizing: border-box;
         }
 
-        .map-panel {
+        .sidebar {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -132,13 +132,20 @@
             border-radius: 4px;
             background: #e9ecef;
             touch-action: pan-x pan-y; 
+            scroll-behavior: smooth;              
+            -webkit-overflow-scrolling: touch;    
         }
 
         .map-wrapper {
             position: relative;
             display: inline-block;
             width: 100%;
-            transition: width 0.1s ease-out; 
+            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+            will-change: width; 
+        }
+
+        .no-transition {
+            transition: none !important;
         }
 
         #map-image {
@@ -197,19 +204,19 @@
         /* Compact Map Marker Style */
         .marker {
             position: absolute;
-            width: 18px;       
-            height: 18px;
+            width: 22px;       
+            height: 22px;
             background-color: var(--primary);
             color: white;
             border-radius: 50%;
             text-align: center;
-            line-height: 18px;
-            font-size: 9px;
+            line-height: 22px;
+            font-size: 11px;
             font-weight: bold;
             transform: translate(-50%, -50%);
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            border: 1.5px solid white;
+            border: 2px solid white;
             user-select: none;
             z-index: 5;
         }
@@ -235,21 +242,6 @@
             color: white;
         }
 
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.2);
-            border-top: 5px solid #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .progress-container {
             width: 250px;
             background-color: rgba(255, 255, 255, 0.2);
@@ -266,7 +258,7 @@
             transition: width 0.1s ease-out;
         }
 
-        /* CUSTOM DIALOG BOX SYSTEM */
+        /* MODAL DIALOG BOXES */
         .dialog-box {
             background: white;
             padding: 20px;
@@ -276,7 +268,7 @@
             width: 85%;
             text-align: center;
             color: var(--text-dark);
-            animation: modalFadeIn 0.2s ease-out;
+            animation: modalFadeIn 0.25s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         @keyframes modalFadeIn {
@@ -301,9 +293,71 @@
             display: flex;
             gap: 10px;
             justify-content: center;
+            margin-top: 15px;
         }
 
-        /* Buttons */
+        /* Custom Form Layout inside Modals */
+        .form-group {
+            margin-bottom: 12px;
+            text-align: left;
+            width: 100%;
+        }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #555;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 13px;
+            text-transform: uppercase;
+            box-sizing: border-box;
+        }
+
+        /* Dynamic Census Houses grid inside entry modal */
+        .houses-section {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 15px;
+            background: #f8fafc;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .house-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .house-row input, .house-row select {
+            padding: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            box-sizing: border-box;
+        }
+
+        /* Options Menu Vertical Buttons */
+        .options-menu-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 4px;
+            font-weight: bold;
+            text-align: center;
+            font-size: 13px;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Buttons styles */
         button {
             padding: 8px 14px;
             border-radius: 4px;
@@ -325,7 +379,7 @@
         .btn-zoom:hover { background-color: #475569; }
 
         /* ========================================================
-           PRINT SYSTEM STYLES
+           PRINT STYLES
            ======================================================== */
         @media print {
             body {
@@ -334,7 +388,7 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
-            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button {
+            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box {
                 display: none !important;
             }
             .container {
@@ -363,9 +417,9 @@
                 border: none !important;
                 background: transparent !important;
                 padding: 2px !important;
+                appearance: none;
             }
 
-            /* Compulsory Single-Page A4 Portrait Map, Register follows */
             body.print-mode-a4 {
                 width: 100%;
             }
@@ -405,7 +459,6 @@
                 margin-top: 20px !important;
             }
 
-            /* Compulsory Single-Page A3 Portrait Map Only (No Register) */
             body.print-mode-a3 {
                 width: 100%;
             }
@@ -445,10 +498,9 @@
 </head>
 <body>
 
-    <!-- Busy Spinner Overlay -->
+    <!-- Busy Progress Overlay -->
     <div id="loading-overlay" class="overlay">
-        <div class="spinner"></div>
-        <div id="status-text" style="font-weight: 600; margin-bottom: 10px; font-size: 15px;">Saving Data...</div>
+        <div id="status-text" style="font-weight: 600; margin-bottom: 15px; font-size: 15px; letter-spacing: 0.5px;">Saving Changes...</div>
         <div class="progress-container">
             <div id="progress-bar" class="progress-bar"></div>
         </div>
@@ -467,49 +519,103 @@
         </div>
     </div>
 
+    <!-- Custom Options Menu Modal (Long Press on Marker) -->
+    <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
+        <div class="dialog-box" style="max-width: 320px;">
+            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker Options</h3>
+            <button id="options-view" class="options-menu-btn btn-load">View Details</button>
+            <button id="options-edit" class="options-menu-btn btn-save">Edit Details</button>
+            <button id="options-delete" class="options-menu-btn btn-clear">Delete Building</button>
+            <button id="options-close" class="options-menu-btn" style="background:#64748b; color:white;">Close</button>
+        </div>
+    </div>
+
+    <!-- Custom Data Entry/Edit Form Modal -->
+    <div id="entry-modal" class="overlay" style="z-index: 9980; background: rgba(15, 23, 42, 0.75);">
+        <div class="dialog-box" style="max-width: 480px;">
+            <h3 id="entry-title" style="margin-top:0; color:var(--primary);">Add Building Details</h3>
+            
+            <div class="form-group">
+                <label>OWNER NAME *</label>
+                <input type="text" id="form-name" placeholder="ENTER OWNER NAME">
+            </div>
+            
+            <!-- Forces mobile device numeric keyboard strictly on select -->
+            <div class="form-group">
+                <label>PHONE </label>
+                <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER 10-DIGIT MOBILE NUMBER">
+            </div>
+            <div class="form-group">
+                <label>BLDING NO</label>
+                <input type="text" id="form-building-no" placeholder="BUILDING NUMBER">
+            </div>
+
+            <!-- Dynamic Multiple Census Houses Area (CN No, Type, Remarks) -->
+            <div style="text-align: left; font-size: 13px; font-weight: bold; color: var(--primary); margin-top: 15px;">
+                Census Houses inside this Building:
+            </div>
+            
+            <div class="houses-section" id="houses-section">
+                <!-- Dynamically generated rows sit here -->
+            </div>
+
+            <div style="text-align: left; margin-top: 10px;">
+                <button type="button" id="btn-add-house" class="btn-load" style="padding: 5px 10px; font-size: 11px;">+ Add Census House</button>
+            </div>
+
+            <!-- Remarks Datalist lookup helper -->
+            <datalist id="remarks-options">
+                <option value="HOME"></option>
+                <option value="HOME-SHOP"></option>
+                <option value="HOME-INSTITUTION"></option>
+                <option value="INSTITUTION"></option>
+                <option value="SHOP"></option>
+                <option value="GROUND"></option>
+                <option value="CLOSED HOME"></option>
+                <option value="CLOSED SHOP"></option>
+                <option value="CHURCH"></option>
+                <option value="TEMPLE"></option>
+                <option value="MOSQUE"></option>
+                <option value="FACTORY"></option>
+            </datalist>
+
+            <div class="dialog-btn-group">
+                <button id="entry-save" class="btn-save">Save</button>
+                <button id="entry-cancel" class="btn-clear">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simplified Header with Print Options only -->
     <div class="header">
-        <h2>My Map</h2>
+        <h2>MY MAP</h2>
         <div class="button-group">
-            <button onclick="loadFromCloud()" class="btn-load">Sync</button>
-            <button onclick="saveToCloud()" class="btn-save">Save</button>
             <button onclick="printA4()" class="btn-print">Print A4</button>
             <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
 
     <div class="container">
-        <!-- Building Register Form (TOP) -->
-        <div class="sidebar">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
-                <button onclick="clearAll()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Local</button>
-            </div>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 6%">No</th>
-                            <th style="width: 20%">Name<span class="required-star">*</span></th>
-                            <th style="width: 14%">Phone<span class="required-star">*</span></th>
-                            <th style="width: 10%">Bldg No</th>
-                            <th style="width: 10%">CN No</th>
-                            <th style="width: 18%">Pucca/Katcha/Others</th>
-                            <th style="width: 22%">Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="register-body">
-                        <!-- Rows generated dynamically -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Map Panel (BOTTOM) -->
+        <!-- Map Panel (TOP) -->
         <div class="map-panel">
+            
+            <!-- Interactive Tool Mode Box -->
+            <div class="tool-mode-box" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
+                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Register Buildings</button>
+                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw Roads</button>
+                </div>
+                <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
+                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New Road</button>
+                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo Node</button>
+                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Roads</button>
+                </div>
+            </div>
+
             <div class="map-controls">
-                <span style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
-                    Click map to mark. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold a marker to delete it.
+                <span id="instruction-hint" style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
+                    Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.
                 </span>
                 <div class="zoom-controls">
                     <strong>Zoom Map:</strong>
@@ -522,7 +628,7 @@
             
             <div class="map-area" id="map-scroll-container">
                 <div class="map-wrapper" id="map-wrapper">
-                    <img id="map-image" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiThD8osmhs81FJK2Leasb2ZLwbOMXuVZiI09fRwcmpqlDul-vVEBtXGj4ldqv8DYhpfCCrIum1j_eJVcxGFVY2G1RU7Xb_ie2dFjxyLdKzb1-qUxeTfIY44ipuGgslS9GZvIiCnS_qJQQMBOBTe7AvV4FHxYemNwlpBfLB1PxTsZZczlEAMwyj3Lk4aEDe/s1600/D.png" alt="HLB Map Boundary" onerror="this.src='https://via.placeholder.com/800x500.png?text=Please+upload+your+map.png+to+GitHub'">
+                    <img id="map-image" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEg6HU0l84ykGEeEcGmiX7vhMNqFdijz_nTJB0EPE6Pwc17LZMj3Ulk3vL5Fci2xbyB5a_rwhblzewq4g_tG165v7Cbkl_5CsptmX5qBmiibYYyCtzCvkC20uV8_8AwVkhkTteUuXlmmwvzCEnSe4jJCfglW-y1dTlHHyyi8B90Fumqfbx4DgywdpcdmghOM/s1600/KK.png" alt="HLB Map Boundary" onerror="this.src='https://via.placeholder.com/800x500.png?text=Please+upload+your+map.png+to+GitHub'">
                     
                     <svg id="arrow-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;" viewBox="0 0 100 100" preserveAspectRatio="none">
                         <defs>
@@ -530,6 +636,7 @@
                                 <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#e74c3c" />
                             </marker>
                         </defs>
+                        <g id="svg-roads"></g>
                         <g id="svg-paths"></g>
                     </svg>
 
@@ -537,12 +644,43 @@
                 </div>
             </div>
         </div>
+
+        <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
+        <div class="sidebar">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <h3 style="margin: 0; font-size: 1.2rem;">Register</h3>
+                <div class="button-group">
+                    <button onclick="loadFromCloud()" class="btn-load">Sync</button>
+                    <button onclick="saveToCloud()" class="btn-save">Save</button>
+                    <button onclick="clearAll()" class="btn-clear">Reset</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 6%">Sl No</th>
+                            <th style="width: 20%">Name</th>
+                            <th style="width: 14%">Phone</span></th>
+                            <th style="width: 10%">Bldg No</th>
+                            <th style="width: 12%">CN No</th>
+                            <th style="width: 18%">Type</th>
+                            <th style="width: 20%">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="register-body">
+                        <!-- Rows generated dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
         // ==========================================
         // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSSqI5sQWkXlQVrphxjmQe_pWvytoaCADqVu-MU4ulaXdTTNzePoS7OhNLQjXniEJzXw/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwiFQbOOUnAw48syJN0Im-g7-hvI-0wuf0L9dBE_-iAg4XHErpmahtaI7n9DTWq4Pit/exec";
         // ==========================================
 
         const mapImage = document.getElementById('map-image');
@@ -552,6 +690,7 @@
         const registerBody = document.getElementById('register-body');
         const zoomText = document.getElementById('zoom-text');
         const svgPaths = document.getElementById('svg-paths');
+        const svgRoads = document.getElementById('svg-roads');
         
         const loadingOverlay = document.getElementById('loading-overlay');
         const statusText = document.getElementById('status-text');
@@ -565,58 +704,44 @@
         const dialogOk = document.getElementById('dialog-ok');
         const dialogCancel = document.getElementById('dialog-cancel');
 
+        // Options modal elements
+        const optionsModal = document.getElementById('options-modal');
+        const optionsTitle = document.getElementById('options-title');
+        const optionsView = document.getElementById('options-view');
+        const optionsEdit = document.getElementById('options-edit');
+        const optionsDelete = document.getElementById('options-delete');
+        const optionsClose = document.getElementById('options-close');
+
+        // Entry Form modal elements
+        const entryModal = document.getElementById('entry-modal');
+        const entryTitle = document.getElementById('entry-title');
+        const formName = document.getElementById('form-name');
+        const formPhone = document.getElementById('form-phone');
+        const formBuildingNo = document.getElementById('form-building-no');
+        const housesSection = document.getElementById('houses-section');
+        const entrySave = document.getElementById('entry-save');
+        const entryCancel = document.getElementById('entry-cancel');
+
+        // Mode elements
+        const btnModeBuilding = document.getElementById('btn-mode-building');
+        const btnModeRoad = document.getElementById('btn-mode-road');
+        const roadTools = document.getElementById('road-tools');
+        const instructionHint = document.getElementById('instruction-hint');
+
         let markers = [];
+        let roads = []; 
         let markerCounter = 1;
         let currentZoom = 100;
+        let currentToolMode = "building"; 
+
+        // Local array to hold census houses in active popup session
+        let modalHouses = [];
 
         window.onload = function() {
             if (GOOGLE_SCRIPT_URL !== "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
                 loadFromCloud();
             }
         };
-
-        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS (Replaces default alerts & confirms)
-        function showCustomAlert(message, title = "Notification") {
-            return new Promise((resolve) => {
-                dialogTitle.innerText = title;
-                dialogMessage.innerText = message;
-                dialogCancel.style.display = 'none'; // Only OK button
-                customDialog.style.display = 'flex';
-
-                const onOk = () => {
-                    customDialog.style.display = 'none';
-                    dialogOk.removeEventListener('click', onOk);
-                    resolve(true);
-                };
-                dialogOk.addEventListener('click', onOk);
-            });
-        }
-
-        function showCustomConfirm(message, title = "Confirmation") {
-            return new Promise((resolve) => {
-                dialogTitle.innerText = title;
-                dialogMessage.innerText = message;
-                dialogCancel.style.display = 'inline-block'; // Show Cancel button
-                customDialog.style.display = 'flex';
-
-                const onOk = () => {
-                    cleanup();
-                    resolve(true);
-                };
-                const onCancel = () => {
-                    cleanup();
-                    resolve(false);
-                };
-                function cleanup() {
-                    customDialog.style.display = 'none';
-                    dialogOk.removeEventListener('click', onOk);
-                    dialogCancel.removeEventListener('click', onCancel);
-                }
-
-                dialogOk.addEventListener('click', onOk);
-                dialogCancel.addEventListener('click', onCancel);
-            });
-        }
 
         // GLOBAL GESTURE BLOCKING (Strictly blocks document-level viewport pinch/stretch zoom)
         document.addEventListener('touchmove', function (event) {
@@ -641,17 +766,14 @@
 
         // DISABLE INSPECT / SOURCE KEY SHORTCUTS
         document.addEventListener('keydown', function (e) {
-            // Disable F12 (code 123)
             if (e.keyCode === 123) {
                 e.preventDefault();
                 return false;
             }
-            // Disable Ctrl+Shift+I (73), Ctrl+Shift+J (74), Ctrl+Shift+C (67)
             if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
                 e.preventDefault();
                 return false;
             }
-            // Disable Ctrl+U (View Source - code 85)
             if (e.ctrlKey && e.keyCode === 85) {
                 e.preventDefault();
                 return false;
@@ -666,6 +788,7 @@
         mapScrollContainer.addEventListener('touchstart', function (e) {
             if (e.touches.length === 2) {
                 isPinching = true;
+                mapWrapper.classList.add('no-transition'); 
                 startDistance = getTouchDistance(e.touches[0], e.touches[1]);
                 startZoom = currentZoom;
             }
@@ -681,7 +804,7 @@
                 let targetZoom = Math.round(startZoom * scale);
                 
                 if (targetZoom < 50) targetZoom = 50;
-                if (targetZoom > 1000) targetZoom = 1000; // Increased zoom limit to 1000%
+                if (targetZoom > 1000) targetZoom = 1000; 
                 
                 currentZoom = targetZoom;
                 updateZoom();
@@ -691,6 +814,7 @@
         mapScrollContainer.addEventListener('touchend', function (e) {
             if (e.touches.length < 2) {
                 isPinching = false;
+                mapWrapper.classList.remove('no-transition'); 
             }
         });
 
@@ -702,7 +826,7 @@
 
         // ZOOM BUTTON CONTROLS 
         function zoomIn() {
-            if (currentZoom < 1000) { // Limit extended to 1000%
+            if (currentZoom < 1000) { 
                 currentZoom += 25;
                 updateZoom();
             }
@@ -722,7 +846,50 @@
             zoomText.innerText = `${currentZoom}%`;
         }
 
-        // BUSY SPINNER & SLIDE PROGRESS
+        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
+        function showCustomAlert(message, title = "Notification") {
+            return new Promise((resolve) => {
+                dialogTitle.innerText = title;
+                dialogMessage.innerText = message;
+                dialogCancel.style.display = 'none'; 
+                customDialog.style.display = 'flex';
+
+                const onOk = () => {
+                    customDialog.style.display = 'none';
+                    dialogOk.removeEventListener('click', onOk);
+                    resolve(true);
+                };
+                dialogOk.addEventListener('click', onOk);
+            });
+        }
+
+        function showCustomConfirm(message, title = "Confirmation") {
+            return new Promise((resolve) => {
+                dialogTitle.innerText = title;
+                dialogMessage.innerText = message;
+                dialogCancel.style.display = 'inline-block'; 
+                customDialog.style.display = 'flex';
+
+                const onOk = () => {
+                    cleanup();
+                    resolve(true);
+                };
+                const onCancel = () => {
+                    cleanup();
+                    resolve(false);
+                };
+                function cleanup() {
+                    customDialog.style.display = 'none';
+                    dialogOk.removeEventListener('click', onOk);
+                    dialogCancel.removeEventListener('click', onCancel);
+                }
+
+                dialogOk.addEventListener('click', onOk);
+                dialogCancel.addEventListener('click', onCancel);
+            });
+        }
+
+        // BUSY PROGRESS (spinner removed, only bar and % animate)
         function showBusyProgress(title, onFinishedAction) {
             loadingOverlay.style.display = 'flex';
             statusText.innerText = title;
@@ -770,6 +937,7 @@
             }, 250);
         }
 
+        // RE-DESERIALIZE CHECK TO ENSURE SYNC VALIDATIONS RUN WITHOUT ERRORS
         async function printA4() {
             const isValid = await validateAllFields();
             if (!isValid) return;
@@ -780,34 +948,318 @@
             triggerPrint('print-mode-a3', 'A3');
         }
 
-        // ADD MARKER ON CLICK
-        mapImage.addEventListener('click', function(e) {
+        // FORCE UPPERCASE INPUT FIELDS AT CODE LEVEL
+        formName.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+        formBuildingNo.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+        
+        // Strict Numeric filter for Phone Number input
+        formPhone.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+
+        // INTERACTIVE TOOL MODE CONTROLLER
+        function setToolMode(mode) {
+            currentToolMode = mode;
+            if (mode === "building") {
+                btnModeBuilding.style.backgroundColor = "var(--success)";
+                btnModeRoad.style.backgroundColor = "#64748b";
+                roadTools.style.display = "none";
+                instructionHint.innerText = "Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.";
+            } else {
+                btnModeBuilding.style.backgroundColor = "#64748b";
+                btnModeRoad.style.backgroundColor = "var(--danger)";
+                roadTools.style.display = "flex";
+                instructionHint.innerText = "Click sequential points on the map to draw roads/paths. Click 'New Road' to draw separate segments.";
+            }
+            renderRoads(); 
+        }
+
+        // ROAD DRAWING UTILITIES
+        function startNewRoad() {
+            if (roads.length === 0 || roads[roads.length - 1].length > 0) {
+                roads.push([]); 
+            }
+        }
+
+        function undoLastRoadNode() {
+            if (roads.length > 0) {
+                const active = roads[roads.length - 1];
+                if (active.length > 0) {
+                    active.pop();
+                } else {
+                    roads.pop(); 
+                    undoLastRoadNode(); 
+                }
+                renderRoads();
+            }
+        }
+
+        async function clearRoads() {
+            const confirmed = await showCustomConfirm("Are you sure you want to clear all drawn roads?", "Reset Roads");
+            if (confirmed) {
+                roads = [];
+                renderRoads();
+            }
+        }
+
+        function renderRoads() {
+            svgRoads.innerHTML = '';
+            roads.forEach(road => {
+                if (road.length >= 2) {
+                    const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
+                    const pointsStr = road.map(pt => `${pt.x},${pt.y}`).join(' ');
+                    polyline.setAttribute("points", pointsStr);
+                    polyline.setAttribute("stroke", "#34495e"); 
+                    polyline.setAttribute("stroke-width", "0.35");
+                    polyline.setAttribute("fill", "none");
+                    polyline.setAttribute("stroke-linejoin", "round");
+                    polyline.setAttribute("stroke-linecap", "round");
+                    svgRoads.appendChild(polyline); // Correctly appends to svgRoads ONLY
+                }
+
+                if (currentToolMode === "road") {
+                    road.forEach(pt => {
+                        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                        circle.setAttribute("cx", pt.x);
+                        circle.setAttribute("cy", pt.y);
+                        circle.setAttribute("r", "0.4");
+                        circle.setAttribute("fill", "#7f8c8d");
+                        svgRoads.appendChild(circle);
+                    });
+                }
+            });
+        }
+
+        // CALCULATE TOTAL HOUSES IN THE ACTIVE SESSION
+        function countTotalHousesInSession(excludeId = -1) {
+            let count = 0;
+            markers.forEach(m => {
+                if (m.id !== excludeId) {
+                    count += (m.censusHouses ? m.censusHouses.length : 1);
+                }
+            });
+            return count;
+        }
+
+        // RENDER INTERACTIVE CENSUS HOUSE ROWS INSIDE POPUP MODAL
+        function renderModalHouses(isViewOnly) {
+            housesSection.innerHTML = '';
+            
+            modalHouses.forEach((house, index) => {
+                const row = document.createElement('div');
+                row.className = 'house-row';
+
+                // CN No input
+                const inputCN = document.createElement('input');
+                inputCN.type = 'text';
+                inputCN.style.width = "22%";
+                inputCN.placeholder = '0001';
+                inputCN.value = house.cnNo || '';
+                inputCN.disabled = isViewOnly;
+                inputCN.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    house.cnNo = e.target.value;
+                });
+
+                // Type select dropdown
+                const selectType = document.createElement('select');
+                selectType.style.width = "30%";
+                selectType.disabled = isViewOnly;
+                
+                const optDefault = document.createElement('option');
+                optDefault.value = '';
+                optDefault.innerText = '-- TYPE --';
+                selectType.appendChild(optDefault);
+
+                ['PUCCA', 'KATCHA', 'OTHERS'].forEach(val => {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.innerText = val;
+                    if (house.type === val) opt.selected = true;
+                    selectType.appendChild(opt);
+                });
+                selectType.addEventListener('change', (e) => {
+                    house.type = e.target.value;
+                });
+
+                // Remarks text datalist lookup
+                const inputRemarks = document.createElement('input');
+                inputRemarks.type = 'text';
+                inputRemarks.style.width = "38%";
+                inputRemarks.setAttribute('list', 'remarks-options');
+                inputRemarks.placeholder = 'REMARKS / OTHER';
+                inputRemarks.value = house.remarks || '';
+                inputRemarks.disabled = isViewOnly;
+                inputRemarks.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    house.remarks = e.target.value;
+                });
+
+                row.appendChild(inputCN);
+                row.appendChild(selectType);
+                row.appendChild(inputRemarks);
+
+                // Add Delete button only if there is more than 1 house row and not in View mode
+                if (modalHouses.length > 1 && !isViewOnly) {
+                    const btnDelete = document.createElement('button');
+                    btnDelete.type = 'button';
+                    btnDelete.className = 'btn-clear';
+                    btnDelete.style.padding = '4px 8px';
+                    btnDelete.style.fontSize = '11px';
+                    btnDelete.innerText = 'X';
+                    btnDelete.addEventListener('click', () => {
+                        modalHouses.splice(index, 1);
+                        renderModalHouses(isViewOnly);
+                    });
+                    row.appendChild(btnDelete);
+                }
+
+                housesSection.appendChild(row);
+            });
+        }
+
+        // POPUP FORM DIALOG CONTROLLER (Handles creating and editing building objects)
+        function openEntryModal(markerData, slNo, isViewOnly = false) {
+            return new Promise((resolve) => {
+                entryTitle.innerText = isViewOnly ? `Sl No ${slNo} Details` : `Register Building Sl No ${slNo}`;
+                
+                // Populate inputs
+                formName.value = markerData.name || '';
+                formPhone.value = markerData.phone || '';
+                formBuildingNo.value = markerData.buildingNo || '';
+
+                // Load existing dynamic census houses or fallback to default
+                if (markerData.censusHouses && markerData.censusHouses.length > 0) {
+                    modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
+                } else {
+                    modalHouses = [{
+                        cnNo: markerData.cnNo || '0001',
+                        type: markerData.note || '',
+                        remarks: markerData.remarks || ''
+                    }];
+                }
+
+                // Render dynamic houses rows
+                renderModalHouses(isViewOnly);
+
+                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY
+                const btnAddHouseElement = document.getElementById('btn-add-house');
+                btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
+                
+                // Clone the active element currently inside the DOM
+                const newBtnAddHouse = btnAddHouseElement.cloneNode(true);
+                btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
+                
+                newBtnAddHouse.addEventListener('click', () => {
+                    const totalExisting = countTotalHousesInSession(markerData.id);
+                    const formattedCN = String(totalExisting + modalHouses.length + 1).padStart(4, '0');
+                    modalHouses.push({
+                        cnNo: formattedCN,
+                        type: '',
+                        remarks: ''
+                    });
+                    renderModalHouses(isViewOnly);
+                });
+
+                // Toggle Read-Only State for View mode
+                formName.disabled = isViewOnly;
+                formPhone.disabled = isViewOnly;
+                formBuildingNo.disabled = isViewOnly;
+
+                entrySave.style.display = isViewOnly ? 'none' : 'inline-block';
+                entryCancel.innerText = isViewOnly ? 'Close' : 'Cancel';
+
+                entryModal.style.display = 'flex';
+
+                const onSave = async () => {
+                    const name = formName.value.trim();
+                    const phone = formPhone.value.trim();
+
+                    
+                    // Enforce that all listed Census Houses have a valid CN No
+                    for (let i = 0; i < modalHouses.length; i++) {
+                        if (!modalHouses[i].cnNo || modalHouses[i].cnNo.trim() === "") {
+                            await showCustomAlert(`Save Blocked: CN No is compulsory for all Census Houses (Row ${i+1}).`, "Form Error");
+                            return;
+                        }
+                    }
+
+                    // Map values back to object
+                    markerData.name = name;
+                    markerData.phone = phone;
+                    markerData.buildingNo = formBuildingNo.value.trim();
+                    
+                    // Save back the serialized census houses array
+                    markerData.censusHouses = JSON.parse(JSON.stringify(modalHouses));
+
+                    // Keep flat fields populated with first house value for compatibility checks (Fixes FormCNNo reference error)
+                    markerData.cnNo = modalHouses[0].cnNo;
+                    markerData.note = modalHouses[0].type;
+                    markerData.remarks = modalHouses[0].remarks;
+
+                    cleanup();
+                    resolve(true);
+                };
+
+                const onCancel = () => {
+                    cleanup();
+                    resolve(false);
+                };
+
+                function cleanup() {
+                    entryModal.style.display = 'none';
+                    entrySave.removeEventListener('click', onSave);
+                    entryCancel.removeEventListener('click', onCancel);
+                }
+
+                entrySave.addEventListener('click', onSave);
+                entryCancel.addEventListener('click', onCancel);
+            });
+        }
+
+        // INTERACTIVE MAP CLICK DISTRIBUTOR
+        mapImage.addEventListener('click', async function(e) {
             const rect = mapImage.getBoundingClientRect();
             const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
             const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
 
-            const nextIndex = markers.length + 1;
-            const formattedCN = String(nextIndex).padStart(4, '0');
+            if (currentToolMode === "building") {
+                const nextIndex = markers.length + 1;
+                const totalExisting = countTotalHousesInSession();
+                const formattedCN = String(totalExisting + 1).padStart(4, '0');
 
-            const newMarker = {
-                id: markerCounter,
-                x: xPercent,
-                y: yPercent,
-                slNo: nextIndex,
-                name: '',
-                phone: '',
-                buildingNo: `${nextIndex}`,
-                cnNo: formattedCN, 
-                note: '', 
-                remarks: ''
-            };
+                const draftMarker = {
+                    id: markerCounter,
+                    x: xPercent,
+                    y: yPercent,
+                    slNo: nextIndex,
+                    name: '',
+                    phone: '',
+                    buildingNo: `${nextIndex}`,
+                    censusHouses: [{
+                        cnNo: formattedCN,
+                        type: '',
+                        remarks: ''
+                    }]
+                };
 
-            markers.push(newMarker);
-            markerCounter++;
-            render();
+                const saved = await openEntryModal(draftMarker, nextIndex, false);
+                if (saved) {
+                    markers.push(draftMarker);
+                    markerCounter++;
+                    render();
+                }
+            } else {
+                if (roads.length === 0) {
+                    roads.push([]); 
+                }
+                const active = roads[roads.length - 1];
+                active.push({ x: xPercent, y: yPercent });
+                renderRoads();
+            }
         });
 
-        // VALIDATION CHECK FOR COMPULSORY FIELDS (Only Name and Phone are compulsory)
+        // VALIDATION CHECK FOR COMPULSORY FIELDS
         async function validateAllFields() {
             if (markers.length === 0) {
                 await showCustomAlert("There are no registered buildings to validate.", "Validation Alert");
@@ -830,14 +1282,60 @@
                     return false;
                 }
                 if (phoneVal.length !== 10) {
-                    await showCustomAlert(`Save Blocked: Sl No ${row} has an invalid Phone Number (${phoneVal}). It must be exactly 10 digits.`, "Validation Error");
+                    await showCustomAlert(`Save Blocked: Sl No ${row} has an invalid Phone Number. It must be exactly 10 digits.`, "Validation Error");
                     return false;
                 }
             }
             return true;
         }
 
-        // RENDER METHOD
+        // OPTIONS MENU CONTROLLER (View / Edit / Delete)
+        function openOptionsMenu(index) {
+            const m = markers[index];
+            optionsTitle.innerText = `Building Sl No ${m.slNo} Options`;
+            optionsModal.style.display = 'flex';
+
+            const onView = async () => {
+                optionsModal.style.display = 'none';
+                cleanup();
+                await openEntryModal(m, m.slNo, true);
+            };
+
+            const onEdit = async () => {
+                optionsModal.style.display = 'none';
+                cleanup();
+                const saved = await openEntryModal(m, m.slNo, false);
+                if (saved) render();
+            };
+
+            const onDelete = async () => {
+                optionsModal.style.display = 'none';
+                cleanup();
+                const confirmed = await showCustomConfirm(`Do you want to delete Sl No ${m.slNo}?`, "Confirm Delete");
+                if (confirmed) {
+                    removeMarker(index);
+                }
+            };
+
+            const onClose = () => {
+                optionsModal.style.display = 'none';
+                cleanup();
+            };
+
+            function cleanup() {
+                optionsView.removeEventListener('click', onView);
+                optionsEdit.removeEventListener('click', onEdit);
+                optionsDelete.removeEventListener('click', onDelete);
+                optionsClose.removeEventListener('click', onClose);
+            }
+
+            optionsView.addEventListener('click', onView);
+            optionsEdit.addEventListener('click', onEdit);
+            optionsDelete.addEventListener('click', onDelete);
+            optionsClose.addEventListener('click', onClose);
+        }
+
+        // RENDER REGISTER DATA IN SCREEN TABLE
         function render() {
             markerLayer.innerHTML = '';
             registerBody.innerHTML = '';
@@ -846,37 +1344,34 @@
             markers.forEach((marker, index) => {
                 marker.slNo = index + 1;
 
-                // 1. Draw Map Marker Element
+                // 1. Draw Map Marker Element (22px sized)
                 const markerEl = document.createElement('div');
                 markerEl.className = 'marker';
                 markerEl.style.left = `${marker.x}%`;
                 markerEl.style.top = `${marker.y}%`;
                 markerEl.innerText = marker.slNo;
-                markerEl.title = `Press-and-hold to delete Sl No ${marker.slNo}`;
+                markerEl.title = `Press and hold for options`;
                 
-                // PRESS-AND-HOLD GESTURE TO DELETE MARKER (Asynchronously triggers custom HTML confirm box)
+                // PRESS-AND-HOLD DETECTOR (Triggers Options Menu after 600ms)
                 let pressTimer;
 
                 const startPress = (e) => {
-                    e.stopPropagation(); // Prevents map click trigger underneath
-                    pressTimer = setTimeout(async () => {
-                        const confirmed = await showCustomConfirm(`Do you want to delete Sl No ${marker.slNo}?`, "Confirm Delete");
-                        if (confirmed) {
-                            removeMarker(index);
-                        }
-                    }, 600); // 600 milliseconds long press duration
+                    e.stopPropagation(); 
+                    pressTimer = setTimeout(() => {
+                        openOptionsMenu(index);
+                    }, 600); 
                 };
 
                 const cancelPress = () => {
                     clearTimeout(pressTimer);
                 };
 
-                // Mouse Event listeners
+                // Mouse inputs
                 markerEl.addEventListener('mousedown', startPress);
                 markerEl.addEventListener('mouseup', cancelPress);
                 markerEl.addEventListener('mouseleave', cancelPress);
 
-                // Touch Event listeners
+                // Touch inputs
                 markerEl.addEventListener('touchstart', startPress);
                 markerEl.addEventListener('touchend', cancelPress);
                 markerEl.addEventListener('touchcancel', cancelPress);
@@ -897,101 +1392,36 @@
                     svgPaths.appendChild(line);
                 }
 
-                // 3. Create Table Row
+                // 3. Create Table Row (Census House details are vertically aligned under one row)
                 const row = document.createElement('tr');
 
-                // Sl No
                 const cellSl = document.createElement('td');
                 cellSl.style.fontWeight = "bold";
                 cellSl.innerText = marker.slNo;
 
-                // Name (Forced to Capitals) - COMPULSORY
                 const cellName = document.createElement('td');
-                const inputName = document.createElement('input');
-                inputName.className = 'input-cell';
-                inputName.value = marker.name || '';
-                inputName.placeholder = 'OWNER NAME';
-                inputName.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.toUpperCase();
-                    marker.name = e.target.value;
-                });
-                cellName.appendChild(inputName);
+                cellName.innerText = marker.name || '-';
 
-                // Phone (Numeric filter + 10-Digit limit) - COMPULSORY
                 const cellPhone = document.createElement('td');
-                const inputPhone = document.createElement('input');
-                inputPhone.className = 'input-cell';
-                inputPhone.type = 'text';
-                inputPhone.maxLength = 10;
-                inputPhone.value = marker.phone !== undefined && marker.phone !== null ? String(marker.phone) : '';
-                inputPhone.placeholder = '10 DIGITS';
-                inputPhone.addEventListener('input', (e) => {
-                    let digits = e.target.value.replace(/[^0-9]/g, ''); 
-                    e.target.value = digits;
-                    marker.phone = digits;
-                });
-                cellPhone.appendChild(inputPhone);
+                cellPhone.innerText = marker.phone || '-';
 
-                // Building No (Forced to Capitals) - OPTIONAL
                 const cellBldg = document.createElement('td');
-                const inputBldg = document.createElement('input');
-                inputBldg.className = 'input-cell';
-                inputBldg.value = marker.buildingNo !== undefined && marker.buildingNo !== null ? String(marker.buildingNo) : '';
-                inputBldg.placeholder = 'BUILDING NO';
-                inputBldg.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.toUpperCase();
-                    marker.buildingNo = e.target.value;
-                });
-                cellBldg.appendChild(inputBldg);
+                cellBldg.innerText = marker.buildingNo || '-';
 
-                // CN No (Automatic Default Format 0001 & Editable) - OPTIONAL
+                // Display multiple Census Houses split cleanly by line-breaks (same row)
                 const cellCN = document.createElement('td');
-                const inputCN = document.createElement('input');
-                inputCN.className = 'input-cell';
-                inputCN.value = marker.cnNo !== undefined && marker.cnNo !== null ? String(marker.cnNo) : '';
-                inputCN.placeholder = '0001';
-                inputCN.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.toUpperCase();
-                    marker.cnNo = e.target.value;
-                });
-                cellCN.appendChild(inputCN);
-
-                // Pucca/Katcha/Others Select Dropdown (Stored in marker.note) - OPTIONAL
                 const cellNote = document.createElement('td');
-                const selectNote = document.createElement('select');
-                selectNote.className = 'input-cell';
-                
-                const optDefault = document.createElement('option');
-                optDefault.value = '';
-                optDefault.innerText = '-- SELECT --';
-                selectNote.appendChild(optDefault);
-
-                ['PUCCA', 'KATCHA', 'OTHERS'].forEach(val => {
-                    const opt = document.createElement('option');
-                    opt.value = val;
-                    opt.innerText = val;
-                    if (marker.note === val) {
-                        opt.selected = true;
-                    }
-                    selectNote.appendChild(opt);
-                });
-
-                selectNote.addEventListener('change', (e) => {
-                    marker.note = e.target.value;
-                });
-                cellNote.appendChild(selectNote);
-
-                // Remarks (Forced to Capitals) - OPTIONAL
                 const cellRemarks = document.createElement('td');
-                const inputRemarks = document.createElement('input');
-                inputRemarks.className = 'input-cell';
-                inputRemarks.value = marker.remarks || '';
-                inputRemarks.placeholder = 'REMARKS';
-                inputRemarks.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.toUpperCase();
-                    marker.remarks = e.target.value;
-                });
-                cellRemarks.appendChild(inputRemarks);
+
+                if (marker.censusHouses && marker.censusHouses.length > 0) {
+                    cellCN.innerHTML = marker.censusHouses.map(ch => ch.cnNo || '-').join('<br>');
+                    cellNote.innerHTML = marker.censusHouses.map(ch => ch.type || '-').join('<br>');
+                    cellRemarks.innerHTML = marker.censusHouses.map(ch => ch.remarks || '-').join('<br>');
+                } else {
+                    cellCN.innerText = marker.cnNo || '-';
+                    cellNote.innerText = marker.note || '-';
+                    cellRemarks.innerText = marker.remarks || '-';
+                }
 
                 row.appendChild(cellSl);
                 row.appendChild(cellName);
@@ -1015,6 +1445,8 @@
             if (confirmed) {
                 markers = [];
                 markerCounter = 1;
+                roads = []; 
+                renderRoads();
                 render();
             }
         }
@@ -1029,6 +1461,34 @@
             const isValid = await validateAllFields();
             if (!isValid) return; 
 
+            // Create a deep copy of the save payload
+            const payload = JSON.parse(JSON.stringify(markers));
+
+            // Serialize 1-to-many censusHouses arrays into newline-separated flat columns to preserve Google Sheets schema compatibility
+            payload.forEach(m => {
+                if (m.censusHouses && m.censusHouses.length > 0) {
+                    m.cnNo = m.censusHouses.map(ch => ch.cnNo).join("\n"); 
+                    m.note = m.censusHouses.map(ch => ch.type).join("\n");
+                    m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
+                }
+            });
+
+            // Append roads data block as a serialized config record inside Remarks field
+            if (roads.length > 0) {
+                payload.push({
+                    id: "ROADS_DATA",
+                    x: 0,
+                    y: 0,
+                    slNo: 0,
+                    name: "",
+                    phone: "",
+                    buildingNo: "",
+                    cnNo: "",
+                    note: "",
+                    remarks: JSON.stringify(roads) 
+                });
+            }
+
             const sendAction = () => {
                 return fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
@@ -1036,7 +1496,7 @@
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify(markers)
+                    body: JSON.stringify(payload)
                 });
             };
 
@@ -1052,14 +1512,53 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data && data.length > 0) {
-                            markers = data;
+                            // Filter out serialised roads metadata row and reconstruct roads layout
+                            const roadsRecord = data.find(m => m.id === "ROADS_DATA");
+                            if (roadsRecord) {
+                                try {
+                                    roads = JSON.parse(roadsRecord.remarks);
+                                } catch(e) {
+                                    console.error("Failed to parse loaded roads layout:", e);
+                                    roads = [];
+                                }
+                            } else {
+                                roads = [];
+                            }
+
+                            // Reconstruct flat data array
+                            const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
+
+                            // Re-deserialize newline-separated strings back into dynamic censusHouses arrays
+                            cleanMarkers.forEach(m => {
+                                const cns = String(m.cnNo || "").split("\n");
+                                const types = String(m.note || "").split("\n");
+                                const remarks = String(m.remarks || "").split("\n");
+
+                                const count = Math.max(cns.length, types.length, remarks.length, 1);
+                                m.censusHouses = [];
+                                for (let j = 0; j < count; j++) {
+                                    m.censusHouses.push({
+                                        cnNo: cns[j] || "",
+                                        type: types[j] || "",
+                                        remarks: remarks[j] || ""
+                                    });
+                                }
+
+                                // Maintain flat references
+                                m.cnNo = cns[0] || "";
+                                m.note = types[0] || "";
+                                m.remarks = remarks[0] || "";
+                            });
+
+                            markers = cleanMarkers;
                             markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
+                            renderRoads();
                             render();
                         }
                     });
             };
 
-            showBusyProgress("Loading...", fetchAction);
+            showBusyProgress("Fetching Data...", fetchAction);
         }
     </script>
 </body>
