@@ -123,7 +123,7 @@
             justify-content: center;
         }
 
-        /* Fixed viewport for Map Zoom only */
+        /* Viewport limits map size & handles smooth momentum scrolling */
         .map-area {
             position: relative;
             height: 500px;
@@ -132,13 +132,22 @@
             border-radius: 4px;
             background: #e9ecef;
             touch-action: pan-x pan-y; 
+            scroll-behavior: smooth;              /* Smooth scrolling logic */
+            -webkit-overflow-scrolling: touch;    /* Native momentum scrolling on iOS */
         }
 
         .map-wrapper {
             position: relative;
             display: inline-block;
             width: 100%;
-            transition: width 0.1s ease-out; 
+            /* Cubic bezier curve creates a beautiful smooth glide deceleration when zooming */
+            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
+            will-change: width; /* Alerts the browser to utilize hardware acceleration */
+        }
+
+        /* Dynamically applied during multi-touch pinch to bypass transition lag */
+        .no-transition {
+            transition: none !important;
         }
 
         #map-image {
@@ -219,7 +228,7 @@
             background-color: var(--danger);
         }
 
-        /* Spinner & Dialog Overlays */
+        /* Progress Overlay & Bar */
         .overlay {
             display: none;
             position: fixed;
@@ -261,7 +270,7 @@
             width: 85%;
             text-align: center;
             color: var(--text-dark);
-            animation: modalFadeIn 0.2s ease-out;
+            animation: modalFadeIn 0.25s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         @keyframes modalFadeIn {
@@ -507,9 +516,11 @@
                 <label>OWNER NAME *</label>
                 <input type="text" id="form-name" placeholder="ENTER OWNER NAME">
             </div>
+            
+            <!-- Forces mobile device numeric keyboard strictly on select -->
             <div class="form-group">
                 <label>PHONE NO (10 DIGITS) *</label>
-                <input type="text" id="form-phone" maxlength="10" placeholder="ENTER 10-DIGIT MOBILE NUMBER">
+                <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER 10-DIGIT MOBILE NUMBER">
             </div>
             <div class="form-group">
                 <label>BUILDING NO</label>
@@ -529,7 +540,7 @@
                 </select>
             </div>
             
-            <!-- Upgraded Remarks Datalist Selection -->
+            <!-- Remarks Datalist Selection -->
             <div class="form-group">
                 <label>REMARKS (TYPE OPTION OR CHOOSE FROM LIST)</label>
                 <input type="text" id="form-remarks" list="remarks-options" placeholder="TYPE OTHER OR SELECT REMARK">
@@ -570,7 +581,7 @@
         <div class="map-panel">
             <div class="map-controls">
                 <span style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
-                    Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.
+                    Click map to register a building. Pinch to zoom map (Up to 1000%). Press-and-hold marker for options.
                 </span>
                 <div class="zoom-controls">
                     <strong>Zoom Map:</strong>
@@ -732,6 +743,7 @@
         mapScrollContainer.addEventListener('touchstart', function (e) {
             if (e.touches.length === 2) {
                 isPinching = true;
+                mapWrapper.classList.add('no-transition'); // Disable CSS transitions for lag-free real-time finger tracking
                 startDistance = getTouchDistance(e.touches[0], e.touches[1]);
                 startZoom = currentZoom;
             }
@@ -757,6 +769,7 @@
         mapScrollContainer.addEventListener('touchend', function (e) {
             if (e.touches.length < 2) {
                 isPinching = false;
+                mapWrapper.classList.remove('no-transition'); // Re-enable smooth glide deceleration transitions
             }
         });
 
