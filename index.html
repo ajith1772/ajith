@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- Viewport configured to block page-level zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MY MAP</title>
+    <title>MY Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -115,13 +115,15 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             background: #e9ecef;
+            /* Prevents browser handling pinch gestures over map area directly */
+            touch-action: pan-x pan-y; 
         }
 
         .map-wrapper {
             position: relative;
             display: inline-block;
             width: 100%;
-            transition: width 0.2s ease;
+            transition: width 0.1s ease-out; /* Slightly faster transition for gestures */
         }
 
         #map-image {
@@ -314,7 +316,7 @@
             }
             body.print-mode-a4 .map-panel {
                 width: 100% !important;
-                height: 95vh !important;  /* Fills exactly Page 1 viewport height */
+                height: 95vh !important;  
                 page-break-after: always !important; 
                 page-break-inside: avoid !important;
                 box-sizing: border-box;
@@ -325,14 +327,14 @@
             body.print-mode-a4 .map-area {
                 width: 100% !important;
                 height: 85vh !important;  
-                overflow: hidden !important; /* Block scrollbars in printout */
+                overflow: hidden !important; 
                 display: flex !important;
                 justify-content: center;
                 align-items: center;
             }
             body.print-mode-a4 .map-wrapper {
                 width: auto !important;
-                height: 100% !important; /* Scale proportionally down to fit page height */
+                height: 100% !important; 
                 max-width: 100% !important;
                 display: inline-block;
             }
@@ -342,7 +344,7 @@
                 max-width: 100% !important;
             }
             body.print-mode-a4 .sidebar {
-                page-break-before: always !important; /* Forces register table to page 2 */
+                page-break-before: always !important; 
                 display: block !important;
                 width: 100% !important;
                 margin-top: 20px !important;
@@ -353,11 +355,11 @@
                 width: 100%;
             }
             body.print-mode-a3 .sidebar {
-                display: none !important; /* Hide register entirely */
+                display: none !important; 
             }
             body.print-mode-a3 .map-panel {
                 width: 100% !important;
-                height: 95vh !important;  /* Locks map exactly to single A3 Portrait page */
+                height: 95vh !important;  
                 page-break-inside: avoid !important;
                 box-sizing: border-box;
                 display: flex !important;
@@ -401,8 +403,8 @@
     <div class="header">
         <h2>MY MAP</h2>
         <div class="button-group">
-            <button onclick="loadFromCloud()" class="btn-load">Sync...</button>
-            <button onclick="saveToCloud()" class="btn-save">Save..</button>
+            <button onclick="loadFromCloud()" class="btn-load">Sync</button>
+            <button onclick="saveToCloud()" class="btn-save">Save</button>
             <button onclick="printA4()" class="btn-print">Print A4</button>
             <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
@@ -420,7 +422,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 6%">Sl </th>
+                            <th style="width: 6%">No</th>
                             <th style="width: 20%">Name<span class="required-star">*</span></th>
                             <th style="width: 14%">Phone (10 Digits)<span class="required-star">*</span></th>
                             <th style="width: 10%">Bldg No</th>
@@ -440,7 +442,7 @@
         <div class="map-panel">
             <div class="map-controls">
                 <span style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
-                    Click map to mark. Double-click marker to delete. Zoom strictly scales map view only.
+                    Click map to mark. Use two-finger pinch gesture on the map viewport to zoom.
                 </span>
                 <div class="zoom-controls">
                     <strong>Zoom Map:</strong>
@@ -478,6 +480,7 @@
 
         const mapImage = document.getElementById('map-image');
         const mapWrapper = document.getElementById('map-wrapper');
+        const mapScrollContainer = document.getElementById('map-scroll-container');
         const markerLayer = document.getElementById('marker-layer');
         const registerBody = document.getElementById('register-body');
         const zoomText = document.getElementById('zoom-text');
@@ -498,7 +501,7 @@
             }
         };
 
-        // GESTURE BLOCKING (Strictly prevents mobile viewport pinching/stretching)
+        // GLOBAL GESTURE BLOCKING (Strictly blocks document-level pinch/stretch zoom)
         document.addEventListener('touchmove', function (event) {
             if (event.scale !== undefined && event.scale !== 1) { 
                 event.preventDefault(); 
@@ -509,12 +512,55 @@
         document.addEventListener('touchend', function (event) {
             const now = (new Date()).getTime();
             if (now - lastTouchEnd <= 300) {
-                event.preventDefault(); // Blocks rapid double-tap zooming
+                event.preventDefault(); // Blocks rapid double-tap webpage zoom
             }
             lastTouchEnd = now;
         }, false);
 
-        // ZOOM CONTROLS (Only targets .map-wrapper inside the viewport)
+        // NATIVE PINCH-TO-ZOOM GESTURE LISTENER (Strictly bound to the map viewport)
+        let startDistance = 0;
+        let startZoom = 100;
+        let isPinching = false;
+
+        mapScrollContainer.addEventListener('touchstart', function (e) {
+            if (e.touches.length === 2) {
+                isPinching = true;
+                startDistance = getTouchDistance(e.touches[0], e.touches[1]);
+                startZoom = currentZoom;
+            }
+        }, { passive: true });
+
+        mapScrollContainer.addEventListener('touchmove', function (e) {
+            if (isPinching && e.touches.length === 2) {
+                e.preventDefault(); // Lock viewport scrolling while pinching map
+                
+                const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
+                const scale = currentDistance / startDistance;
+                
+                let targetZoom = Math.round(startZoom * scale);
+                
+                // Keep manual gesture zoom within standard viewport boundaries
+                if (targetZoom < 50) targetZoom = 50;
+                if (targetZoom > 500) targetZoom = 500;
+                
+                currentZoom = targetZoom;
+                updateZoom();
+            }
+        }, { passive: false });
+
+        mapScrollContainer.addEventListener('touchend', function (e) {
+            if (e.touches.length < 2) {
+                isPinching = false;
+            }
+        });
+
+        function getTouchDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // ZOOM BUTTON CONTROLS 
         function zoomIn() {
             if (currentZoom < 500) {
                 currentZoom += 25;
@@ -848,7 +894,7 @@
                     });
             };
 
-            showBusyProgress("Fetching Data...", fetchAction);
+            showBusyProgress("Loading Data...", fetchAction);
         }
     </script>
 </body>
