@@ -72,6 +72,35 @@
             flex-wrap: wrap;
         }
 
+        /* LED INDICATOR KEYFRAMES AND CLASSES */
+        .led-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+        }
+
+        @keyframes blink-green {
+            0% { background-color: #2ecc71; box-shadow: 0 0 3px #2ecc71; }
+            50% { background-color: #27ae60; box-shadow: 0 0 10px #2ecc71; }
+            100% { background-color: #2ecc71; box-shadow: 0 0 3px #2ecc71; }
+        }
+        @keyframes blink-orange {
+            0% { background-color: #e67e22; box-shadow: 0 0 3px #e67e22; }
+            50% { background-color: #d35400; box-shadow: 0 0 10px #e67e22; }
+            100% { background-color: #e67e22; box-shadow: 0 0 3px #e67e22; }
+        }
+        @keyframes blink-red {
+            0% { background-color: #e74c3c; box-shadow: 0 0 3px #e74c3c; }
+            50% { background-color: #c0392b; box-shadow: 0 0 10px #e74c3c; }
+            100% { background-color: #e74c3c; box-shadow: 0 0 3px #e74c3c; }
+        }
+
+        .led-green { animation: blink-green 1.5s infinite; }
+        .led-orange { animation: blink-orange 0.8s infinite; } 
+        .led-red { animation: blink-red 1.5s infinite; }
+
         /* STACKED LAYOUT: MAP TOP, REGISTER BOTTOM */
         .container {
             display: flex;
@@ -126,7 +155,7 @@
         /* Fixed viewport for Map Zoom only */
         .map-area {
             position: relative;
-            height: 500px;
+            height: 200px;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -201,29 +230,96 @@
             border-color: var(--primary);
         }
 
-        /* Compact Map Marker Style */
-        .marker {
+        /* ========================================================
+           GEOMETRIC MAP MARKERS STYLES
+           ======================================================== */
+        .marker-base {
             position: absolute;
-            width: 22px;       
+            width: 22px;
             height: 22px;
-            background-color: var(--primary);
-            color: white;
-            border-radius: 50%;
-            text-align: center;
             line-height: 22px;
+            text-align: center;
             font-size: 11px;
             font-weight: bold;
             transform: translate(-50%, -50%);
             cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            border: 2px solid white;
             user-select: none;
             z-index: 5;
+            transition: transform 0.2s ease, background-color 0.2s ease;
         }
 
-        .marker:hover {
-            transform: translate(-50%, -50%) scale(1.1);
-            background-color: var(--danger);
+        /* CIRCLE (Default / Others fallback) */
+        .marker-circle {
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* HOME + PUCCA (Solid Square) */
+        .marker-home-pucca {
+            border-radius: 0%; 
+            background-color: white;
+            color: black;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* HOME + KATCHA (Dashed Lined Square) */
+        .marker-home-katcha {
+            border-radius: 0%;
+            background-color: white;
+            color: black;
+            border: 2px dashed black;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        /* OTHER + PUCCA (Solid Triangle) */
+        .marker-other-pucca {
+            width: 24px;
+            height: 24px;
+            line-height: 28px; 
+            font-size: 9px;
+        }
+
+        /* OTHER + KATCHA (Lined Triangle) */
+        .marker-other-katcha {
+            width: 24px;
+            height: 24px;
+            line-height: 28px;
+            font-size: 9px;
+        }
+
+        /* CSS Styling rules for inline SVG shapes inside markers */
+        .marker-other-pucca svg polygon {
+            fill: #2980b9;
+            fill: var(--primary);
+            stroke: white;
+            stroke-width: 1.5;
+        }
+
+        .marker-other-katcha svg polygon {
+            fill: white;
+            stroke: #2980b9;
+            stroke: var(--primary);
+            stroke-width: 1.5;
+            stroke-dasharray: 3, 1.5;
+        }
+
+        /* Global Marker Hover Transitions */
+        .marker-base:hover {
+            transform: translate(-50%, -50%) scale(1.15);
+            background-color: var(--danger) !important;
+            border-color: var(--danger-dark) !important;
+            color: white !important;
+        }
+
+        /* Hover color injection for SVG Triangles */
+        .marker-base:hover svg polygon {
+            fill: var(--danger) !important;
+            stroke: var(--danger-dark) !important;
+            stroke-dasharray: none !important; 
         }
 
         /* STYLISH HORIZONTAL ROAD LABEL BADGE */
@@ -411,7 +507,7 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
-            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box {
+            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box, .sync-badge {
                 display: none !important;
             }
             .container {
@@ -521,7 +617,7 @@
 </head>
 <body>
 
-    <!-- Busy Progress Overlay -->
+    <!-- Busy Progress Overlay (Used strictly on manual sync operations) -->
     <div id="loading-overlay" class="overlay">
         <div id="status-text" style="font-weight: 600; margin-bottom: 15px; font-size: 15px; letter-spacing: 0.5px;">Saving Changes...</div>
         <div class="progress-container">
@@ -571,7 +667,7 @@
     <!-- Custom Options Menu Modal (Long Press on Marker) -->
     <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
         <div class="dialog-box" style="max-width: 320px;">
-            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker Options</h3>
+            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker</h3>
             <button id="options-view" class="options-menu-btn btn-load">View</button>
             <button id="options-edit" class="options-menu-btn btn-save">Edit</button>
             <button id="options-delete" class="options-menu-btn btn-clear">Delete</button>
@@ -614,21 +710,22 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="HOME ASBETOS SHEET"></option>
-                <option value="HOME IRON SHEET"></option>
-                <option value="HOME TILED (ഓട്)"></option>
-                <option value="HOME CONCRETE"></option>
+                <option value="HOME-ASBETOS SHEET"></option>
+                <option value="HOME-CLOSED "></option>
+                <option value="HOME-CONCRETE"></option>
+                <option value="HOME-IRON SHEET"></option>
+                <option value="HOME-TILED (ഓട്)"></option>
                 <option value="HOME-SHOP"></option>
                 <option value="HOME-INSTITUTION"></option>
-                <option value="INSTITUTION"></option>
-                <option value="SHOP"></option>
-                <option value="GROUND"></option>
-                <option value="CLOSED HOME"></option>
-                <option value="CLOSED SHOP"></option>
                 <option value="CHURCH"></option>
-                <option value="TEMPLE"></option>
-                <option value="MOSQUE"></option>
                 <option value="FACTORY"></option>
+                <option value="GROUND"></option>
+                <option value="INSTITUTION"></option>
+                <option value="MOSQUE"></option>
+                <option value="SHOP"></option>
+                <option value="SHOP-CLOSED "></option>
+                <option value="TEMPLE"></option>               
+                
             </datalist>
 
             <div class="dialog-btn-group">
@@ -638,11 +735,17 @@
         </div>
     </div>
 
-    <!-- Simplified Header with Print Options only -->
+    <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
-        <h2>HLB Map Digitization Portal</h2>
+        <div style="display: flex; align-items: center; justify-content: center;">
+            <h2>HLB Map Digitization Portal</h2>
+            <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
+                <span id="sync-led" class="led-indicator led-green"></span>
+                <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
+            </div>
+        </div>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print A4</button>
+            <button onclick="printA4()" class="btn-print">Print A4 </button>
             <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
@@ -656,7 +759,7 @@
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
                     <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
-                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw Roads</button>
+                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Roads</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
                     <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New</button>
@@ -700,10 +803,10 @@
         <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Building</h3>
                 <div class="button-group">
-                    <button onclick="loadFromCloud()" class="btn-load">Sync</button>
-                    <button onclick="saveToCloud()" class="btn-save">Save</button>
+                    <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
+                    <button onclick="saveToCloudManual()" class="btn-save">Save</button>
                     <button onclick="clearAll()" class="btn-clear">Reset</button>
                 </div>
             </div>
@@ -717,7 +820,7 @@
                             <th style="width: 14%">Phone</th>
                             <th style="width: 10%">Bldg No</th>
                             <th style="width: 12%">CN No</th>
-                            <th style="width: 18%">Type</th>
+                            <th style="width: 18%">Pucca/Katcha/Others</th>
                             <th style="width: 20%">Remarks</th>
                         </tr>
                     </thead>
@@ -801,12 +904,7 @@
 
         // Local array to hold census houses in active popup session
         let modalHouses = [];
-
-        window.onload = function() {
-            if (GOOGLE_SCRIPT_URL !== "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
-                loadFromCloud();
-            }
-        };
+        let isSyncingSilently = false;
 
         // GLOBAL GESTURE BLOCKING (Strictly blocks document-level viewport pinch/stretch zoom)
         document.addEventListener('touchmove', function (event) {
@@ -928,6 +1026,7 @@
             });
         }
 
+        // ASYNC CONFIRM (Used during delete prompts)
         function showCustomConfirm(message, title = "Confirmation") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -954,7 +1053,7 @@
             });
         }
 
-        // BUSY PROGRESS (decelerating smooth step curve, no 98% freezing)
+        // BUSY PROGRESS (spinner removed, only bar and % animate)
         function showBusyProgress(title, onFinishedAction) {
             loadingOverlay.style.display = 'flex';
             statusText.innerText = title;
@@ -965,13 +1064,13 @@
             const interval = setInterval(() => {
                 if (percent < 95) {
                     const remaining = 98 - percent;
-                    percent += Math.max(0.2, remaining * 0.08); // Steady smooth flow
+                    percent += Math.max(0.2, remaining * 0.08); 
                     progressBar.style.width = `${percent}%`;
                     percentageText.innerText = `${Math.round(percent)}%`;
                 }
             }, 80);
 
-            onFinishedAction().then(() => {
+            return onFinishedAction().then(() => {
                 clearInterval(interval);
                 // Micro-interpolation animation glides instantly to 100% upon success
                 let completePercent = percent;
@@ -985,7 +1084,7 @@
                         clearInterval(completeInterval);
                         setTimeout(() => {
                             loadingOverlay.style.display = 'none';
-                        }, 150); // Fluid 150ms finish delay
+                        }, 150); 
                     }
                 }, 15);
             }).catch((err) => {
@@ -1073,6 +1172,7 @@
             const confirmed = await showCustomConfirm("Are you sure you want to clear all drawn roads?", "Reset Roads");
             if (confirmed) {
                 roads = [];
+                saveDataLocally();
                 renderRoads();
             }
         }
@@ -1089,7 +1189,7 @@
                     polyline.setAttribute("fill", "none");
                     polyline.setAttribute("stroke-linejoin", "round");
                     polyline.setAttribute("stroke-linecap", "round");
-                    svgRoads.appendChild(polyline); 
+                    svgRoads.appendChild(polyline); // Correctly appends to svgRoads ONLY
                 }
 
                 if (currentToolMode === "road") {
@@ -1266,7 +1366,7 @@
                 btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
                 
                 newBtnAddHouse.addEventListener('click', () => {
-                    // Sequentially increment CN No strictly inside the same building only (first is 0001, next is 0002)
+                    // Sequentially increment CN No inside this row list only (First is always 0001, next is 0002)
                     const formattedCN = String(modalHouses.length + 1).padStart(4, '0');
                     modalHouses.push({
                         cnNo: formattedCN,
@@ -1298,18 +1398,10 @@
                     // Save back the serialized census houses array
                     markerData.censusHouses = JSON.parse(JSON.stringify(modalHouses));
 
-                    // FORCE PAD THE CENSUS HOUSE CN NO STRINGS COMPULSORILY (Ensures output is saved in 0001 format strictly)
-                    markerData.censusHouses.forEach(house => {
-                        let cnStr = String(house.cnNo || "").trim();
-                        if (/^\d+$/.test(cnStr)) {
-                            house.cnNo = cnStr.padStart(4, '0');
-                        }
-                    });
-
                     // Keep flat fields populated with first house value for compatibility checks (Fixes FormCNNo reference error)
-                    markerData.cnNo = markerData.censusHouses[0].cnNo;
-                    markerData.note = markerData.censusHouses[0].type;
-                    markerData.remarks = markerData.censusHouses[0].remarks;
+                    markerData.cnNo = modalHouses[0].cnNo;
+                    markerData.note = modalHouses[0].type;
+                    markerData.remarks = modalHouses[0].remarks;
 
                     cleanup();
                     resolve(true);
@@ -1365,7 +1457,8 @@
                         markers.push(draftMarker);
                         markerCounter++;
                         render();
-                        await saveToCloud();
+                        saveDataLocally(); // Local persistence is always instantaneous
+                        syncDataWithBackendSilently(); // Background silent sync
                     }
                 };
 
@@ -1387,7 +1480,8 @@
                         markers.push(draftMarker);
                         markerCounter++;
                         render();
-                        await saveToCloud();
+                        saveDataLocally();
+                        syncDataWithBackendSilently();
                     }
                 };
 
@@ -1412,6 +1506,7 @@
                 }
                 const active = roads[roads.length - 1];
                 active.push({ x: xPercent, y: yPercent });
+                saveDataLocally();
                 renderRoads();
             }
         });
@@ -1425,7 +1520,8 @@
         async function removeMarkerAndSave(index) {
             markers.splice(index, 1);
             render();
-            await saveToCloud(); // Auto-saves to Google Sheet
+            saveDataLocally();
+            syncDataWithBackendSilently();
         }
 
         // OPTIONS MENU CONTROLLER (View / Edit / Delete)
@@ -1455,7 +1551,8 @@
                 }
                 if (saved) {
                     render();
-                    await saveToCloud(); 
+                    saveDataLocally();
+                    syncDataWithBackendSilently(); 
                 }
             };
 
@@ -1487,6 +1584,30 @@
             optionsClose.addEventListener('click', onClose);
         }
 
+        // CLASSIFY MARKERS FOR GEOMETRIC PLOT LAYOUT (Pucca vs Katcha)
+        function getBuildingClassification(marker) {
+            if (!marker.censusHouses || marker.censusHouses.length === 0) {
+                return { isHome: true, type: "PUCCA" };
+            }
+            
+            const primaryHouse = marker.censusHouses[0];
+            const remarkText = String(primaryHouse.remarks || "").toUpperCase().trim();
+            const houseType = String(primaryHouse.type || "").toUpperCase().trim(); // PUCCA, KATCHA, OTHERS
+            
+            // Default to Home if remark is empty OR contains HOME
+            const isOtherType = remarkText !== "" && (
+                remarkText.includes("SHOP") || 
+                remarkText.includes("TEMPLE") || 
+                remarkText.includes("CHURCH") || 
+                remarkText.includes("MOSQUE") || 
+                remarkText.includes("FACTORY") || 
+                remarkText.includes("INSTITUTION") || 
+                remarkText.includes("GROUND")
+            );
+            
+            return { isHome: !isOtherType, type: houseType };
+        }
+
         // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
         function render() {
             markerLayer.innerHTML = '';
@@ -1505,15 +1626,48 @@
             });
 
             markers.forEach((marker, index) => {
-                // 1. Draw Map Element (Numbered circle vs Horizontal road label pill badge)
+                // 1. Draw Map Element (Geometric markers vs Horizontal road label pill badge)
                 const markerEl = document.createElement('div');
                 
                 if (marker.isRoadLabel) {
                     markerEl.className = 'marker-road-label';
                     markerEl.innerText = marker.name || 'UNNAMED ROAD';
                 } else {
-                    markerEl.className = 'marker';
+                    // Determine Building Shape/Design
+                    const classification = getBuildingClassification(marker);
                     markerEl.innerText = marker.slNo;
+
+                    if (classification.isHome) {
+                        // Home styles (Squares)
+                        if (classification.type === "PUCCA") {
+                            markerEl.className = 'marker-base marker-home-pucca';
+                        } else if (classification.type === "KATCHA") {
+                            markerEl.className = 'marker-base marker-home-katcha';
+                        } else {
+                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
+                        }
+                    } else {
+                        // Other building styles (Triangles drawn with high performance SVG nodes)
+                        if (classification.type === "PUCCA") {
+                            markerEl.className = 'marker-base marker-other-pucca';
+                            markerEl.innerHTML = `
+                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
+                                    <polygon points="12,2 2,22 22,22"/>
+                                </svg>
+                                ${marker.slNo}
+                            `;
+                        } else if (classification.type === "KATCHA") {
+                            markerEl.className = 'marker-base marker-other-katcha';
+                            markerEl.innerHTML = `
+                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
+                                    <polygon points="12,2 2,22 22,22"/>
+                                </svg>
+                                ${marker.slNo}
+                            `;
+                        } else {
+                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
+                        }
+                    }
                 }
                 
                 markerEl.style.left = `${marker.x}%`;
@@ -1622,13 +1776,17 @@
                 markers = [];
                 markerCounter = 1;
                 roads = []; 
+                localStorage.removeItem('census_markers');
+                localStorage.removeItem('census_roads');
+                localStorage.removeItem('census_marker_counter');
+                updateSyncStatus('pending');
                 renderRoads();
                 render();
             }
         }
 
-        // SAVE DATA (POST)
-        async function saveToCloud() {
+        // SAVE DATA MANUAL (Called explicitly from the button with full screen animation)
+        async function saveToCloudManual() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
                 await showCustomAlert("Please write your Apps Script URL into the constant variable first.", "Setup Required");
                 return;
@@ -1637,23 +1795,19 @@
             const isValid = await validateAllFields();
             if (!isValid) return; 
 
-            // Create a deep copy of the save payload
             const payload = JSON.parse(JSON.stringify(markers));
-
-            // Serialize 1-to-many censusHouses arrays into newline-separated flat columns to preserve Google Sheets schema compatibility
             payload.forEach(m => {
                 if (m.isRoadLabel) {
                     m.cnNo = "ROAD_LABEL";
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
-                    m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); // Fallback check updated
+                    m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.note = m.censusHouses.map(ch => ch.type).join("\n");
                     m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
             });
 
-            // Append roads data block as a serialized config record inside Remarks field
             if (roads.length > 0) {
                 payload.push({
                     id: "ROADS_DATA",
@@ -1680,11 +1834,12 @@
                 });
             };
 
-            showBusyProgress("Saving Changes to Google Sheets...", sendAction);
+            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
+            updateSyncStatus('synced');
         }
 
-        // LOAD DATA (GET)
-        async function loadFromCloud() {
+        // FETCH DATA (GET - loads directly from sheet with spinner progress)
+        async function loadFromCloud(showProgress = true) {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
 
             const fetchAction = () => {
@@ -1692,35 +1847,24 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data && data.length > 0) {
-                            // Filter out serialised roads metadata row and reconstruct roads layout
                             const roadsRecord = data.find(m => m.id === "ROADS_DATA");
                             if (roadsRecord) {
                                 try {
                                     roads = JSON.parse(roadsRecord.remarks);
                                 } catch(e) {
-                                    console.error("Failed to parse loaded roads layout:", e);
                                     roads = [];
                                 }
                             } else {
                                 roads = [];
                             }
 
-                            // Reconstruct flat data array
                             const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
 
-                            // Re-deserialize newline-separated strings back into dynamic censusHouses arrays
                             cleanMarkers.forEach(m => {
                                 if (m.cnNo === "ROAD_LABEL") {
                                     m.isRoadLabel = true;
                                 } else {
-                                    const cns = String(m.cnNo || "").split("\n").map(cn => {
-                                        let clean = cn.trim();
-                                        // Auto-reconstructstripped numbers back to 4-digit 0001 format compulsorily
-                                        if (/^\d+$/.test(clean)) {
-                                            return clean.padStart(4, '0');
-                                        }
-                                        return clean;
-                                    });
+                                    const cns = String(m.cnNo || "").split("\n");
                                     const types = String(m.note || "").split("\n");
                                     const remarks = String(m.remarks || "").split("\n");
 
@@ -1734,7 +1878,6 @@
                                         });
                                     }
 
-                                    // Maintain flat references
                                     m.cnNo = cns[0] || "";
                                     m.note = types[0] || "";
                                     m.remarks = remarks[0] || "";
@@ -1743,13 +1886,138 @@
 
                             markers = cleanMarkers;
                             markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
+                            saveDataLocally();
                             renderRoads();
                             render();
+                            updateSyncStatus('synced');
                         }
                     });
             };
 
-            showBusyProgress("Lov❤️ding...", fetchAction);
+            if (showProgress) {
+                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
+            } else {
+                await fetchAction();
+            }
+        }
+
+        // OFFLINE-FIRST PERSISTENCE LOADER
+        function saveDataLocally() {
+            try {
+                localStorage.setItem('census_markers', JSON.stringify(markers));
+                localStorage.setItem('census_roads', JSON.stringify(roads));
+                localStorage.setItem('census_marker_counter', markerCounter);
+                updateSyncStatus('pending');
+            } catch(e) {
+                console.error("Local storage write failed:", e);
+            }
+        }
+
+        function loadDataLocally() {
+            const localMarkers = localStorage.getItem('census_markers');
+            const localRoads = localStorage.getItem('census_roads');
+            const localCounter = localStorage.getItem('census_marker_counter');
+
+            if (localMarkers) {
+                try {
+                    markers = JSON.parse(localMarkers);
+                    roads = localRoads ? JSON.parse(localRoads) : [];
+                    markerCounter = parseInt(localCounter) || 1;
+                    renderRoads();
+                    render();
+                    return true;
+                } catch(e) {
+                    console.error("Local storage load parse failed:", e);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // REAL-TIME CLOUD STATUS LED INDICATOR
+        function updateSyncStatus(state) {
+            const led = document.getElementById('sync-led');
+            const text = document.getElementById('sync-text');
+            if (!led || !text) return;
+
+            // Clear existing indicator classes
+            led.className = 'led-indicator';
+
+            if (state === 'synced') {
+                led.classList.add('led-green');
+                text.innerText = 'Online & Synced';
+                text.style.color = '#065f46';
+            } else if (state === 'syncing') {
+                led.classList.add('led-orange');
+                text.innerText = 'Data Backup Running...';
+                text.style.color = '#d35400';
+            } else if (state === 'pending' || state === 'offline') {
+                led.classList.add('led-red');
+                text.innerText = 'Offline / Sync Pending';
+                text.style.color = '#991b1b';
+            }
+        }
+
+        // IMMEDATE BACKGROUND SYNC CONTROLLER
+        async function syncDataWithBackendSilently() {
+            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
+            if (isSyncingSilently) return;
+
+            isSyncingSilently = true;
+            updateSyncStatus('syncing');
+
+            const payload = JSON.parse(JSON.stringify(markers));
+
+            payload.forEach(m => {
+                if (m.isRoadLabel) {
+                    m.cnNo = "ROAD_LABEL";
+                    m.note = "";
+                    m.remarks = "";
+                } else if (m.censusHouses && m.censusHouses.length > 0) {
+                    m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
+                    m.note = m.censusHouses.map(ch => ch.type).join("\n");
+                    m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
+                }
+            });
+
+            if (roads.length > 0) {
+                payload.push({
+                    id: "ROADS_DATA",
+                    x: 0,
+                    y: 0,
+                    slNo: 0,
+                    name: "",
+                    phone: "",
+                    buildingNo: "",
+                    cnNo: "",
+                    note: "",
+                    remarks: JSON.stringify(roads) 
+                });
+            }
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                isSyncingSilently = false;
+                updateSyncStatus('synced');
+            } catch (err) {
+                isSyncingSilently = false;
+                updateSyncStatus('offline');
+                console.warn("Background sync failed. Attempting background retry in 10 seconds...", err);
+                setTimeout(syncDataWithBackendSilently, 10000); 
+            }
         }
     </script>
 </body>
