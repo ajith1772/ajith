@@ -231,7 +231,7 @@
         }
 
         /* ========================================================
-           GEOMETRIC MAP MARKERS STYLES (FORTIFIED SPECIFICITY)
+           GEOMETRIC MAP MARKERS STYLES
            ======================================================== */
         .marker-base {
             position: absolute;
@@ -278,18 +278,18 @@
 
         /* OTHER + PUCCA (Solid Triangle) */
         .marker-other-pucca {
-            width: 24px !important;
-            height: 24px !important;
-            line-height: 28px !important; 
-            font-size: 9px !important;
+            width: 24px;
+            height: 24px;
+            line-height: 28px; 
+            font-size: 9px;
         }
 
         /* OTHER + KATCHA (Lined Triangle) */
         .marker-other-katcha {
-            width: 24px !important;
-            height: 24px !important;
-            line-height: 28px !important;
-            font-size: 9px !important;
+            width: 24px;
+            height: 24px;
+            line-height: 28px;
+            font-size: 9px;
         }
 
         /* CSS Styling rules for inline SVG shapes inside markers */
@@ -692,7 +692,7 @@
                 <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER MOBILE NUMBER">
             </div>
             <div class="form-group">
-                <label>BLDING NO</label>
+                <label>BUILDING NO</label>
                 <input type="text" id="form-building-no" placeholder="BUILDING NUMBER">
             </div>
 
@@ -726,7 +726,7 @@
                 <option value="SHED WITH IRON SHEET"></option>
                 <option value="SHOP"></option>
                 <option value="SHOP-CLOSED "></option>
-                <option value="TEMPLE"></option> 
+                <option value="TEMPLE"></option>
             </datalist>
 
             <div class="dialog-btn-group">
@@ -907,7 +907,7 @@
         let modalHouses = [];
         let isSyncingSilently = false;
 
-        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
+        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS (FULLY HOSTED & COMPILING FIRST)
         function showCustomAlert(message, title = "Notification") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -1008,15 +1008,48 @@
             }, 250);
         }
 
-        async function printA4() {
-            const isValid = await validateAllFields();
-            if (!isValid) return;
-            triggerPrint('print-mode-a4', 'A4');
+        // ALL EXPLICIT PRINT TARGETS DECLARED SAFELY HERE (Prevents printA4/A3 ReferenceErrors)
+        function printA4() {
+            validateAllFields().then(isValid => {
+                if (isValid) triggerPrint('print-mode-a4', 'A4');
+            });
         }
 
         function printA3() {
             triggerPrint('print-mode-a3', 'A3');
         }
+
+        // ZOOM BUTTON CONTROLS 
+        function zoomIn() {
+            if (currentZoom < 1000) { 
+                currentZoom += 25;
+                updateZoom();
+            }
+        }
+        function zoomOut() {
+            if (currentZoom > 50) {
+                currentZoom -= 25;
+                updateZoom();
+            }
+        }
+        function zoomReset() {
+            currentZoom = 100;
+            updateZoom();
+        }
+        function updateZoom() {
+            mapWrapper.style.width = `${currentZoom}%`;
+            zoomText.innerText = `${currentZoom}%`;
+        }
+
+        // FORCE UPPERCASE INPUT FIELDS AT CODE LEVEL
+        formName.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+        formBuildingNo.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+        formRoadLabelInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+        
+        // Strict Numeric filter for Phone Number input
+        formPhone.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
 
         // INTERACTIVE TOOL MODE CONTROLLER
         function setToolMode(mode) {
@@ -1064,7 +1097,6 @@
             }
         }
 
-        // RESOLVED ALL HIERARCHY AND APPEND CONFLICTS COMPULSORILY
         function renderRoads() {
             svgRoads.innerHTML = '';
             roads.forEach(road => {
@@ -1515,10 +1547,11 @@
             });
         }
 
-        // RENDER REGISTER DATA IN SCREEN TABLE AND MAP (Unified generator)
+        // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
         function render() {
             markerLayer.innerHTML = '';
             registerBody.innerHTML = '';
+            svgPaths.innerHTML = ''; 
 
             // Pre-calculate sequential Sl No strictly bypassing Road Labels
             let bldgCount = 0;
@@ -1550,7 +1583,7 @@
                         } else if (classification.type === "KATCHA") {
                             markerEl.className = 'marker-base marker-home-katcha';
                         } else {
-                            markerEl.className = 'marker-base marker-circle'; 
+                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
                         }
                     } else {
                         // Other building styles (Triangles drawn with hardware accelerated inline SVGs)
@@ -1571,7 +1604,7 @@
                                 ${marker.slNo}
                             `;
                         } else {
-                            markerEl.className = 'marker-base marker-circle'; 
+                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
                         }
                     }
                 }
@@ -1582,9 +1615,6 @@
                 
                 // DRAG & DROP GESTURE + PRESS-AND-HOLD OPTIONS TRIGGER LOGIC (600MS HOLD)
                 let pressTimer;
-                let startDistance = 0;
-                let startZoom = 100;
-                let isPinching = false;
                 let isDragging = false;
                 let dragStartX = 0;
                 let dragStartY = 0;
@@ -1660,7 +1690,7 @@
                     }
                 };
 
-                // Mouse inputs
+                // Mouse inputs (bound to window dynamically inside startPress only to prevent memory leaks)
                 markerEl.addEventListener('mousedown', startPress);
                 window.addEventListener('mousemove', movePress);
                 window.addEventListener('mouseup', cancelPress);
@@ -1672,6 +1702,20 @@
                 markerEl.addEventListener('touchcancel', cancelPress);
 
                 markerLayer.appendChild(markerEl);
+
+                // 2. Draw SVG Route Line (Connects every consecutive point, including roads, without gaps)
+                if (index < markers.length - 1) {
+                    const nextMarker = markers[index + 1];
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", marker.x);
+                    line.setAttribute("y1", marker.y);
+                    line.setAttribute("x2", nextMarker.x);
+                    line.setAttribute("y2", nextMarker.y);
+                    line.setAttribute("stroke", "#e74c3c");
+                    line.setAttribute("stroke-width", "0.2");
+                    line.setAttribute("marker-end", "url(#arrow)");
+                    svgPaths.appendChild(line);
+                }
 
                 // 3. Create Table Row (Census House details are vertically aligned under one row)
                 const row = document.createElement('tr');
@@ -1688,6 +1732,7 @@
                 const cellRemarks = document.createElement('td');
 
                 if (marker.isRoadLabel) {
+                    // Stylized row layout in table for Road Labels
                     cellName.innerHTML = `<span style="font-weight:bold; color:var(--primary);">ROAD: ${marker.name || 'UNNAMED'}</span>`;
                     cellPhone.innerText = '-';
                     cellBldg.innerText = '-';
@@ -1699,6 +1744,7 @@
                     cellPhone.innerText = marker.phone || '-';
                     cellBldg.innerText = marker.buildingNo || '-';
 
+                    // Display multiple Census Houses split cleanly by line-breaks (same row)
                     if (marker.censusHouses && marker.censusHouses.length > 0) {
                         cellCN.innerHTML = marker.censusHouses.map(ch => ch.cnNo || '-').join('<br>');
                         cellNote.innerHTML = marker.censusHouses.map(ch => ch.type || '-').join('<br>');
@@ -1761,6 +1807,7 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
+                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
 
@@ -1869,7 +1916,7 @@
             };
 
             if (showProgress) {
-                await showBusyProgress("Syncing...", fetchAction);
+                await showBusyProgress("Syncing Data...", fetchAction);
             } else {
                 await fetchAction();
             }
@@ -1956,6 +2003,7 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
+                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
 
@@ -2004,6 +2052,23 @@
                 setTimeout(syncDataWithBackendSilently, 10000); 
             }
         }
+
+        // INITIAL LIFE CYCLES AT THE BOTTOM (Prevents hoisting or reference conflicts)
+        window.onload = function() {
+            try {
+                const hasLocalData = loadDataLocally();
+                if (hasLocalData) {
+                    console.log("Loaded cached dataset from local storage.");
+                    syncDataWithBackendSilently(); 
+                } else {
+                    if (GOOGLE_SCRIPT_URL !== "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
+                        loadFromCloud(false); 
+                    }
+                }
+            } catch(err) {
+                console.error("Life cycle bootup error:", err);
+            }
+        };
     </script>
 </body>
 </html>
