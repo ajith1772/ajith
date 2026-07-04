@@ -109,7 +109,7 @@
             width: 100%;
         }
 
-        .sidebar {
+        .map-panel {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -118,7 +118,7 @@
             box-sizing: border-box;
         }
 
-        .map-panel {
+        .sidebar {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -155,7 +155,7 @@
         /* Fixed viewport for Map Zoom only */
         .map-area {
             position: relative;
-            height: 300px;
+            height: 400px;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -231,7 +231,7 @@
         }
 
         /* ========================================================
-           GEOMETRIC MAP MARKERS STYLES
+           GEOMETRIC MAP MARKERS STYLES (FORTIFIED SPECIFICITY)
            ======================================================== */
         .marker-base {
             position: absolute;
@@ -246,70 +246,71 @@
             user-select: none;
             z-index: 5;
             transition: transform 0.2s ease, background-color 0.2s ease;
+            overflow: visible !important; /* Crucial: Prevents browsers clipping Triangle SVGs */
         }
 
         /* CIRCLE (Default / Others fallback) */
         .marker-circle {
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            border: 2px solid white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border-radius: 50% !important;
+            background-color: var(--primary) !important;
+            color: white !important;
+            border: 2px solid white !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
         }
 
         /* HOME + PUCCA (Solid Square) */
         .marker-home-pucca {
-            border-radius: 0%; 
-            background-color: var(--primary);
-            color: white;
-            border: 2px solid white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border-radius: 0% !important; 
+            background-color: var(--primary) !important;
+            color: white !important;
+            border: 2px solid white !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
         }
 
         /* HOME + KATCHA (Dashed Lined Square) */
         .marker-home-katcha {
-            border-radius: 0%;
-            background-color: white;
-            color: var(--primary);
-            border: 2px dashed var(--primary);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            border-radius: 0% !important;
+            background-color: white !important;
+            color: var(--primary) !important;
+            border: 2px dashed var(--primary) !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
         }
 
         /* OTHER + PUCCA (Solid Triangle) */
         .marker-other-pucca {
-            width: 24px;
-            height: 24px;
-            line-height: 28px; 
-            font-size: 9px;
+            width: 24px !important;
+            height: 24px !important;
+            line-height: 28px !important; 
+            font-size: 9px !important;
         }
 
         /* OTHER + KATCHA (Lined Triangle) */
         .marker-other-katcha {
-            width: 24px;
-            height: 24px;
-            line-height: 28px;
-            font-size: 9px;
+            width: 24px !important;
+            height: 24px !important;
+            line-height: 28px !important;
+            font-size: 9px !important;
         }
 
         /* CSS Styling rules for inline SVG shapes inside markers */
         .marker-other-pucca svg polygon {
-            fill: #2980b9;
-            fill: var(--primary);
-            stroke: white;
-            stroke-width: 1.5;
+            fill: #2980b9 !important;
+            fill: var(--primary) !important;
+            stroke: white !important;
+            stroke-width: 1.5 !important;
         }
 
         .marker-other-katcha svg polygon {
-            fill: white;
-            stroke: #2980b9;
-            stroke: var(--primary);
-            stroke-width: 1.5;
-            stroke-dasharray: 3, 1.5;
+            fill: white !important;
+            stroke: #2980b9 !important;
+            stroke: var(--primary) !important;
+            stroke-width: 1.5 !important;
+            stroke-dasharray: 3, 1.5 !important;
         }
 
         /* Global Marker Hover Transitions */
         .marker-base:hover {
-            transform: translate(-50%, -50%) scale(1.15);
+            transform: translate(-50%, -50%) scale(1.15) !important;
             background-color: var(--danger) !important;
             border-color: var(--danger-dark) !important;
             color: white !important;
@@ -643,7 +644,7 @@
         <div class="dialog-box" style="max-width: 320px;">
             <h3 style="margin-top:0; color:var(--primary);">Select Action</h3>
             <p style="font-size:13px; color:#64748b; margin-bottom:15px;">What would you like to add at this point?</p>
-            <button id="btn-choice-building" class="options-menu-btn btn-save">Register</button>
+            <button id="btn-choice-building" class="options-menu-btn btn-save">Building</button>
             <button id="btn-choice-roadname" class="options-menu-btn btn-load">Road</button>
             <button id="btn-choice-cancel" class="options-menu-btn" style="background:#64748b; color:white;">Cancel</button>
         </div>
@@ -710,6 +711,7 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
+                <option value="HOME-ASBETOS SHEET"></option>
                 <option value="HOME-CLOSED"></option>
                 <option value="HOME-CONCRETE"></option>
                 <option value="HOME-IRON SHEET"></option>
@@ -758,10 +760,10 @@
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
                     <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
-                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw Roads</button>
+                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
-                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">Road</button>
+                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New</button>
                     <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
                     <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
                 </div>
@@ -802,7 +804,7 @@
         <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Buildings</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
                 <div class="button-group">
                     <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
                     <button onclick="saveToCloudManual()" class="btn-save">Save</button>
@@ -905,109 +907,6 @@
         let modalHouses = [];
         let isSyncingSilently = false;
 
-        // GLOBAL GESTURE BLOCKING (Strictly blocks document-level viewport pinch/stretch zoom)
-        document.addEventListener('touchmove', function (event) {
-            if (event.scale !== undefined && event.scale !== 1) { 
-                event.preventDefault(); 
-            }
-        }, { passive: false });
-
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault(); // Blocks rapid double-tap webpage zoom
-            }
-            lastTouchEnd = now;
-        }, false);
-
-        // DISABLE CONTEXT MENU GLOBALLY (Right Click & Mobile long-press menus)
-        document.addEventListener('contextmenu', function (e) {
-            e.preventDefault();
-        });
-
-        // DISABLE INSPECT / SOURCE KEY SHORTCUTS
-        document.addEventListener('keydown', function (e) {
-            if (e.keyCode === 123) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.keyCode === 85) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        // NATIVE PINCH-TO-ZOOM GESTURE LISTENER (Strictly bound to map area)
-        let startDistance = 0;
-        let startZoom = 100;
-        let isPinching = false;
-
-        mapScrollContainer.addEventListener('touchstart', function (e) {
-            if (e.touches.length === 2) {
-                isPinching = true;
-                mapWrapper.classList.add('no-transition'); 
-                startDistance = getTouchDistance(e.touches[0], e.touches[1]);
-                startZoom = currentZoom;
-            }
-        }, { passive: true });
-
-        mapScrollContainer.addEventListener('touchmove', function (e) {
-            if (isPinching && e.touches.length === 2) {
-                e.preventDefault(); // Lock viewport scrolling while pinching map
-                
-                const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
-                const scale = currentDistance / startDistance;
-                
-                let targetZoom = Math.round(startZoom * scale);
-                
-                if (targetZoom < 50) targetZoom = 50;
-                if (targetZoom > 1000) targetZoom = 1000; 
-                
-                currentZoom = targetZoom;
-                updateZoom();
-            }
-        }, { passive: false });
-
-        mapScrollContainer.addEventListener('touchend', function (e) {
-            if (e.touches.length < 2) {
-                isPinching = false;
-                mapWrapper.classList.remove('no-transition'); 
-            }
-        });
-
-        function getTouchDistance(touch1, touch2) {
-            const dx = touch1.clientX - touch2.clientX;
-            const dy = touch1.clientY - touch2.clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        // ZOOM BUTTON CONTROLS 
-        function zoomIn() {
-            if (currentZoom < 1000) { 
-                currentZoom += 25;
-                updateZoom();
-            }
-        }
-        function zoomOut() {
-            if (currentZoom > 50) {
-                currentZoom -= 25;
-                updateZoom();
-            }
-        }
-        function zoomReset() {
-            currentZoom = 100;
-            updateZoom();
-        }
-        function updateZoom() {
-            mapWrapper.style.width = `${currentZoom}%`;
-            zoomText.innerText = `${currentZoom}%`;
-        }
-
         // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
         function showCustomAlert(message, title = "Notification") {
             return new Promise((resolve) => {
@@ -1025,7 +924,6 @@
             });
         }
 
-        // ASYNC CONFIRM (Used during delete prompts)
         function showCustomConfirm(message, title = "Confirmation") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -1052,7 +950,7 @@
             });
         }
 
-        // BUSY PROGRESS (spinner removed, only bar and % animate)
+        // BUSY PROGRESS (spinner removed, only bar and % animate with smooth final interpolation)
         function showBusyProgress(title, onFinishedAction) {
             loadingOverlay.style.display = 'flex';
             statusText.innerText = title;
@@ -1120,16 +1018,6 @@
             triggerPrint('print-mode-a3', 'A3');
         }
 
-        // FORCE UPPERCASE INPUT FIELDS AT CODE LEVEL
-        formName.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        formBuildingNo.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        formRoadLabelInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        
-        // Strict Numeric filter for Phone Number input
-        formPhone.addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        });
-
         // INTERACTIVE TOOL MODE CONTROLLER
         function setToolMode(mode) {
             currentToolMode = mode;
@@ -1176,6 +1064,7 @@
             }
         }
 
+        // RESOLVED ALL HIERARCHY AND APPEND CONFLICTS COMPULSORILY
         function renderRoads() {
             svgRoads.innerHTML = '';
             roads.forEach(road => {
@@ -1188,7 +1077,7 @@
                     polyline.setAttribute("fill", "none");
                     polyline.setAttribute("stroke-linejoin", "round");
                     polyline.setAttribute("stroke-linecap", "round");
-                    svgRoads.appendChild(polyline); // Correctly appends to svgRoads ONLY (Redundant self-append removed)
+                    svgRoads.appendChild(polyline); 
                 }
 
                 if (currentToolMode === "road") {
@@ -1365,7 +1254,7 @@
                 btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
                 
                 newBtnAddHouse.addEventListener('click', () => {
-                    // Sequentially increment CN No strictly inside the same building row only (first is 0001, second is 0002)
+                    // Sequentially increment CN No inside this row list only (First is always 0001, next is 0002)
                     const formattedCN = String(modalHouses.length + 1).padStart(4, '0');
                     modalHouses.push({
                         cnNo: formattedCN,
@@ -1397,7 +1286,7 @@
                     // Save back the serialized census houses array
                     markerData.censusHouses = JSON.parse(JSON.stringify(modalHouses));
 
-                    // Keep flat fields populated with first house value for compatibility checks
+                    // Keep flat fields populated with first house value for compatibility checks (Fixes FormCNNo reference error)
                     markerData.cnNo = modalHouses[0].cnNo;
                     markerData.note = modalHouses[0].type;
                     markerData.remarks = modalHouses[0].remarks;
@@ -1607,11 +1496,29 @@
             return { isHome: !isOtherType, type: houseType };
         }
 
-        // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
+        // REAL-TIME PATH STRETCHER ROUTINE (Redraws vectors in memory instantly on drag)
+        function renderRouteLinesOnly() {
+            svgPaths.innerHTML = '';
+            markers.forEach((marker, index) => {
+                if (index < markers.length - 1) {
+                    const nextMarker = markers[index + 1];
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", marker.x);
+                    line.setAttribute("y1", marker.y);
+                    line.setAttribute("x2", nextMarker.x);
+                    line.setAttribute("y2", nextMarker.y);
+                    line.setAttribute("stroke", "#e74c3c");
+                    line.setAttribute("stroke-width", "0.2");
+                    line.setAttribute("marker-end", "url(#arrow)");
+                    svgPaths.appendChild(line);
+                }
+            });
+        }
+
+        // RENDER REGISTER DATA IN SCREEN TABLE AND MAP (Unified generator)
         function render() {
             markerLayer.innerHTML = '';
             registerBody.innerHTML = '';
-            svgPaths.innerHTML = ''; 
 
             // Pre-calculate sequential Sl No strictly bypassing Road Labels
             let bldgCount = 0;
@@ -1637,20 +1544,20 @@
                     markerEl.innerText = marker.slNo;
 
                     if (classification.isHome) {
-                        // Home styles (Squares)
+                        // Home styles (Squares with fortified style overrides)
                         if (classification.type === "PUCCA") {
                             markerEl.className = 'marker-base marker-home-pucca';
                         } else if (classification.type === "KATCHA") {
                             markerEl.className = 'marker-base marker-home-katcha';
                         } else {
-                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
+                            markerEl.className = 'marker-base marker-circle'; 
                         }
                     } else {
-                        // Other building styles (Triangles drawn with high performance SVG nodes)
+                        // Other building styles (Triangles drawn with hardware accelerated inline SVGs)
                         if (classification.type === "PUCCA") {
                             markerEl.className = 'marker-base marker-other-pucca';
                             markerEl.innerHTML = `
-                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1; overflow:visible;">
                                     <polygon points="12,2 2,22 22,22"/>
                                 </svg>
                                 ${marker.slNo}
@@ -1658,67 +1565,120 @@
                         } else if (classification.type === "KATCHA") {
                             markerEl.className = 'marker-base marker-other-katcha';
                             markerEl.innerHTML = `
-                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1; overflow:visible;">
                                     <polygon points="12,2 2,22 22,22"/>
                                 </svg>
                                 ${marker.slNo}
                             `;
                         } else {
-                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
+                            markerEl.className = 'marker-base marker-circle'; 
                         }
                     }
                 }
                 
                 markerEl.style.left = `${marker.x}%`;
                 markerEl.style.top = `${marker.y}%`;
-                markerEl.title = `Press and hold for options`;
+                markerEl.title = `Drag to reposition. Press-and-hold for options`;
                 
-                // PRESS-AND-HOLD DETECTOR (Triggers Options Menu after 600ms)
+                // DRAG & DROP GESTURE + PRESS-AND-HOLD OPTIONS TRIGGER LOGIC (600MS HOLD)
                 let pressTimer;
+                let startDistance = 0;
+                let startZoom = 100;
+                let isPinching = false;
+                let isDragging = false;
+                let dragStartX = 0;
+                let dragStartY = 0;
+                let dragStartLeft = 0;
+                let dragStartTop = 0;
 
                 const startPress = (e) => {
-                    e.stopPropagation(); 
+                    e.stopPropagation(); // Prevents map clicks underneath
+                    
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    
+                    isDragging = true;
+                    dragStartX = clientX;
+                    dragStartY = clientY;
+                    
+                    const rect = markerEl.getBoundingClientRect();
+                    const parentRect = mapImage.getBoundingClientRect();
+                    
+                    dragStartLeft = ((rect.left + rect.width/2 - parentRect.left) / parentRect.width) * 100;
+                    dragStartTop = ((rect.top + rect.height/2 - parentRect.top) / parentRect.height) * 100;
+
+                    // Trigger options popup if held for 600ms without dragging
                     pressTimer = setTimeout(() => {
-                        openOptionsMenu(index);
+                        if (isDragging) {
+                            isDragging = false; // Cancel drag if options are opened
+                            openOptionsMenu(index);
+                        }
                     }, 600); 
+                };
+
+                const movePress = (e) => {
+                    if (!isDragging) return;
+                    
+                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                    
+                    const dx = clientX - dragStartX;
+                    const dy = clientY - dragStartY;
+                    
+                    // Cancel options hold timer if they start dragging actively
+                    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                        clearTimeout(pressTimer);
+                    }
+                    
+                    const parentRect = mapImage.getBoundingClientRect();
+                    
+                    const deltaXPercent = (dx / parentRect.width) * 100;
+                    const deltaYPercent = (dy / parentRect.height) * 100;
+                    
+                    let newX = dragStartLeft + deltaXPercent;
+                    let newY = dragStartTop + deltaYPercent;
+                    
+                    // Constrain within bounds (0% to 100%)
+                    if (newX < 0) newX = 0; if (newX > 100) newX = 100;
+                    if (newY < 0) newY = 0; if (newY > 100) newY = 100;
+                    
+                    marker.x = newX;
+                    marker.y = newY;
+                    
+                    markerEl.style.left = `${newX}%`;
+                    markerEl.style.top = `${newY}%`;
+                    
+                    renderRouteLinesOnly(); // Real-time line path update
                 };
 
                 const cancelPress = () => {
                     clearTimeout(pressTimer);
+                    if (isDragging) {
+                        isDragging = false;
+                        saveDataLocally();
+                        syncDataWithBackendSilently(); // Quiet background upload
+                    }
                 };
 
                 // Mouse inputs
                 markerEl.addEventListener('mousedown', startPress);
-                markerEl.addEventListener('mouseup', cancelPress);
-                markerEl.addEventListener('mouseleave', cancelPress);
+                window.addEventListener('mousemove', movePress);
+                window.addEventListener('mouseup', cancelPress);
 
                 // Touch inputs
                 markerEl.addEventListener('touchstart', startPress);
+                markerEl.addEventListener('touchmove', movePress, { passive: false });
                 markerEl.addEventListener('touchend', cancelPress);
                 markerEl.addEventListener('touchcancel', cancelPress);
 
                 markerLayer.appendChild(markerEl);
 
-                // 2. Draw SVG Route Line (Connects every consecutive point, including roads, without gaps)
-                if (index < markers.length - 1) {
-                    const nextMarker = markers[index + 1];
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", marker.x);
-                    line.setAttribute("y1", marker.y);
-                    line.setAttribute("x2", nextMarker.x);
-                    line.setAttribute("y2", nextMarker.y);
-                    line.setAttribute("stroke", "#e74c3c");
-                    line.setAttribute("stroke-width", "0.2");
-                    line.setAttribute("marker-end", "url(#arrow)");
-                    svgPaths.appendChild(line);
-                }
-
-                // 3. Create Table Row 
+                // 3. Create Table Row (Census House details are vertically aligned under one row)
                 const row = document.createElement('tr');
 
                 const cellSl = document.createElement('td');
                 cellSl.style.fontWeight = "bold";
-                cellSl.innerText = marker.isRoadLabel ? "ROAD" : marker.slNo; // Label display in register table
+                cellSl.innerText = marker.isRoadLabel ? "ROAD" : marker.slNo; 
 
                 const cellName = document.createElement('td');
                 const cellPhone = document.createElement('td');
@@ -1728,7 +1688,6 @@
                 const cellRemarks = document.createElement('td');
 
                 if (marker.isRoadLabel) {
-                    // Stylized row layout in table for Road Labels
                     cellName.innerHTML = `<span style="font-weight:bold; color:var(--primary);">ROAD: ${marker.name || 'UNNAMED'}</span>`;
                     cellPhone.innerText = '-';
                     cellBldg.innerText = '-';
@@ -1740,7 +1699,6 @@
                     cellPhone.innerText = marker.phone || '-';
                     cellBldg.innerText = marker.buildingNo || '-';
 
-                    // Display multiple Census Houses split cleanly by line-breaks (same row)
                     if (marker.censusHouses && marker.censusHouses.length > 0) {
                         cellCN.innerHTML = marker.censusHouses.map(ch => ch.cnNo || '-').join('<br>');
                         cellNote.innerHTML = marker.censusHouses.map(ch => ch.type || '-').join('<br>');
@@ -1762,6 +1720,8 @@
 
                 registerBody.appendChild(row);
             });
+
+            renderRouteLinesOnly(); // Primary sequential path generator
         }
 
         function removeMarker(index) {
@@ -1801,7 +1761,6 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
-                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
 
@@ -1839,6 +1798,81 @@
 
             await showBusyProgress("Updating...", sendAction);
             updateSyncStatus('synced');
+        }
+
+        // FETCH DATA (GET - loads directly from sheet with spinner progress)
+        async function loadFromCloud(showProgress = true) {
+            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
+
+            const fetchAction = () => {
+                return fetch(GOOGLE_SCRIPT_URL)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const roadsRecord = data.find(m => m.id === "ROADS_DATA");
+                            if (roadsRecord) {
+                                try {
+                                    roads = JSON.parse(roadsRecord.remarks);
+                                } catch(e) {
+                                    roads = [];
+                                }
+                            } else {
+                                roads = [];
+                            }
+
+                            const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
+
+                            // Re-deserialize newline-separated strings back into dynamic censusHouses arrays
+                            cleanMarkers.forEach(m => {
+                                const rawCN = cleanStringValue(m.cnNo);
+                                const rawNote = cleanStringValue(m.note);
+                                const rawRemarks = cleanStringValue(m.remarks);
+
+                                m.buildingNo = cleanStringValue(m.buildingNo);
+                                m.name = cleanStringValue(m.name);
+                                m.phone = cleanStringValue(m.phone);
+
+                                if (rawCN === "ROAD_LABEL") {
+                                    m.isRoadLabel = true;
+                                    m.cnNo = "ROAD_LABEL";
+                                    m.note = "";
+                                    m.remarks = "";
+                                } else {
+                                    const cns = rawCN.split("\n");
+                                    const types = rawNote.split("\n");
+                                    const remarks = rawRemarks.split("\n");
+
+                                    const count = Math.max(cns.length, types.length, remarks.length, 1);
+                                    m.censusHouses = [];
+                                    for (let j = 0; j < count; j++) {
+                                        m.censusHouses.push({
+                                            cnNo: cns[j] || "",
+                                            type: types[j] || "",
+                                            remarks: remarks[j] || ""
+                                        });
+                                    }
+
+                                    m.cnNo = cns[0] || "";
+                                    m.note = types[0] || "";
+                                    m.remarks = remarks[0] || "";
+                                }
+                            });
+
+                            markers = cleanMarkers;
+                            markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
+                            saveDataLocally();
+                            renderRoads();
+                            render();
+                            updateSyncStatus('synced');
+                        }
+                    });
+            };
+
+            if (showProgress) {
+                await showBusyProgress("Syncing...", fetchAction);
+            } else {
+                await fetchAction();
+            }
         }
 
         // OFFLINE-FIRST PERSISTENCE LOADER
@@ -1922,7 +1956,6 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
-                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
 
@@ -1969,82 +2002,6 @@
                 updateSyncStatus('offline');
                 console.warn("Background sync failed. Attempting background retry in 10 seconds...", err);
                 setTimeout(syncDataWithBackendSilently, 10000); 
-            }
-        }
-
-        // FETCH DATA (GET - loads directly from sheet with spinner progress)
-        async function loadFromCloud(showProgress = true) {
-            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
-
-            const fetchAction = () => {
-                return fetch(GOOGLE_SCRIPT_URL)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.length > 0) {
-                            const roadsRecord = data.find(m => m.id === "ROADS_DATA");
-                            if (roadsRecord) {
-                                try {
-                                    roads = JSON.parse(roadsRecord.remarks);
-                                } catch(e) {
-                                    roads = [];
-                                }
-                            } else {
-                                roads = [];
-                            }
-
-                            const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
-
-                            // Re-deserialize newline-separated strings back into dynamic censusHouses arrays
-                            cleanMarkers.forEach(m => {
-                                // Strip out leading text-formatting database apostrophes safely
-                                const rawCN = cleanStringValue(m.cnNo);
-                                const rawNote = cleanStringValue(m.note);
-                                const rawRemarks = cleanStringValue(m.remarks);
-
-                                m.buildingNo = cleanStringValue(m.buildingNo);
-                                m.name = cleanStringValue(m.name);
-                                m.phone = cleanStringValue(m.phone);
-
-                                if (rawCN === "ROAD_LABEL") {
-                                    m.isRoadLabel = true;
-                                    m.cnNo = "ROAD_LABEL";
-                                    m.note = "";
-                                    m.remarks = "";
-                                } else {
-                                    const cns = rawCN.split("\n");
-                                    const types = rawNote.split("\n");
-                                    const remarks = rawRemarks.split("\n");
-
-                                    const count = Math.max(cns.length, types.length, remarks.length, 1);
-                                    m.censusHouses = [];
-                                    for (let j = 0; j < count; j++) {
-                                        m.censusHouses.push({
-                                            cnNo: cns[j] || "",
-                                            type: types[j] || "",
-                                            remarks: remarks[j] || ""
-                                        });
-                                    }
-
-                                    m.cnNo = cns[0] || "";
-                                    m.note = types[0] || "";
-                                    m.remarks = remarks[0] || "";
-                                }
-                            });
-
-                            markers = cleanMarkers;
-                            markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
-                            saveDataLocally();
-                            renderRoads();
-                            render();
-                            updateSyncStatus('synced');
-                        }
-                    });
-            };
-
-            if (showProgress) {
-                await showBusyProgress("Syncing...", fetchAction);
-            } else {
-                await fetchAction();
             }
         }
     </script>
