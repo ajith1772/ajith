@@ -109,7 +109,7 @@
             width: 100%;
         }
 
-        .map-panel {
+        .sidebar {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -118,7 +118,7 @@
             box-sizing: border-box;
         }
 
-        .sidebar {
+        .map-panel {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -155,7 +155,7 @@
         /* Fixed viewport for Map Zoom only */
         .map-area {
             position: relative;
-            height: 400px;
+            height: 500px;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -260,8 +260,8 @@
         /* HOME + PUCCA (Solid Square) */
         .marker-home-pucca {
             border-radius: 0%; 
-            background-color: white;
-            color: black;
+            background-color: var(--primary);
+            color: white;
             border: 2px solid white;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
@@ -270,8 +270,8 @@
         .marker-home-katcha {
             border-radius: 0%;
             background-color: white;
-            color: black;
-            border: 2px dashed black;
+            color: var(--primary);
+            border: 2px dashed var(--primary);
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
@@ -617,7 +617,7 @@
 </head>
 <body>
 
-    <!-- Busy Progress Overlay (Used strictly on manual sync operations) -->
+    <!-- Busy Progress Overlay -->
     <div id="loading-overlay" class="overlay">
         <div id="status-text" style="font-weight: 600; margin-bottom: 15px; font-size: 15px; letter-spacing: 0.5px;">Saving Changes...</div>
         <div class="progress-container">
@@ -643,7 +643,7 @@
         <div class="dialog-box" style="max-width: 320px;">
             <h3 style="margin-top:0; color:var(--primary);">Select Action</h3>
             <p style="font-size:13px; color:#64748b; margin-bottom:15px;">What would you like to add at this point?</p>
-            <button id="btn-choice-building" class="options-menu-btn btn-save">Building</button>
+            <button id="btn-choice-building" class="options-menu-btn btn-save">Register</button>
             <button id="btn-choice-roadname" class="options-menu-btn btn-load">Road</button>
             <button id="btn-choice-cancel" class="options-menu-btn" style="background:#64748b; color:white;">Cancel</button>
         </div>
@@ -710,11 +710,10 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="HOME-ASBETOS SHEET"></option>
-                <option value="HOME-CLOSED "></option>
+                <option value="HOME-CLOSED"></option>
                 <option value="HOME-CONCRETE"></option>
                 <option value="HOME-IRON SHEET"></option>
-                <option value="HOME-TILED (ഓട്)"></option>
+                <option value="HOME-TILED ROOF"></option>
                 <option value="HOME-SHOP"></option>
                 <option value="HOME-INSTITUTION"></option>
                 <option value="CHURCH"></option>
@@ -722,10 +721,10 @@
                 <option value="GROUND"></option>
                 <option value="INSTITUTION"></option>
                 <option value="MOSQUE"></option>
+                <option value="SHED WITH IRON SHEET"></option>
                 <option value="SHOP"></option>
                 <option value="SHOP-CLOSED "></option>
-                <option value="TEMPLE"></option>               
-                
+                <option value="TEMPLE"></option> 
             </datalist>
 
             <div class="dialog-btn-group">
@@ -745,7 +744,7 @@
             </div>
         </div>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print A4 </button>
+            <button onclick="printA4()" class="btn-print">Print A4</button>
             <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
@@ -759,10 +758,10 @@
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
                     <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
-                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Roads</button>
+                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw Roads</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
-                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New</button>
+                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">Road</button>
                     <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
                     <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
                 </div>
@@ -803,7 +802,7 @@
         <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Buildings</h3>
                 <div class="button-group">
                     <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
                     <button onclick="saveToCloudManual()" class="btn-save">Save</button>
@@ -1189,7 +1188,7 @@
                     polyline.setAttribute("fill", "none");
                     polyline.setAttribute("stroke-linejoin", "round");
                     polyline.setAttribute("stroke-linecap", "round");
-                    svgRoads.appendChild(polyline); // Correctly appends to svgRoads ONLY
+                    svgRoads.appendChild(polyline); // Correctly appends to svgRoads ONLY (Redundant self-append removed)
                 }
 
                 if (currentToolMode === "road") {
@@ -1348,7 +1347,7 @@
                     modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
                 } else {
                     modalHouses = [{
-                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact
+                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact (editable)
                         type: markerData.note || '',
                         remarks: markerData.remarks || ''
                     }];
@@ -1357,7 +1356,7 @@
                 // Render dynamic houses rows
                 renderModalHouses(isViewOnly);
 
-                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY
+                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY (No longer references global detached nodes)
                 const btnAddHouseElement = document.getElementById('btn-add-house');
                 btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
                 
@@ -1366,7 +1365,7 @@
                 btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
                 
                 newBtnAddHouse.addEventListener('click', () => {
-                    // Sequentially increment CN No inside this row list only (First is always 0001, next is 0002)
+                    // Sequentially increment CN No strictly inside the same building row only (first is 0001, second is 0002)
                     const formattedCN = String(modalHouses.length + 1).padStart(4, '0');
                     modalHouses.push({
                         cnNo: formattedCN,
@@ -1398,7 +1397,7 @@
                     // Save back the serialized census houses array
                     markerData.censusHouses = JSON.parse(JSON.stringify(modalHouses));
 
-                    // Keep flat fields populated with first house value for compatibility checks (Fixes FormCNNo reference error)
+                    // Keep flat fields populated with first house value for compatibility checks
                     markerData.cnNo = modalHouses[0].cnNo;
                     markerData.note = modalHouses[0].type;
                     markerData.remarks = modalHouses[0].remarks;
@@ -1446,7 +1445,7 @@
                         phone: '',
                         buildingNo: `${markers.filter(m => !m.isRoadLabel).length + 1}`,
                         censusHouses: [{
-                            cnNo: '0001', // Every new building always defaults to '0001' first
+                            cnNo: '0001', // Every new building always defaults to '0001' first (keeps 0001 default)
                             type: '',
                             remarks: ''
                         }]
@@ -1802,10 +1801,14 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
+                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
+                    m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
+
                     m.note = m.censusHouses.map(ch => ch.type).join("\n");
                     m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
+                m.buildingNo = m.buildingNo ? "'" + String(m.buildingNo).replace(/^'/, "") : "";
             });
 
             if (roads.length > 0) {
@@ -1834,71 +1837,8 @@
                 });
             };
 
-            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
+            await showBusyProgress("Updating...", sendAction);
             updateSyncStatus('synced');
-        }
-
-        // FETCH DATA (GET - loads directly from sheet with spinner progress)
-        async function loadFromCloud(showProgress = true) {
-            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
-
-            const fetchAction = () => {
-                return fetch(GOOGLE_SCRIPT_URL)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.length > 0) {
-                            const roadsRecord = data.find(m => m.id === "ROADS_DATA");
-                            if (roadsRecord) {
-                                try {
-                                    roads = JSON.parse(roadsRecord.remarks);
-                                } catch(e) {
-                                    roads = [];
-                                }
-                            } else {
-                                roads = [];
-                            }
-
-                            const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
-
-                            cleanMarkers.forEach(m => {
-                                if (m.cnNo === "ROAD_LABEL") {
-                                    m.isRoadLabel = true;
-                                } else {
-                                    const cns = String(m.cnNo || "").split("\n");
-                                    const types = String(m.note || "").split("\n");
-                                    const remarks = String(m.remarks || "").split("\n");
-
-                                    const count = Math.max(cns.length, types.length, remarks.length, 1);
-                                    m.censusHouses = [];
-                                    for (let j = 0; j < count; j++) {
-                                        m.censusHouses.push({
-                                            cnNo: cns[j] || "",
-                                            type: types[j] || "",
-                                            remarks: remarks[j] || ""
-                                        });
-                                    }
-
-                                    m.cnNo = cns[0] || "";
-                                    m.note = types[0] || "";
-                                    m.remarks = remarks[0] || "";
-                                }
-                            });
-
-                            markers = cleanMarkers;
-                            markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
-                            saveDataLocally();
-                            renderRoads();
-                            render();
-                            updateSyncStatus('synced');
-                        }
-                    });
-            };
-
-            if (showProgress) {
-                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
-            } else {
-                await fetchAction();
-            }
         }
 
         // OFFLINE-FIRST PERSISTENCE LOADER
@@ -1934,13 +1874,21 @@
             return false;
         }
 
+        // DATABASE DE-SERIALIZATION CLEANER (Strips out leading database-format text apostrophes)
+        function cleanStringValue(val) {
+            let str = String(val || "").trim();
+            if (str.startsWith("'")) {
+                str = str.substring(1);
+            }
+            return str;
+        }
+
         // REAL-TIME CLOUD STATUS LED INDICATOR
         function updateSyncStatus(state) {
             const led = document.getElementById('sync-led');
             const text = document.getElementById('sync-text');
             if (!led || !text) return;
 
-            // Clear existing indicator classes
             led.className = 'led-indicator';
 
             if (state === 'synced') {
@@ -1974,10 +1922,14 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
+                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
+                    m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
+
                     m.note = m.censusHouses.map(ch => ch.type).join("\n");
                     m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
+                m.buildingNo = m.buildingNo ? "'" + String(m.buildingNo).replace(/^'/, "") : "";
             });
 
             if (roads.length > 0) {
@@ -2017,6 +1969,82 @@
                 updateSyncStatus('offline');
                 console.warn("Background sync failed. Attempting background retry in 10 seconds...", err);
                 setTimeout(syncDataWithBackendSilently, 10000); 
+            }
+        }
+
+        // FETCH DATA (GET - loads directly from sheet with spinner progress)
+        async function loadFromCloud(showProgress = true) {
+            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
+
+            const fetchAction = () => {
+                return fetch(GOOGLE_SCRIPT_URL)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const roadsRecord = data.find(m => m.id === "ROADS_DATA");
+                            if (roadsRecord) {
+                                try {
+                                    roads = JSON.parse(roadsRecord.remarks);
+                                } catch(e) {
+                                    roads = [];
+                                }
+                            } else {
+                                roads = [];
+                            }
+
+                            const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
+
+                            // Re-deserialize newline-separated strings back into dynamic censusHouses arrays
+                            cleanMarkers.forEach(m => {
+                                // Strip out leading text-formatting database apostrophes safely
+                                const rawCN = cleanStringValue(m.cnNo);
+                                const rawNote = cleanStringValue(m.note);
+                                const rawRemarks = cleanStringValue(m.remarks);
+
+                                m.buildingNo = cleanStringValue(m.buildingNo);
+                                m.name = cleanStringValue(m.name);
+                                m.phone = cleanStringValue(m.phone);
+
+                                if (rawCN === "ROAD_LABEL") {
+                                    m.isRoadLabel = true;
+                                    m.cnNo = "ROAD_LABEL";
+                                    m.note = "";
+                                    m.remarks = "";
+                                } else {
+                                    const cns = rawCN.split("\n");
+                                    const types = rawNote.split("\n");
+                                    const remarks = rawRemarks.split("\n");
+
+                                    const count = Math.max(cns.length, types.length, remarks.length, 1);
+                                    m.censusHouses = [];
+                                    for (let j = 0; j < count; j++) {
+                                        m.censusHouses.push({
+                                            cnNo: cns[j] || "",
+                                            type: types[j] || "",
+                                            remarks: remarks[j] || ""
+                                        });
+                                    }
+
+                                    m.cnNo = cns[0] || "";
+                                    m.note = types[0] || "";
+                                    m.remarks = remarks[0] || "";
+                                }
+                            });
+
+                            markers = cleanMarkers;
+                            markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
+                            saveDataLocally();
+                            renderRoads();
+                            render();
+                            updateSyncStatus('synced');
+                        }
+                    });
+            };
+
+            if (showProgress) {
+                await showBusyProgress("Syncing...", fetchAction);
+            } else {
+                await fetchAction();
             }
         }
     </script>
