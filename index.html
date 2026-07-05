@@ -75,9 +75,9 @@
 
         /* LED INDICATOR KEYFRAMES AND CLASSES */
         .led-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            border-radius: 0%;
             display: inline-block;
             margin-right: 5px;
         }
@@ -115,7 +115,7 @@
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            width: 100%;
+            width: auto;
             box-sizing: border-box;
         }
 
@@ -124,7 +124,7 @@
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            width: 100%;
+            width: auto;
             box-sizing: border-box;
         }
 
@@ -180,7 +180,7 @@
         }
 
         #map-image {
-            width: 100%;
+            width: auto;
             display: block;
             user-select: none;
             -webkit-user-drag: none;
@@ -746,7 +746,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY MAP 2026</h2>
+            <h2>MY MAP 26</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -2202,10 +2202,10 @@
             // Setting showProgress to false prevents a blocking spinner on initial load
             loadFromCloud(false)
                 .then(() => {
-                    console.log("Latest Google Sheet data synced successfully.");
+                    console.log("Latest Data synced successfully.");
                 })
                 .catch((err) => {
-                    console.warn("Could not sync with Google Sheets on startup:", err);
+                    console.warn("Failed to Sync on startup:", err);
                 });
         });
 
