@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Census HLB Register & Mapper</title>
+    <title>My Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -156,7 +156,7 @@
         /* Fixed viewport for Map Zoom only */
         .map-area {
             position: relative;
-            height: 500px;
+            height: 400px;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -647,8 +647,8 @@
         <div class="dialog-box" style="max-width: 320px;">
             <h3 style="margin-top:0; color:var(--primary);">Select Action</h3>
             <p style="font-size:13px; color:#64748b; margin-bottom:15px;">What would you like to add at this point?</p>
-            <button id="btn-choice-building" class="options-menu-btn btn-save">Register Building</button>
-            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Name a Road</button>
+            <button id="btn-choice-building" class="options-menu-btn btn-save">Building</button>
+            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Road</button>
             <button id="btn-choice-cancel" class="options-menu-btn" style="background:#64748b; color:white;">Cancel</button>
         </div>
     </div>
@@ -672,9 +672,9 @@
     <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
         <div class="dialog-box" style="max-width: 320px;">
             <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker Options</h3>
-            <button id="options-view" class="options-menu-btn btn-load">View Details</button>
-            <button id="options-edit" class="options-menu-btn btn-save">Edit Details</button>
-            <button id="options-delete" class="options-menu-btn btn-clear">Delete Building</button>
+            <button id="options-view" class="options-menu-btn btn-load">View</button>
+            <button id="options-edit" class="options-menu-btn btn-save">Edit</button>
+            <button id="options-delete" class="options-menu-btn btn-clear">Delete</button>
             <button id="options-close" class="options-menu-btn" style="background:#64748b; color:white;">Close</button>
         </div>
     </div>
@@ -746,15 +746,15 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>HLB Map Digitization Portal</h2>
+            <h2>MY MAP</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
             </div>
         </div>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Portrait)</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Portrait)</button>
+            <button onclick="printA4()" class="btn-print">Print A4</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
 
@@ -764,19 +764,27 @@
             
             <!-- Interactive Tool Mode Box -->
             <div class="tool-mode-box" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="display: flex; gap: 10px; align-items: center;">
+              <div style="display: flex; gap: 10px; align-items: center;">
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
-                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Register Buildings</button>
-                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw Roads</button>
+                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
+                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Roads</button>
                     <!-- NEW TOOL MODE BUTTON -->
-                    <button id="btn-mode-move" onclick="setToolMode('move')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Move Buildings</button>
+                    <button id="btn-mode-move" onclick="setToolMode('move')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Move</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
-                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New Road</button>
-                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo Node</button>
-                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Roads</button>
+                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">Road</button>
+                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
+                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
                 </div>
+                <!-- NEW STATISTICS COUNTER SECTION -->
+            <div id="stats-counter-box" style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; font-weight: bold; color: #334155;">
+                <div>Home: <span id="stats-count-home" style="color: #16a34a; font-size: 14px;">0</span></div>
+                <div style="border-left: 2px solid #cbd5e1; height: 15px;"></div>
+                <div>Other Buildings: <span id="stats-count-other" style="color: #2563eb; font-size: 14px;">0</span></div>
+                <div style="border-left: 2px solid #cbd5e1; height: 15px;"></div>
+                <div>Total Buildings: <span id="stats-count-total" style="color: #0f172a; font-size: 14px;">0</span></div>
             </div>
+            
 
             <div class="map-controls">
                 <span id="instruction-hint" style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
@@ -846,7 +854,7 @@
     <script>
         // ==========================================
         // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwJl5KEuTasZmn1BztFo6qnS5ZJYFmYmLyGu0pJlZ7Di1UzjVCCH-uFVM8nAwiQ9xBXzw/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbymhDD0ayhMQqDzFPbVFn1lib2XLm5JiK4fDv5mOgUW9YZGWza2yGAyoBRczwbOFQTj2Q/exec";
         // ==========================================
 
         const mapImage = document.getElementById('map-image');
@@ -1321,15 +1329,23 @@
                     const name = formName.value.trim();
                     const phone = formPhone.value.trim();
 
-                    // Map values back to object (All constraints completely removed, blank saving allowed)
+                    // Map values back to object
                     markerData.name = name;
                     markerData.phone = phone;
                     markerData.buildingNo = formBuildingNo.value.trim();
                     
+                    // STRICT 4-DIGIT PADDING FOR ALL CENSUS HOUSES
+                    modalHouses.forEach(house => {
+                        let cnClean = String(house.cnNo || "").trim();
+                        if (/^\d+$/.test(cnClean)) {
+                            house.cnNo = cnClean.padStart(4, '0');
+                        }
+                    });
+
                     // Save back the serialized census houses array
                     markerData.censusHouses = JSON.parse(JSON.stringify(modalHouses));
 
-                    // Keep flat fields populated with first house value for compatibility checks (Fixes FormCNNo reference error)
+                    // Keep flat fields populated with first house value for compatibility checks
                     markerData.cnNo = modalHouses[0].cnNo;
                     markerData.note = modalHouses[0].type;
                     markerData.remarks = modalHouses[0].remarks;
@@ -1558,22 +1574,59 @@
             });
         }
 
+
+
         // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
         function render() {
             markerLayer.innerHTML = '';
             registerBody.innerHTML = '';
             svgPaths.innerHTML = ''; 
 
+            // CALCULATE STATISTICS BY SERIAL NUMBER (BUILDING LEVEL)
+            let homeCount = 0;
+            let otherCount = 0;
+
+            markers.forEach((marker) => {
+                if (marker.isRoadLabel) return; // Skip road labels completely
+
+                let hasHomeComponent = false;
+                
+                if (marker.censusHouses && marker.censusHouses.length > 0) {
+                    // Check if any house in this building is classified as HOME
+                    hasHomeComponent = marker.censusHouses.some(house => {
+                        const rText = String(house.remarks || "").toUpperCase().trim();
+                        // If remark is blank, it defaults to HOME. Or if remark explicitly contains "HOME"
+                        return rText === "" || rText.includes("HOME");
+                    });
+                } else {
+                    const rText = String(marker.remarks || "").toUpperCase().trim();
+                    hasHomeComponent = (rText === "" || rText.includes("HOME"));
+                }
+
+                if (hasHomeComponent) {
+                    homeCount++; // Counted as House (HOME)
+                } else {
+                    otherCount++; // Only counted as Other if there are absolutely no Home uses
+                }
+            });
+
+            // Update UI Counters
+            document.getElementById('stats-count-home').innerText = homeCount;
+            document.getElementById('stats-count-other').innerText = otherCount;
+            document.getElementById('stats-count-total').innerText = homeCount + otherCount;
+
             // Pre-calculate sequential Sl No strictly bypassing Road Labels
             let bldgCount = 0;
             markers.forEach((marker) => {
                 if (marker.isRoadLabel) {
-                    marker.slNo = ""; // Empty serial string for road labels
+                    marker.slNo = ""; 
                 } else {
                     bldgCount++;
-                    marker.slNo = bldgCount; // Integer sequential count representing buildings only
+                    marker.slNo = bldgCount; 
                 }
             });
+            
+            
 
             markers.forEach((marker, index) => {
                 // 1. Draw Map Element (Geometric markers vs Horizontal road label pill badge)
@@ -1844,7 +1897,7 @@
                 });
             };
 
-            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
+            await showBusyProgress("Saving...", sendAction);
             updateSyncStatus('synced');
         }
 
@@ -1917,7 +1970,7 @@
             };
 
             if (showProgress) {
-                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
+                await showBusyProgress("Syncing...", fetchAction);
             } else {
                 await fetchAction();
             }
