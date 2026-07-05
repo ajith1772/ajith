@@ -156,7 +156,7 @@
         /* Fixed viewport for Map Zoom only */
         .map-area {
             position: relative;
-            height: 400px;
+            height: 500px;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -170,7 +170,7 @@
         .map-wrapper {
             position: relative;
             display: inline-block;
-            width: 100%;
+            width: auto;
             transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
             will-change: width; 
         }
@@ -746,7 +746,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY MAP</h2>
+            <h2>MY MAPPER</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -922,8 +922,7 @@
         let currentZoom = 100;
         let currentToolMode = "building"; 
         // Touch pinch-to-zoom state variables
-        let initialTouchDistance = -1;
-        let baseZoomOnPinchStart = 100;
+        
 
         // Local array to hold census houses in active popup session
         let modalHouses = [];
@@ -2107,41 +2106,77 @@
             }
         }
 
+        // Touch state variables for unified pan and zoom
+        let isPanningMap = false;
+        let startScrollLeft = 0;
+        let startScrollTop = 0;
+        let startTouchX = 0;
+        let startTouchY = 0;
+
+        let initialTouchDistance = -1;
+        let baseZoomOnPinchStart = 100;
+
+        // Touch state variables for unified pan and zoom
+        isPanningMap = false;
+        startScrollLeft = 0;
+        startScrollTop = 0;
+        startTouchX = 0;
+        startTouchY = 0;
+
         // Helper to calculate distance between two touches
         function getTouchDistance(touch1, touch2) {
             return Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
         }
 
-        // Pinch-to-zoom event listeners on the scroll container
+        // Unified Touchstart Handler
         mapScrollContainer.addEventListener('touchstart', function(e) {
-            if (e.touches.length === 2) {
-                // Prevent default browser zoom actions
+            if (e.touches.length === 1) {
+                // Initiate manual pan/scroll with single finger
+                isPanningMap = true;
+                startTouchX = e.touches[0].clientX;
+                startTouchY = e.touches[0].clientY;
+                startScrollLeft = mapScrollContainer.scrollLeft;
+                startScrollTop = mapScrollContainer.scrollTop;
+            } else if (e.touches.length === 2) {
+                // Initiate pinch-to-zoom with two fingers (disable pan)
+                isPanningMap = false;
                 e.preventDefault();
                 initialTouchDistance = getTouchDistance(e.touches[0], e.touches[1]);
                 baseZoomOnPinchStart = currentZoom;
             }
         }, { passive: false });
 
+        // Unified Touchmove Handler
         mapScrollContainer.addEventListener('touchmove', function(e) {
-            if (e.touches.length === 2 && initialTouchDistance > 0) {
+            if (e.touches.length === 1 && isPanningMap) {
+                // Handle single-finger scrolling/panning
+                const deltaX = e.touches[0].clientX - startTouchX;
+                const deltaY = e.touches[0].clientY - startTouchY;
+                
+                mapScrollContainer.scrollLeft = startScrollLeft - deltaX;
+                mapScrollContainer.scrollTop = startScrollTop - deltaY;
+                
+                e.preventDefault(); // Prevents mobile pull-to-refresh or page bounce
+            } else if (e.touches.length === 2 && initialTouchDistance > 0) {
+                // Handle two-finger pinch-to-zoom
                 e.preventDefault();
                 
                 const currentTouchDistance = getTouchDistance(e.touches[0], e.touches[1]);
                 const pinchFactor = currentTouchDistance / initialTouchDistance;
                 
-                // Calculate new zoom level based on starting zoom and pinch factor
                 let targetZoom = baseZoomOnPinchStart * pinchFactor;
-                
-                // Clamp zoom between 50% and 1000%
                 targetZoom = Math.min(1000, Math.max(50, targetZoom));
                 
-                // Keep zoom adjustment to increments of 5% for smoothness
                 currentZoom = Math.round(targetZoom / 5) * 5;
                 updateZoom();
             }
         }, { passive: false });
 
+        // Unified Touchend Handler
         mapScrollContainer.addEventListener('touchend', function(e) {
+            if (e.touches.length === 0) {
+                isPanningMap = false;
+            }
             if (e.touches.length < 2) {
                 initialTouchDistance = -1;
             }
