@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <!-- Viewport configured to block page-level zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MY Mapper</title>
+    <title>Census HLB Register & Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -233,23 +233,25 @@
         }
 
         /* ========================================================
-           GEOMETRIC MAP MARKERS STYLES
+           GEOMETRIC MAP MARKERS STYLES (FORTIFIED SPECIFICITY)
            ======================================================== */
-        .marker-base {
+        .marker {
             position: absolute;
-            width: 22px;
-            height: 22px;
-            line-height: 22px;
+            width: 22px !important;
+            height: 22px !important;
+            line-height: 22px !important;
             text-align: center;
             font-size: 11px;
             font-weight: bold;
             transform: translate(-50%, -50%);
             cursor: pointer;
-            user-select: none;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
+            touch-action: none !important; /* Critical: Locks mobile selection menu overrides completely */
             z-index: 5;
             transition: transform 0.2s ease, background-color 0.2s ease;
             overflow: visible !important; /* Crucial: Prevents browsers clipping Triangle SVGs */
-            touch-action: none !important; /* Directs gesture listeners to handle the elements exclusively */
         }
 
         /* CIRCLE (Default / Others fallback) */
@@ -281,18 +283,18 @@
 
         /* OTHER + PUCCA (Solid Triangle) */
         .marker-other-pucca {
-            width: 24px;
-            height: 24px;
-            line-height: 28px; 
-            font-size: 9px;
+            width: 24px !important;
+            height: 24px !important;
+            line-height: 28px !important; 
+            font-size: 9px !important;
         }
 
         /* OTHER + KATCHA (Lined Triangle) */
         .marker-other-katcha {
-            width: 24px;
-            height: 24px;
-            line-height: 28px;
-            font-size: 9px;
+            width: 24px !important;
+            height: 24px !important;
+            line-height: 28px !important;
+            font-size: 9px !important;
         }
 
         /* CSS Styling rules for inline SVG shapes inside markers */
@@ -312,7 +314,7 @@
         }
 
         /* Global Marker Hover Transitions */
-        .marker-base:hover {
+        .marker:hover {
             transform: translate(-50%, -50%) scale(1.15) !important;
             background-color: var(--danger) !important;
             border-color: var(--danger-dark) !important;
@@ -320,7 +322,7 @@
         }
 
         /* Hover color injection for SVG Triangles */
-        .marker-base:hover svg polygon {
+        .marker:hover svg polygon {
             fill: var(--danger) !important;
             stroke: var(--danger-dark) !important;
             stroke-dasharray: none !important; 
@@ -341,7 +343,9 @@
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0,0,0,0.25);
             z-index: 5;
-            user-select: none;
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
             touch-action: none !important;
         }
         .marker-road-label:hover {
@@ -909,10 +913,9 @@
         // Local array to hold census houses in active popup session
         let modalHouses = [];
         let isSyncingSilently = false;
+        let isInteractingWithMarker = false; // Prevents map clicks during marker gestures
 
-        // COGNIZANT AND CLEAN COMPILATION CODES (ALL HOISTED AND ACCESSIBLE SAFELY AT RUNTIME)
-
-        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
+        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS (DEFINED AT THE TOP)
         function showCustomAlert(message, title = "Notification") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -1281,7 +1284,7 @@
                 // Render dynamic houses rows
                 renderModalHouses(isViewOnly);
 
-                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY
+                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY (No longer references global detached nodes)
                 const btnAddHouseElement = document.getElementById('btn-add-house');
                 btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
                 
@@ -1352,6 +1355,11 @@
             const rect = mapImage.getBoundingClientRect();
             const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
             const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+
+            if (isInteractingWithMarker) {
+                isInteractingWithMarker = false; // Reset blocker state safely
+                return; // Strictly blocks accidental double placements on mouse release
+            }
 
             if (currentToolMode === "building") {
                 // Show action choice dialog
@@ -1555,6 +1563,7 @@
         function render() {
             markerLayer.innerHTML = '';
             registerBody.innerHTML = '';
+            svgPaths.innerHTML = ''; 
 
             // Pre-calculate sequential Sl No strictly bypassing Road Labels
             let bldgCount = 0;
@@ -1630,7 +1639,7 @@
                     if (e.touches && e.touches.length >= 2) {
                         return; 
                     }
-                    e.stopPropagation(); // Prevents map clicks underneath for single touch
+                    isInteractingWithMarker = true; // Block map placement click trigger during any marker touch interaction
                     
                     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -1645,7 +1654,7 @@
                     dragStartLeft = ((rect.left + rect.width/2 - parentRect.left) / parentRect.width) * 100;
                     dragStartTop = ((rect.top + rect.height/2 - parentRect.top) / parentRect.height) * 100;
 
-                    // Trigger options popup if held for 600ms without dragging (18px movement padding threshold)
+                    // Trigger options popup if held for 600ms without dragging (Optimized 18px movement padding threshold)
                     pressTimer = setTimeout(() => {
                         if (isDragging) {
                             isDragging = false; // Cancel drag if options are opened
@@ -1725,7 +1734,7 @@
                     svgPaths.appendChild(line);
                 }
 
-                // 3. Create Table Row 
+                // 3. Create Table Row (Census House details are vertically aligned under one row)
                 const row = document.createElement('tr');
 
                 const cellSl = document.createElement('td');
@@ -1740,7 +1749,6 @@
                 const cellRemarks = document.createElement('td');
 
                 if (marker.isRoadLabel) {
-                    // Stylized row layout in table for Road Labels
                     cellName.innerHTML = `<span style="font-weight:bold; color:var(--primary);">ROAD: ${marker.name || 'UNNAMED'}</span>`;
                     cellPhone.innerText = '-';
                     cellBldg.innerText = '-';
@@ -1752,7 +1760,6 @@
                     cellPhone.innerText = marker.phone || '-';
                     cellBldg.innerText = marker.buildingNo || '-';
 
-                    // Display multiple Census Houses split cleanly by line-breaks (same row)
                     if (marker.censusHouses && marker.censusHouses.length > 0) {
                         cellCN.innerHTML = marker.censusHouses.map(ch => ch.cnNo || '-').join('<br>');
                         cellNote.innerHTML = marker.censusHouses.map(ch => ch.type || '-').join('<br>');
@@ -1942,27 +1949,6 @@
             }
         }
 
-        function loadDataLocally() {
-            const localMarkers = localStorage.getItem('census_markers');
-            const localRoads = localStorage.getItem('census_roads');
-            const localCounter = localStorage.getItem('census_marker_counter');
-
-            if (localMarkers) {
-                try {
-                    markers = JSON.parse(localMarkers);
-                    roads = localRoads ? JSON.parse(localRoads) : [];
-                    markerCounter = parseInt(localCounter) || 1;
-                    renderRoads();
-                    render();
-                    return true;
-                } catch(e) {
-                    console.error("Local storage load parse failed:", e);
-                    return false;
-                }
-            }
-            return false;
-        }
-
         // DATABASE DE-SERIALIZATION CLEANER (Strips out leading database-format text apostrophes)
         function cleanStringValue(val) {
             let str = String(val || "").trim();
@@ -2062,6 +2048,27 @@
         }
 
         // INITIAL LIFE CYCLES AT THE BOTTOM (Prevents hoisting or reference conflicts)
+        function loadDataLocally() {
+            const localMarkers = localStorage.getItem('census_markers');
+            const localRoads = localStorage.getItem('census_roads');
+            const localCounter = localStorage.getItem('census_marker_counter');
+
+            if (localMarkers) {
+                try {
+                    markers = JSON.parse(localMarkers);
+                    roads = localRoads ? JSON.parse(localRoads) : [];
+                    markerCounter = parseInt(localCounter) || 1;
+                    renderRoads();
+                    render();
+                    return true;
+                } catch(e) {
+                    console.error("Local storage load parse failed:", e);
+                    return false;
+                }
+            }
+            return false;
+        }
+
         window.onload = function() {
             try {
                 const hasLocalData = loadDataLocally();
