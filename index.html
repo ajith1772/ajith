@@ -109,7 +109,7 @@
             width: 100%;
         }
 
-        .map-panel {
+        .sidebar {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -118,7 +118,7 @@
             box-sizing: border-box;
         }
 
-        .sidebar {
+        .map-panel {
             background: white;
             padding: 15px;
             border-radius: 8px;
@@ -231,7 +231,7 @@
         }
 
         /* ========================================================
-           GEOMETRIC MAP MARKERS STYLES
+           GEOMETRIC MAP MARKERS STYLES (RESTORED COMPULSORILY)
            ======================================================== */
         .marker-base {
             position: absolute;
@@ -260,8 +260,8 @@
         /* HOME + PUCCA (Solid Square) */
         .marker-home-pucca {
             border-radius: 0%; 
-            background-color: white;
-            color: black;
+            background-color: var(--primary);
+            color: white;
             border: 2px solid white;
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
@@ -270,8 +270,8 @@
         .marker-home-katcha {
             border-radius: 0%;
             background-color: white;
-            color: black;
-            border: 2px dashed black;
+            color: var(--primary);
+            border: 2px dashed var(--primary);
             box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
@@ -326,7 +326,7 @@
         .marker-road-label {
             position: absolute;
             background: rgba(255, 255, 255, 0.95);
-            color: #2c3e50;
+            color: black;
             padding: 3px 8px;
             border: 1.5px solid #7f8c8d;
             border-radius: 12px;
@@ -617,7 +617,7 @@
 </head>
 <body>
 
-    <!-- Busy Progress Overlay (Used strictly on manual sync operations) -->
+    <!-- Busy Progress Overlay -->
     <div id="loading-overlay" class="overlay">
         <div id="status-text" style="font-weight: 600; margin-bottom: 15px; font-size: 15px; letter-spacing: 0.5px;">Saving Changes...</div>
         <div class="progress-container">
@@ -667,7 +667,7 @@
     <!-- Custom Options Menu Modal (Long Press on Marker) -->
     <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
         <div class="dialog-box" style="max-width: 320px;">
-            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker</h3>
+            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker Options</h3>
             <button id="options-view" class="options-menu-btn btn-load">View</button>
             <button id="options-edit" class="options-menu-btn btn-save">Edit</button>
             <button id="options-delete" class="options-menu-btn btn-clear">Delete</button>
@@ -687,7 +687,7 @@
             
             <!-- Forces mobile device numeric keyboard strictly on select -->
             <div class="form-group">
-                <label>MOBILE</label>
+                <label>PHONE NO</label>
                 <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER MOBILE NUMBER">
             </div>
             <div class="form-group">
@@ -710,22 +710,29 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
+
+                <option value="CATTLE HOME WITH IRON ROOF"></option>
                 <option value="HOME-ASBETOS SHEET"></option>
-                <option value="HOME-CLOSED "></option>
+                <option value="HOME-CLOSED"></option>
                 <option value="HOME-CONCRETE"></option>
-                <option value="HOME-IRON SHEET"></option>
-                <option value="HOME-TILED ROOF"></option>
-                <option value="HOME-SHOP"></option>
+                <option value="HOME-CONCRETE RENT"></option>
+                <option value="HOME-CONCRETE MULTISTROYED"></option>
                 <option value="HOME-INSTITUTION"></option>
-                <option value="CHURCH"></option>
-                <option value="FACTORY"></option>
+                <option value="HOME-IRON SHEET"></option>
+                <option value="HOME-UNDER CONSTRUCTION"></option>
+                <option value="HOME-PLYWOOD WALL"></option>
+                <option value="HOME-SHOP"></option>
+                <option value="HOME-TILED ROOF"></option>
                 <option value="GROUND"></option>
                 <option value="INSTITUTION"></option>
-                <option value="MOSQUE"></option>
-                <option value="SHED WITH IRON SHEET"></option>
                 <option value="SHOP"></option>
-                <option value="SHOP-CLOSED"></option>
-                <option value="TEMPLE"></option>               
+                <option value="SHOP CLOSED"></option>
+                <option value="TOILET"></option>
+                <option value="CHURCH"></option>
+                <option value="FACTORY"></option>
+                <option value="MOSQUE"></option>
+                <option value="TEMPLE"></option>
+                
                 
             </datalist>
 
@@ -746,7 +753,7 @@
             </div>
         </div>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print A4 </button>
+            <button onclick="printA4()" class="btn-print">Print A4</button>
             <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
@@ -761,10 +768,12 @@
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
                     <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
                     <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Roads</button>
+                    <!-- NEW TOOL MODE BUTTON -->
+                    <button id="btn-mode-move" onclick="setToolMode('move')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Move</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
-                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New</button>
-                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
+                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">Road</button>
+                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo Node</button>
                     <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
                 </div>
             </div>
@@ -821,7 +830,7 @@
                             <th style="width: 14%">Phone</th>
                             <th style="width: 10%">Bldg No</th>
                             <th style="width: 12%">CN No</th>
-                            <th style="width: 18%">Pucca/Katcha/Others</th>
+                            <th style="width: 18%">Type</th>
                             <th style="width: 20%">Remarks</th>
                         </tr>
                     </thead>
@@ -894,6 +903,7 @@
         // Mode elements
         const btnModeBuilding = document.getElementById('btn-mode-building');
         const btnModeRoad = document.getElementById('btn-mode-road');
+        const btnModeMove = document.getElementById('btn-mode-move');
         const roadTools = document.getElementById('road-tools');
         const instructionHint = document.getElementById('instruction-hint');
 
@@ -907,88 +917,7 @@
         let modalHouses = [];
         let isSyncingSilently = false;
 
-        // GLOBAL GESTURE BLOCKING (Strictly blocks document-level viewport pinch/stretch zoom)
-        document.addEventListener('touchmove', function (event) {
-            if (event.scale !== undefined && event.scale !== 1) { 
-                event.preventDefault(); 
-            }
-        }, { passive: false });
-
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault(); // Blocks rapid double-tap webpage zoom
-            }
-            lastTouchEnd = now;
-        }, false);
-
-        // DISABLE CONTEXT MENU GLOBALLY (Right Click & Mobile long-press menus)
-        document.addEventListener('contextmenu', function (e) {
-            e.preventDefault();
-        });
-
-        // DISABLE INSPECT / SOURCE KEY SHORTCUTS
-        document.addEventListener('keydown', function (e) {
-            if (e.keyCode === 123) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.keyCode === 85) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        // NATIVE PINCH-TO-ZOOM GESTURE LISTENER (Strictly bound to map area)
-        let startDistance = 0;
-        let startZoom = 100;
-        let isPinching = false;
-
-        mapScrollContainer.addEventListener('touchstart', function (e) {
-            if (e.touches.length === 2) {
-                isPinching = true;
-                mapWrapper.classList.add('no-transition'); 
-                startDistance = getTouchDistance(e.touches[0], e.touches[1]);
-                startZoom = currentZoom;
-            }
-        }, { passive: true });
-
-        mapScrollContainer.addEventListener('touchmove', function (e) {
-            if (isPinching && e.touches.length === 2) {
-                e.preventDefault(); // Lock viewport scrolling while pinching map
-                
-                const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
-                const scale = currentDistance / startDistance;
-                
-                let targetZoom = Math.round(startZoom * scale);
-                
-                if (targetZoom < 50) targetZoom = 50;
-                if (targetZoom > 1000) targetZoom = 1000; 
-                
-                currentZoom = targetZoom;
-                updateZoom();
-            }
-        }, { passive: false });
-
-        mapScrollContainer.addEventListener('touchend', function (e) {
-            if (e.touches.length < 2) {
-                isPinching = false;
-                mapWrapper.classList.remove('no-transition'); 
-            }
-        });
-
-        function getTouchDistance(touch1, touch2) {
-            const dx = touch1.clientX - touch2.clientX;
-            const dy = touch1.clientY - touch2.clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        // ZOOM BUTTON CONTROLS 
+        // ZOOM CONTROLS (Only targets .map-wrapper inside the viewport)
         function zoomIn() {
             if (currentZoom < 1000) { 
                 currentZoom += 25;
@@ -1027,7 +956,6 @@
             });
         }
 
-        // ASYNC CONFIRM (Used during delete prompts)
         function showCustomConfirm(message, title = "Confirmation") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -1054,7 +982,7 @@
             });
         }
 
-        // BUSY PROGRESS (spinner removed, only bar and % animate)
+        // BUSY PROGRESS (spinner removed, decelerating step crawl with instant 100% resolve)
         function showBusyProgress(title, onFinishedAction) {
             loadingOverlay.style.display = 'flex';
             statusText.innerText = title;
@@ -1073,7 +1001,7 @@
 
             return onFinishedAction().then(() => {
                 clearInterval(interval);
-                // Micro-interpolation animation glides instantly to 100% upon success
+                // Micro-interpolation animation glides instantly to 100% upon success (eliminates 98% lag)
                 let completePercent = percent;
                 const completeInterval = setInterval(() => {
                     if (completePercent < 100) {
@@ -1122,31 +1050,29 @@
             triggerPrint('print-mode-a3', 'A3');
         }
 
-        // FORCE UPPERCASE INPUT FIELDS AT CODE LEVEL
-        formName.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        formBuildingNo.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        formRoadLabelInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        
-        // Strict Numeric filter for Phone Number input
-        formPhone.addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        });
-
-        // INTERACTIVE TOOL MODE CONTROLLER
+        // INTERACTIVE TOOL MODE CONTROLLER (Switches Building vs Road vs Move)
         function setToolMode(mode) {
             currentToolMode = mode;
+            
+            // Reset all active tool background colors to slate gray
+            btnModeBuilding.style.backgroundColor = "#64748b";
+            btnModeRoad.style.backgroundColor = "#64748b";
+            btnModeMove.style.backgroundColor = "#64748b";
+            roadTools.style.display = "none";
+
             if (mode === "building") {
                 btnModeBuilding.style.backgroundColor = "var(--success)";
-                btnModeRoad.style.backgroundColor = "#64748b";
-                roadTools.style.display = "none";
                 instructionHint.innerText = "Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.";
-            } else {
-                btnModeBuilding.style.backgroundColor = "#64748b";
+            } else if (mode === "road") {
                 btnModeRoad.style.backgroundColor = "var(--danger)";
                 roadTools.style.display = "flex";
                 instructionHint.innerText = "Click sequential points on the map to draw roads/paths. Click 'New Road' to draw separate segments.";
+            } else if (mode === "move") {
+                btnModeMove.style.backgroundColor = "var(--info)";
+                instructionHint.innerText = "MOVE BUILDINGS ACTIVE: Click/touch and drag any building marker around the map to relocate it. Long-press menus are disabled.";
             }
             renderRoads(); 
+            render(); // Re-render to bind/unbind drag listeners and options triggers correctly
         }
 
         // ROAD DRAWING UTILITIES
@@ -1178,6 +1104,7 @@
             }
         }
 
+        // RENDER CUSTOM PATHWAY LAYOUTS (No longer contains duplicate self-appending DOM lines)
         function renderRoads() {
             svgRoads.innerHTML = '';
             roads.forEach(road => {
@@ -1349,7 +1276,7 @@
                     modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
                 } else {
                     modalHouses = [{
-                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact
+                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact (editable)
                         type: markerData.note || '',
                         remarks: markerData.remarks || ''
                     }];
@@ -1358,7 +1285,7 @@
                 // Render dynamic houses rows
                 renderModalHouses(isViewOnly);
 
-                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY
+                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY (No longer references global detached nodes)
                 const btnAddHouseElement = document.getElementById('btn-add-house');
                 btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
                 
@@ -1447,7 +1374,7 @@
                         phone: '',
                         buildingNo: `${markers.filter(m => !m.isRoadLabel).length + 1}`,
                         censusHouses: [{
-                            cnNo: '0001', // Every new building always defaults to '0001' first
+                            cnNo: '0001', // Every new building always defaults to '0001' first (keeps 0001 default)
                             type: '',
                             remarks: ''
                         }]
@@ -1501,7 +1428,7 @@
                 btnChoiceRoadname.addEventListener('click', onChoiceRoadname);
                 btnChoiceCancel.addEventListener('click', onChoiceCancel);
 
-            } else {
+            } else if (currentToolMode === "road") {
                 if (roads.length === 0) {
                     roads.push([]); 
                 }
@@ -1609,6 +1536,25 @@
             return { isHome: !isOtherType, type: houseType };
         }
 
+        // REAL-TIME PATHWAY RENDERING UTILITY FOR DRAG & DROP RELOCATIONS
+        function renderRouteLinesOnly() {
+            svgPaths.innerHTML = '';
+            markers.forEach((marker, index) => {
+                if (index < markers.length - 1) {
+                    const nextMarker = markers[index + 1];
+                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                    line.setAttribute("x1", marker.x);
+                    line.setAttribute("y1", marker.y);
+                    line.setAttribute("x2", nextMarker.x);
+                    line.setAttribute("y2", nextMarker.y);
+                    line.setAttribute("stroke", "#e74c3c");
+                    line.setAttribute("stroke-width", "0.2");
+                    line.setAttribute("marker-end", "url(#arrow)");
+                    svgPaths.appendChild(line);
+                }
+            });
+        }
+
         // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
         function render() {
             markerLayer.innerHTML = '';
@@ -1673,31 +1619,90 @@
                 
                 markerEl.style.left = `${marker.x}%`;
                 markerEl.style.top = `${marker.y}%`;
-                markerEl.title = `Press and hold for options`;
+                markerEl.title = currentToolMode === "move" ? "Drag to relocate" : "Press and hold for options";
                 
-                // PRESS-AND-HOLD DETECTOR (Triggers Options Menu after 600ms)
-                let pressTimer;
+                // TOOL MODE SELECTIVE ROUTING: DRAG AND DROP VS LONG-PRESS OPTIONS MENU
+                if (currentToolMode === "move") {
+                    markerEl.style.cursor = 'move';
+                    
+                    const startDrag = (e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        
+                        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                        
+                        const onDrag = (moveEvt) => {
+                            moveEvt.preventDefault();
+                            const currentX = moveEvt.touches ? moveEvt.touches[0].clientX : moveEvt.clientX;
+                            const currentY = moveEvt.touches ? moveEvt.touches[0].clientY : moveEvt.clientY;
+                            
+                            const rect = mapImage.getBoundingClientRect();
+                            let xPercent = ((currentX - rect.left) / rect.width) * 100;
+                            let yPercent = ((currentY - rect.top) / rect.height) * 100;
+                            
+                            // Bounds constraining (0% to 100% viewport dimensions)
+                            if (xPercent < 0) xPercent = 0;
+                            if (xPercent > 100) xPercent = 100;
+                            if (yPercent < 0) yPercent = 0;
+                            if (yPercent > 100) yPercent = 100;
+                            
+                            // Update visual position of marker instantly
+                            markerEl.style.left = `${xPercent}%`;
+                            markerEl.style.top = `${yPercent}%`;
+                            
+                            // Store draft coordinate in marker object
+                            marker.x = xPercent;
+                            marker.y = yPercent;
+                            
+                            // Redraw route lines in real-time smoothly during dragging
+                            renderRouteLinesOnly();
+                        };
+                        
+                        const endDrag = () => {
+                            document.removeEventListener('mousemove', onDrag);
+                            document.removeEventListener('mouseup', endDrag);
+                            document.removeEventListener('touchmove', onDrag);
+                            document.removeEventListener('touchend', endDrag);
+                            
+                            // Save final dropped coordinates to local storage and sync in background
+                            saveDataLocally();
+                            syncDataWithBackendSilently();
+                            render(); // Refresh elements to clean coordinate references
+                        };
+                        
+                        document.addEventListener('mousemove', onDrag, { passive: false });
+                        document.addEventListener('mouseup', endDrag);
+                        document.addEventListener('touchmove', onDrag, { passive: false });
+                        document.addEventListener('touchend', endDrag);
+                    };
+                    
+                    markerEl.addEventListener('mousedown', startDrag);
+                    markerEl.addEventListener('touchstart', startDrag, { passive: false });
+                } else {
+                    // Standard Mode: Bind standard Press-and-Hold Listener
+                    let pressTimer;
 
-                const startPress = (e) => {
-                    e.stopPropagation(); 
-                    pressTimer = setTimeout(() => {
-                        openOptionsMenu(index);
-                    }, 600); 
-                };
+                    const startPress = (e) => {
+                        e.stopPropagation(); 
+                        if (currentToolMode !== "building") return; // Blocks long-press menus if not in building mode
+                        pressTimer = setTimeout(() => {
+                            openOptionsMenu(index);
+                        }, 600); 
+                    };
 
-                const cancelPress = () => {
-                    clearTimeout(pressTimer);
-                };
+                    const cancelPress = () => {
+                        clearTimeout(pressTimer);
+                    };
 
-                // Mouse inputs
-                markerEl.addEventListener('mousedown', startPress);
-                markerEl.addEventListener('mouseup', cancelPress);
-                markerEl.addEventListener('mouseleave', cancelPress);
+                    markerEl.addEventListener('mousedown', startPress);
+                    markerEl.addEventListener('mouseup', cancelPress);
+                    markerEl.addEventListener('mouseleave', cancelPress);
 
-                // Touch inputs
-                markerEl.addEventListener('touchstart', startPress);
-                markerEl.addEventListener('touchend', cancelPress);
-                markerEl.addEventListener('touchcancel', cancelPress);
+                    markerEl.addEventListener('touchstart', startPress);
+                    markerEl.addEventListener('touchend', cancelPress);
+                    markerEl.addEventListener('touchcancel', cancelPress);
+                }
 
                 markerLayer.appendChild(markerEl);
 
@@ -1720,7 +1725,7 @@
 
                 const cellSl = document.createElement('td');
                 cellSl.style.fontWeight = "bold";
-                cellSl.innerText = marker.isRoadLabel ? "ROAD" : marker.slNo; // Label display in register table
+                cellSl.innerText = marker.isRoadLabel ? "ROAD" : marker.slNo; 
 
                 const cellName = document.createElement('td');
                 const cellPhone = document.createElement('td');
@@ -1730,7 +1735,6 @@
                 const cellRemarks = document.createElement('td');
 
                 if (marker.isRoadLabel) {
-                    // Stylized row layout in table for Road Labels
                     cellName.innerHTML = `<span style="font-weight:bold; color:var(--primary);">ROAD: ${marker.name || 'UNNAMED'}</span>`;
                     cellPhone.innerText = '-';
                     cellBldg.innerText = '-';
@@ -1742,7 +1746,6 @@
                     cellPhone.innerText = marker.phone || '-';
                     cellBldg.innerText = marker.buildingNo || '-';
 
-                    // Display multiple Census Houses split cleanly by line-breaks (same row)
                     if (marker.censusHouses && marker.censusHouses.length > 0) {
                         cellCN.innerHTML = marker.censusHouses.map(ch => ch.cnNo || '-').join('<br>');
                         cellNote.innerHTML = marker.censusHouses.map(ch => ch.type || '-').join('<br>');
@@ -1804,9 +1807,12 @@
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
+                    m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
+
                     m.note = m.censusHouses.map(ch => ch.type).join("\n");
                     m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
+                m.buildingNo = m.buildingNo ? "'" + String(m.buildingNo).replace(/^'/, "") : "";
             });
 
             if (roads.length > 0) {
@@ -1835,71 +1841,8 @@
                 });
             };
 
-            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
+            await showBusyProgress("Saving...", sendAction);
             updateSyncStatus('synced');
-        }
-
-        // FETCH DATA (GET - loads directly from sheet with spinner progress)
-        async function loadFromCloud(showProgress = true) {
-            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
-
-            const fetchAction = () => {
-                return fetch(GOOGLE_SCRIPT_URL)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.length > 0) {
-                            const roadsRecord = data.find(m => m.id === "ROADS_DATA");
-                            if (roadsRecord) {
-                                try {
-                                    roads = JSON.parse(roadsRecord.remarks);
-                                } catch(e) {
-                                    roads = [];
-                                }
-                            } else {
-                                roads = [];
-                            }
-
-                            const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
-
-                            cleanMarkers.forEach(m => {
-                                if (m.cnNo === "ROAD_LABEL") {
-                                    m.isRoadLabel = true;
-                                } else {
-                                    const cns = String(m.cnNo || "").split("\n");
-                                    const types = String(m.note || "").split("\n");
-                                    const remarks = String(m.remarks || "").split("\n");
-
-                                    const count = Math.max(cns.length, types.length, remarks.length, 1);
-                                    m.censusHouses = [];
-                                    for (let j = 0; j < count; j++) {
-                                        m.censusHouses.push({
-                                            cnNo: cns[j] || "",
-                                            type: types[j] || "",
-                                            remarks: remarks[j] || ""
-                                        });
-                                    }
-
-                                    m.cnNo = cns[0] || "";
-                                    m.note = types[0] || "";
-                                    m.remarks = remarks[0] || "";
-                                }
-                            });
-
-                            markers = cleanMarkers;
-                            markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
-                            saveDataLocally();
-                            renderRoads();
-                            render();
-                            updateSyncStatus('synced');
-                        }
-                    });
-            };
-
-            if (showProgress) {
-                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
-            } else {
-                await fetchAction();
-            }
         }
 
         // OFFLINE-FIRST PERSISTENCE LOADER
@@ -1935,13 +1878,21 @@
             return false;
         }
 
+        // DATABASE DE-SERIALIZATION CLEANER (Strips out leading database-format text apostrophes)
+        function cleanStringValue(val) {
+            let str = String(val || "").trim();
+            if (str.startsWith("'")) {
+                str = str.substring(1);
+            }
+            return str;
+        }
+
         // REAL-TIME CLOUD STATUS LED INDICATOR
         function updateSyncStatus(state) {
             const led = document.getElementById('sync-led');
             const text = document.getElementById('sync-text');
             if (!led || !text) return;
 
-            // Clear existing indicator classes
             led.className = 'led-indicator';
 
             if (state === 'synced') {
@@ -1975,10 +1926,14 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
+                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
+                    m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
+
                     m.note = m.censusHouses.map(ch => ch.type).join("\n");
                     m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
+                m.buildingNo = m.buildingNo ? "'" + String(m.buildingNo).replace(/^'/, "") : "";
             });
 
             if (roads.length > 0) {
@@ -1998,7 +1953,7 @@
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // Safe 30s background sync timeout
 
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
@@ -2016,8 +1971,84 @@
             } catch (err) {
                 isSyncingSilently = false;
                 updateSyncStatus('offline');
-                console.warn("Background sync failed. Attempting background retry in 10 seconds...", err);
-                setTimeout(syncDataWithBackendSilently, 10000); 
+                console.warn("Background sync failed. Attempting background retry in 20 seconds...", err);
+                setTimeout(syncDataWithBackendSilently, 20000); // Safe 20s retry backoff
+            }
+        }
+
+        // FETCH DATA (GET - loads directly from sheet with spinner progress)
+        async function loadFromCloud(showProgress = true) {
+            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
+
+            const fetchAction = () => {
+                return fetch(GOOGLE_SCRIPT_URL)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            const roadsRecord = data.find(m => m.id === "ROADS_DATA");
+                            if (roadsRecord) {
+                                try {
+                                    roads = JSON.parse(roadsRecord.remarks);
+                                } catch(e) {
+                                    roads = [];
+                                }
+                            } else {
+                                roads = [];
+                            }
+
+                            const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
+
+                            // Re-deserialize newline-separated strings back into dynamic censusHouses arrays
+                            cleanMarkers.forEach(m => {
+                                // Strip out leading text-formatting database apostrophes safely
+                                const rawCN = cleanStringValue(m.cnNo);
+                                const rawNote = cleanStringValue(m.note);
+                                const rawRemarks = cleanStringValue(m.remarks);
+
+                                m.buildingNo = cleanStringValue(m.buildingNo);
+                                m.name = cleanStringValue(m.name);
+                                m.phone = cleanStringValue(m.phone);
+
+                                if (rawCN === "ROAD_LABEL") {
+                                    m.isRoadLabel = true;
+                                    m.cnNo = "ROAD_LABEL";
+                                    m.note = "";
+                                    m.remarks = "";
+                                } else {
+                                    const cns = rawCN.split("\n");
+                                    const types = rawNote.split("\n");
+                                    const remarks = rawRemarks.split("\n");
+
+                                    const count = Math.max(cns.length, types.length, remarks.length, 1);
+                                    m.censusHouses = [];
+                                    for (let j = 0; j < count; j++) {
+                                        m.censusHouses.push({
+                                            cnNo: cns[j] || "",
+                                            type: types[j] || "",
+                                            remarks: remarks[j] || ""
+                                        });
+                                    }
+
+                                    m.cnNo = cns[0] || "";
+                                    m.note = types[0] || "";
+                                    m.remarks = remarks[0] || "";
+                                }
+                            });
+
+                            markers = cleanMarkers;
+                            markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
+                            saveDataLocally();
+                            renderRoads();
+                            render();
+                            updateSyncStatus('synced');
+                        }
+                    });
+            };
+
+            if (showProgress) {
+                await showBusyProgress("Syncing...", fetchAction);
+            } else {
+                await fetchAction();
             }
         }
     </script>
