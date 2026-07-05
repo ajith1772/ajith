@@ -161,9 +161,9 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             background: #e9ecef;
-            /* Blocks mobile browser pan/zoom conflicts so custom touch pinching is extremely smooth */
+            /* Blocks standard mobile browser pinch zoom conflicts, custom controller handles manually */
             touch-action: none; 
-            scroll-behavior: smooth;              
+            scroll-behavior: auto;              
             -webkit-overflow-scrolling: touch;    
         }
 
@@ -184,7 +184,7 @@
             display: block;
             user-select: none;
             -webkit-user-drag: none;
-            /* Prevents browser-level image popup menus (Copy, Preview, Share, Lens) on long press */
+            /* Prevents browser-level image popup menus on long press */
             pointer-events: none !important; 
         }
 
@@ -738,7 +738,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>HLB Map Digitization Portal</h2>
+            <h2>Map Digitization Portal</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -770,7 +770,7 @@
                 </div>
             </div>
 
-            <!-- STATISTICS COUNTER SECTION -->
+            <!-- STATISTICS PANEL -->
             <div id="stats-counter-box" style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; font-weight: bold; color: #334155;">
                 <div>Houses (HOME): <span id="stats-count-home" style="color: #16a34a; font-size: 14px;">0</span></div>
                 <div style="border-left: 2px solid #cbd5e1; height: 15px;"></div>
@@ -781,7 +781,7 @@
 
             <div class="map-controls">
                 <span id="instruction-hint" style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
-                    Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.
+                    Click map to register a building. Drag to scroll map. Use two fingers to pinch zoom. Press-and-hold marker for options.
                 </span>
                 <div class="zoom-controls">
                     <strong>Zoom Map:</strong>
@@ -919,7 +919,7 @@
         let modalHouses = [];
         let isSyncingSilently = false;
 
-        // Custom asynchronous HTML dialog handlers
+        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
         function showCustomAlert(message, title = "Notification") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -962,7 +962,7 @@
             });
         }
 
-        // BUSY PROGRESS (spinner removed, only bar and % animate with final completion interpolation)
+        // BUSY PROGRESS
         function showBusyProgress(title, onFinishedAction) {
             loadingOverlay.style.display = 'flex';
             statusText.innerText = title;
@@ -981,7 +981,6 @@
 
             return onFinishedAction().then(() => {
                 clearInterval(interval);
-                // Micro-interpolation animation glides instantly to 100% upon success (eliminates 98% lag)
                 let completePercent = percent;
                 const completeInterval = setInterval(() => {
                     if (completePercent < 100) {
@@ -1018,6 +1017,14 @@
                 const styleToRemove = document.getElementById("print-page-style");
                 if (styleToRemove) styleToRemove.remove();
             }, 250);
+        }
+
+        function printA4() {
+            triggerPrint("print-mode-a4", "A4");
+        }
+
+        function printA3() {
+            triggerPrint("print-mode-a3", "A3");
         }
 
         // ALL EXPLICIT LIFECYCLE ZOOM CONTROL FUNCS BOUND TO WINDOW SCOPE
@@ -1064,7 +1071,7 @@
 
             if (mode === "building") {
                 btnModeBuilding.style.backgroundColor = "var(--success)";
-                instructionHint.innerText = "Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.";
+                instructionHint.innerText = "Click map to register a building. Drag to scroll map. Use two fingers to pinch zoom. Press-and-hold marker for options.";
             } else if (mode === "road") {
                 btnModeRoad.style.backgroundColor = "var(--danger)";
                 roadTools.style.display = "flex";
@@ -1118,7 +1125,7 @@
                     polyline.setAttribute("fill", "none");
                     polyline.setAttribute("stroke-linejoin", "round");
                     polyline.setAttribute("stroke-linecap", "round");
-                    svgRoads.appendChild(polyline); 
+                    svgRoads.appendChild(polyline);
                 }
 
                 if (currentToolMode === "road") {
@@ -1286,16 +1293,13 @@
                 // Render dynamic houses rows
                 renderModalHouses(isViewOnly);
 
-                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY (No longer references global detached nodes)
                 const btnAddHouseElement = document.getElementById('btn-add-house');
                 btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
                 
-                // Clone the active element currently inside the DOM
                 const newBtnAddHouse = btnAddHouseElement.cloneNode(true);
                 btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
                 
                 newBtnAddHouse.addEventListener('click', () => {
-                    // Sequentially increment CN No inside this row list only (First is always 0001, next is 0002)
                     const formattedCN = String(modalHouses.length + 1).padStart(4, '0');
                     modalHouses.push({
                         cnNo: formattedCN,
@@ -1319,12 +1323,11 @@
                     const name = formName.value.trim();
                     const phone = formPhone.value.trim();
 
-                    // Map values back to object
                     markerData.name = name;
                     markerData.phone = phone;
                     markerData.buildingNo = formBuildingNo.value.trim();
                     
-                    // STRICT 4-DIGIT PADDING FOR ALL CENSUS HOUSES
+                    // STRICT 4-DIGIT CN PADDING ENFORCEMENT ON SAVE
                     modalHouses.forEach(house => {
                         let cnClean = String(house.cnNo || "").trim();
                         if (/^\d+$/.test(cnClean)) {
@@ -1332,7 +1335,6 @@
                         }
                     });
 
-                    // Save back the serialized census houses array
                     markerData.censusHouses = JSON.parse(JSON.stringify(modalHouses));
 
                     // Keep flat fields populated with first house value for compatibility checks
@@ -1360,14 +1362,16 @@
             });
         }
 
-        // INTERACTIVE MAP CLICK DISTRIBUTOR (Binds directly to wrapper to bypass native touch menus)
+        // INTERACTIVE MAP CLICK DISTRIBUTOR
         mapWrapper.addEventListener('click', async function(e) {
+            // Only fire building/road clicks if user wasn't dragging/sliding the map
+            if (isPanningState) return;
+
             const rect = mapImage.getBoundingClientRect();
             const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
             const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
 
             if (currentToolMode === "building") {
-                // Show action choice dialog
                 clickChoiceDialog.style.display = "flex";
 
                 const onChoiceBuilding = async () => {
@@ -1448,11 +1452,6 @@
             }
         });
 
-        // VALIDATION BYPASSED
-        async function validateAllFields() {
-            return true;
-        }
-
         // HELPER TO REMOVE MARKER AND AUTO-SAVE TO SHEET
         async function removeMarkerAndSave(index) {
             markers.splice(index, 1);
@@ -1531,7 +1530,6 @@
             const remarkText = String(primaryHouse.remarks || "").toUpperCase().trim();
             const houseType = String(primaryHouse.type || "").toUpperCase().trim(); 
             
-            // Default to Home if remark is empty OR contains HOME
             const isOtherType = remarkText !== "" && (
                 remarkText.includes("SHOP") || 
                 remarkText.includes("TEMPLE") || 
@@ -1580,10 +1578,9 @@
                 let hasHomeComponent = false;
                 
                 if (marker.censusHouses && marker.censusHouses.length > 0) {
-                    // Check if any house in this building is classified as HOME
                     hasHomeComponent = marker.censusHouses.some(house => {
                         const rText = String(house.remarks || "").toUpperCase().trim();
-                        // If remark is blank, it defaults to HOME. Or if remark explicitly contains "HOME"
+                        // Blank remark defaults to HOME, or if the remark explicitly contains HOME
                         return rText === "" || rText.includes("HOME");
                     });
                 } else {
@@ -1592,13 +1589,13 @@
                 }
 
                 if (hasHomeComponent) {
-                    homeCount++; // Counted as House (HOME)
+                    homeCount++; 
                 } else {
-                    otherCount++; // Only counted as Other if there are absolutely no Home uses
+                    otherCount++; 
                 }
             });
 
-            // Update UI Counters
+            // Update UI statistics counters
             document.getElementById('stats-count-home').innerText = homeCount;
             document.getElementById('stats-count-other').innerText = otherCount;
             document.getElementById('stats-count-total').innerText = homeCount + otherCount;
@@ -1615,19 +1612,16 @@
             });
 
             markers.forEach((marker, index) => {
-                // 1. Draw Map Element (Geometric markers vs Horizontal road label pill badge)
                 const markerEl = document.createElement('div');
                 
                 if (marker.isRoadLabel) {
                     markerEl.className = 'marker-road-label';
                     markerEl.innerText = marker.name || 'UNNAMED ROAD';
                 } else {
-                    // Determine Building Shape/Design
                     const classification = getBuildingClassification(marker);
                     markerEl.innerText = marker.slNo;
 
                     if (classification.isHome) {
-                        // Home styles (Squares)
                         if (classification.type === "PUCCA") {
                             markerEl.className = 'marker-base marker-home-pucca';
                         } else if (classification.type === "KATCHA") {
@@ -1636,7 +1630,6 @@
                             markerEl.className = 'marker-base marker-circle'; 
                         }
                     } else {
-                        // Other building styles (Triangles drawn with high performance SVG nodes)
                         if (classification.type === "PUCCA") {
                             markerEl.className = 'marker-base marker-other-pucca';
                             markerEl.innerHTML = `
@@ -1683,21 +1676,17 @@
                             let xPercent = ((currentX - rect.left) / rect.width) * 100;
                             let yPercent = ((currentY - rect.top) / rect.height) * 100;
                             
-                            // Bounds constraining (0% to 100% viewport dimensions)
                             if (xPercent < 0) xPercent = 0;
                             if (xPercent > 100) xPercent = 100;
                             if (yPercent < 0) yPercent = 0;
                             if (yPercent > 100) yPercent = 100;
                             
-                            // Update visual position of marker instantly
                             markerEl.style.left = `${xPercent}%`;
                             markerEl.style.top = `${yPercent}%`;
                             
-                            // Store draft coordinates inside global array
                             marker.x = xPercent;
                             marker.y = yPercent;
                             
-                            // Redraw route lines in real-time smoothly during dragging
                             renderRouteLinesOnly();
                         };
                         
@@ -1707,7 +1696,6 @@
                             document.removeEventListener('touchmove', onDrag);
                             document.removeEventListener('touchend', endDrag);
                             
-                            // Save final dropped coordinates to local storage and sync in background
                             saveDataLocally();
                             syncDataWithBackendSilently();
                             render(); 
@@ -1722,12 +1710,11 @@
                     markerEl.addEventListener('mousedown', startDrag);
                     markerEl.addEventListener('touchstart', startDrag, { passive: false });
                 } else {
-                    // Standard Mode: Bind standard Press-and-Hold Listener
                     let pressTimer;
 
                     const startPress = (e) => {
                         e.stopPropagation(); 
-                        if (currentToolMode !== "building") return; // Blocks long-press menus if not in building mode
+                        if (currentToolMode !== "building") return; 
                         pressTimer = setTimeout(() => {
                             openOptionsMenu(index);
                         }, 600); 
@@ -1748,7 +1735,7 @@
 
                 markerLayer.appendChild(markerEl);
 
-                // 2. Draw SVG Route Line (Connects every consecutive point, including roads, without gaps)
+                // Draw SVG Route Line 
                 if (index < markers.length - 1) {
                     const nextMarker = markers[index + 1];
                     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -1762,7 +1749,7 @@
                     svgPaths.appendChild(line);
                 }
 
-                // 3. Create Table Row 
+                // Create Table Row 
                 const row = document.createElement('tr');
 
                 const cellSl = document.createElement('td');
@@ -1831,15 +1818,12 @@
             }
         }
 
-        // SAVE DATA MANUAL (Called explicitly from the button with full screen animation)
+        // SAVE DATA MANUAL
         async function saveToCloudManual() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
                 await showCustomAlert("Please write your Apps Script URL into the constant variable first.", "Setup Required");
                 return;
             }
-
-            const isValid = await validateAllFields();
-            if (!isValid) return; 
 
             const payload = JSON.parse(JSON.stringify(markers));
             payload.forEach(m => {
@@ -1848,11 +1832,19 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
+                    // Padding CN No to 4 digits on save
+                    m.censusHouses.forEach(house => {
+                        let cnClean = String(house.cnNo || "").trim();
+                        if (/^\d+$/.test(cnClean)) {
+                            house.cnNo = cnClean.padStart(4, '0');
+                        }
+                    });
+
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
 
-                    m.note = m.censusHouses.map(ch => { return ch.type; }).join("\n");
-                    m.remarks = m.censusHouses.map(ch => { return ch.remarks; }).join("\n");
+                    m.note = m.censusHouses.map(ch => ch.type).join("\n");
+                    m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
                 m.buildingNo = m.buildingNo ? "'" + String(m.buildingNo).replace(/^'/, "") : "";
             });
@@ -1887,7 +1879,7 @@
             updateSyncStatus('synced');
         }
 
-        // FETCH DATA (GET - loads directly from sheet with spinner progress)
+        // FETCH DATA (GET)
         async function loadFromCloud(showProgress = true) {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
 
@@ -1932,14 +1924,19 @@
                                     const count = Math.max(cns.length, types.length, remarks.length, 1);
                                     m.censusHouses = [];
                                     for (let j = 0; j < count; j++) {
+                                        let singleCN = cns[j] || "";
+                                        // Pad numeric values on download to guarantee display compliance
+                                        if (/^\d+$/.test(singleCN.trim())) {
+                                            singleCN = singleCN.trim().padStart(4, '0');
+                                        }
                                         m.censusHouses.push({
-                                            cnNo: cns[j] || "",
+                                            cnNo: singleCN,
                                             type: types[j] || "",
                                             remarks: remarks[j] || ""
                                         });
                                     }
 
-                                    m.cnNo = cns[0] || "";
+                                    m.cnNo = m.censusHouses[0].cnNo;
                                     m.note = types[0] || "";
                                     m.remarks = remarks[0] || "";
                                 }
@@ -1995,7 +1992,7 @@
             return false;
         }
 
-        // DATABASE DE-SERIALIZATION CLEANER (Strips out leading database-format text apostrophes)
+        // DATABASE DE-SERIALIZATION CLEANER
         function cleanStringValue(val) {
             let str = String(val || "").trim();
             if (str.startsWith("'")) {
@@ -2043,7 +2040,13 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
-                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
+                    m.censusHouses.forEach(house => {
+                        let cnClean = String(house.cnNo || "").trim();
+                        if (/^\d+$/.test(cnClean)) {
+                            house.cnNo = cnClean.padStart(4, '0');
+                        }
+                    });
+
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
 
@@ -2070,7 +2073,7 @@
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000); // Safe 30s background sync timeout
+                const timeoutId = setTimeout(() => controller.abort(), 30000); 
 
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
@@ -2089,106 +2092,135 @@
                 isSyncingSilently = false;
                 updateSyncStatus('offline');
                 console.warn("Background sync failed. Attempting background retry in 20 seconds...", err);
-                setTimeout(syncDataWithBackendSilently, 20000); // Safe 20s retry backoff
+                setTimeout(syncDataWithBackendSilently, 20000); 
             }
         }
 
-        // ==========================================================
-        // RESTRUCTURED GESTURE CONTROLLER FOR UNIFIED PAN AND ZOOM
-        // ==========================================================
-        const touchState = {
-            mode: 'none', // 'none', 'pan', or 'zoom'
-            startX: 0,
-            startY: 0,
-            startScrollLeft: 0,
-            startScrollTop: 0,
-            startDistance: 0,
-            startZoom: 100
-        };
+        // ========================================================
+        // RESTRUCTURED TWO-FINGER PINCH-TO-ZOOM AND FINGER SCROLL
+        // ========================================================
+        let isPanningState = false; 
+        let isTouchDragging = false;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let scrollStartLeft = 0;
+        let scrollStartTop = 0;
 
-        // Helper to calculate distance between two coordinates
-        function getTouchDistance(t1, t2) {
+        let touchInitialDistance = -1;
+        let zoomBaseValue = 100;
+        let focalPoint = { x: 0, y: 0 };
+
+        function calculateDistance(t1, t2) {
             return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
         }
 
-        // 1. Touch Start Handler
+        // Touch interactions on Scroll Viewport Container
         mapScrollContainer.addEventListener('touchstart', function(e) {
-            // Disable CSS transition delays immediately during manual touching for instant zoom tracking
-            mapWrapper.classList.add('no-transition');
+            isPanningState = false; 
 
             if (e.touches.length === 1) {
-                // Prepare for fluid 360-degree manual panning
-                touchState.mode = 'pan';
-                touchState.startX = e.touches[0].clientX;
-                touchState.startY = e.touches[0].clientY;
-                touchState.startScrollLeft = mapScrollContainer.scrollLeft;
-                touchState.startScrollTop = mapScrollContainer.scrollTop;
+                // Prepare Single-finger drag (panning scroll space)
+                isTouchDragging = true;
+                const activeTouch = e.touches[0];
+                touchStartX = activeTouch.clientX;
+                touchStartY = activeTouch.clientY;
+                scrollStartLeft = mapScrollContainer.scrollLeft;
+                scrollStartTop = mapScrollContainer.scrollTop;
             } else if (e.touches.length === 2) {
-                // Prepare for pinch-to-zoom scaling
-                touchState.mode = 'zoom';
-                touchState.startDistance = getTouchDistance(e.touches[0], e.touches[1]);
-                touchState.startZoom = currentZoom;
+                // Prepare Two-finger Pinch Zoom
+                isTouchDragging = false;
                 e.preventDefault();
+                touchInitialDistance = calculateDistance(e.touches[0], e.touches[1]);
+                zoomBaseValue = currentZoom;
+
+                // Track the visual focal midpoint inside the viewport scroll map space
+                const boundingBox = mapScrollContainer.getBoundingClientRect();
+                const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                focalPoint.x = midX - boundingBox.left + mapScrollContainer.scrollLeft;
+                focalPoint.y = midY - boundingBox.top + mapScrollContainer.scrollTop;
             }
         }, { passive: false });
 
-        // 2. Touch Move Handler
         mapScrollContainer.addEventListener('touchmove', function(e) {
-            if (touchState.mode === 'pan' && e.touches.length === 1) {
-                // Shift coordinates smoothly in all directions
-                const dx = e.touches[0].clientX - touchState.startX;
-                const dy = e.touches[0].clientY - touchState.startY;
-                
-                mapScrollContainer.scrollLeft = touchState.startScrollLeft - dx;
-                mapScrollContainer.scrollTop = touchState.startScrollTop - dy;
-                
-                e.preventDefault(); // Prevents page bouncing and browser native scrolling conflicts
-            } else if (touchState.mode === 'zoom' && e.touches.length === 2) {
-                e.preventDefault();
-                
-                const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
-                if (touchState.startDistance > 0) {
-                    const pinchScale = currentDistance / touchState.startDistance;
-                    let targetZoom = touchState.startZoom * pinchScale;
-                    
-                    // Clamp zoom bounds
-                    targetZoom = Math.min(1000, Math.max(50, targetZoom));
-                    currentZoom = Math.round(targetZoom);
-                    updateZoom();
+            if (e.touches.length === 1 && isTouchDragging) {
+                // Active single-finger slide pan
+                const activeTouch = e.touches[0];
+                const deltaX = activeTouch.clientX - touchStartX;
+                const deltaY = activeTouch.clientY - touchStartY;
+
+                // Only classify as a slide if the finger dragged further than 4px
+                if (Math.hypot(deltaX, deltaY) > 4) {
+                    isPanningState = true; 
                 }
+
+                mapScrollContainer.scrollLeft = scrollStartLeft - deltaX;
+                mapScrollContainer.scrollTop = scrollStartTop - deltaY;
+
+            } else if (e.touches.length === 2 && touchInitialDistance > 0) {
+                // Active two-finger pinch zoom
+                e.preventDefault();
+                isPanningState = true;
+
+                const currentDistance = calculateDistance(e.touches[0], e.touches[1]);
+                const pinchMultiplier = currentDistance / touchInitialDistance;
+
+                let calculatedZoom = zoomBaseValue * pinchMultiplier;
+                calculatedZoom = Math.min(1000, Math.max(50, calculatedZoom));
+
+                const previousZoom = currentZoom;
+                currentZoom = Math.round(calculatedZoom);
+
+                // Strip transition animations instantly to map directly to physical finger locations
+                mapWrapper.classList.add('no-transition');
+                updateZoom();
+
+                // Recenter scroll offsets seamlessly based on focal point shift
+                const zoomFactorRatio = currentZoom / previousZoom;
+                mapScrollContainer.scrollLeft = focalPoint.x * zoomFactorRatio - (focalPoint.x - mapScrollContainer.scrollLeft);
+                mapScrollContainer.scrollTop = focalPoint.y * zoomFactorRatio - (focalPoint.y - mapScrollContainer.scrollTop);
             }
         }, { passive: false });
 
-        // 3. Touch End / Cancel Handler
-        const resetTouchState = function() {
-            // Re-enable smooth CSS animations for zoom-button clicks
-            mapWrapper.classList.remove('no-transition');
+        mapScrollContainer.addEventListener('touchend', function(e) {
+            isTouchDragging = false;
             
-            // Clear tracking states to prevent visual jumping on finger release
-            touchState.mode = 'none';
-            touchState.startDistance = 0;
-        };
+            if (e.touches.length < 2) {
+                touchInitialDistance = -1;
+                mapWrapper.classList.remove('no-transition');
+            }
 
-        mapScrollContainer.addEventListener('touchend', resetTouchState);
-        mapScrollContainer.addEventListener('touchcancel', resetTouchState);
+            if (e.touches.length === 1) {
+                // Reset dragging parameters to single finger left in touch
+                const activeTouch = e.touches[0];
+                touchStartX = activeTouch.clientX;
+                touchStartY = activeTouch.clientY;
+                scrollStartLeft = mapScrollContainer.scrollLeft;
+                scrollStartTop = mapScrollContainer.scrollTop;
+                isTouchDragging = true;
+            }
 
-        // ==========================================
-        // AUTO-INITIALIZE PORTAL & OFFLINE-FIRST SYNC
-        // ==========================================
+            // Small delay window to clear active pan lock flag
+            setTimeout(() => {
+                isPanningState = false;
+            }, 80);
+        });
+
+        // Initialize Startup Lifecycle routines
         window.addEventListener('DOMContentLoaded', () => {
-            // 1. Instantly load local cache for quick loading speed
-            const localDataLoaded = loadDataLocally();
-            if (localDataLoaded) {
-                console.log("Cached local register loaded instantly.");
+            const isLocalDataAvailable = loadDataLocally();
+            
+            if (isLocalDataAvailable) {
+                console.log("Cached local data loaded instantly.");
             }
             
-            // 2. Silently fetch live Google Sheet updates in the background
+            // Sync live Google Sheet data silently in background
             loadFromCloud(false)
                 .then(() => {
-                    console.log("Database successfully synchronized on startup.");
+                    console.log("Latest Google Sheet data synced.");
                 })
                 .catch((err) => {
-                    console.warn("Sheet synchronization deferred on startup:", err);
+                    console.warn("Sheet synchronization bypassed on startup:", err);
                 });
         });
     </script>
