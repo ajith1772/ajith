@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>per</title>
+    <title>Census HLB Register & Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -75,9 +75,9 @@
 
         /* LED INDICATOR KEYFRAMES AND CLASSES */
         .led-indicator {
-            width: 15px;
-            height: 15px;
-            border-radius: 0%;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
             display: inline-block;
             margin-right: 5px;
         }
@@ -157,7 +157,6 @@
         .map-area {
             position: relative;
             height: 500px;
-            width: 100%;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -171,7 +170,7 @@
         .map-wrapper {
             position: relative;
             display: inline-block;
-            width: auto;
+            width: 100%;
             transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
             will-change: width; 
         }
@@ -512,7 +511,7 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
-            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box, .sync-badge {
+            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box, .sync-badge, #stats-counter-box {
                 display: none !important;
             }
             .container {
@@ -648,8 +647,8 @@
         <div class="dialog-box" style="max-width: 320px;">
             <h3 style="margin-top:0; color:var(--primary);">Select Action</h3>
             <p style="font-size:13px; color:#64748b; margin-bottom:15px;">What would you like to add at this point?</p>
-            <button id="btn-choice-building" class="options-menu-btn btn-save">Building</button>
-            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Road</button>
+            <button id="btn-choice-building" class="options-menu-btn btn-save">Register Building</button>
+            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Name a Road</button>
             <button id="btn-choice-cancel" class="options-menu-btn" style="background:#64748b; color:white;">Cancel</button>
         </div>
     </div>
@@ -673,9 +672,9 @@
     <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
         <div class="dialog-box" style="max-width: 320px;">
             <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker Options</h3>
-            <button id="options-view" class="options-menu-btn btn-load">View</button>
-            <button id="options-edit" class="options-menu-btn btn-save">Edit</button>
-            <button id="options-delete" class="options-menu-btn btn-clear">Delete</button>
+            <button id="options-view" class="options-menu-btn btn-load">View Details</button>
+            <button id="options-edit" class="options-menu-btn btn-save">Edit Details</button>
+            <button id="options-delete" class="options-menu-btn btn-clear">Delete Building</button>
             <button id="options-close" class="options-menu-btn" style="background:#64748b; color:white;">Close</button>
         </div>
     </div>
@@ -715,26 +714,18 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="HOME-ASBETOS SHEET"></option>
-                <option value="HOME-CLOSED"></option>
-                <option value="HOME-CONCRETE"></option>
-                <option value="HOME-CONCRETE RENT"></option>
-                <option value="HOME-CONCRETE MULTISTROYED"></option>
-                <option value="HOME-INSTITUTION"></option>
-                <option value="HOME-IRON SHEET"></option>
-                <option value="HOME-UNDER CONSTRUCTION"></option>
-                <option value="HOME-PLYWOOD WALL"></option>
+                <option value="HOME"></option>
                 <option value="HOME-SHOP"></option>
-                <option value="HOME-TILED ROOF"></option>
-                <option value="GROUND"></option>
+                <option value="HOME-INSTITUTION"></option>
                 <option value="INSTITUTION"></option>
                 <option value="SHOP"></option>
-                <option value="SHOP CLOSED"></option>
-                <option value="TOILET"></option>
+                <option value="GROUND"></option>
+                <option value="CLOSED HOME"></option>
+                <option value="CLOSED SHOP"></option>
                 <option value="CHURCH"></option>
-                <option value="FACTORY"></option>
-                <option value="MOSQUE"></option>
                 <option value="TEMPLE"></option>
+                <option value="MOSQUE"></option>
+                <option value="FACTORY"></option>
             </datalist>
 
             <div class="dialog-btn-group">
@@ -747,15 +738,15 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY MAP 2026</h2>
+            <h2>HLB Map Digitization Portal</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
             </div>
         </div>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print A4</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
+            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Portrait)</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Portrait)</button>
         </div>
     </div>
 
@@ -765,27 +756,28 @@
             
             <!-- Interactive Tool Mode Box -->
             <div class="tool-mode-box" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-              <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; gap: 10px; align-items: center;">
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
-                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
-                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Roads</button>
+                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Register Buildings</button>
+                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw Roads</button>
                     <!-- NEW TOOL MODE BUTTON -->
-                    <button id="btn-mode-move" onclick="setToolMode('move')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Move</button>
+                    <button id="btn-mode-move" onclick="setToolMode('move')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Move Buildings</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
-                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">Road</button>
-                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
-                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
+                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New Road</button>
+                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo Node</button>
+                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Roads</button>
                 </div>
-                <!-- NEW STATISTICS COUNTER SECTION -->
+            </div>
+
+            <!-- STATISTICS COUNTER SECTION -->
             <div id="stats-counter-box" style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 13px; font-weight: bold; color: #334155;">
-                <div>Home: <span id="stats-count-home" style="color: #16a34a; font-size: 14px;">0</span></div>
+                <div>Houses (HOME): <span id="stats-count-home" style="color: #16a34a; font-size: 14px;">0</span></div>
                 <div style="border-left: 2px solid #cbd5e1; height: 15px;"></div>
                 <div>Other Buildings: <span id="stats-count-other" style="color: #2563eb; font-size: 14px;">0</span></div>
                 <div style="border-left: 2px solid #cbd5e1; height: 15px;"></div>
                 <div>Total Buildings: <span id="stats-count-total" style="color: #0f172a; font-size: 14px;">0</span></div>
             </div>
-            
 
             <div class="map-controls">
                 <span id="instruction-hint" style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
@@ -922,14 +914,12 @@
         let markerCounter = 1;
         let currentZoom = 100;
         let currentToolMode = "building"; 
-        // Touch pinch-to-zoom state variables
-        
 
         // Local array to hold census houses in active popup session
         let modalHouses = [];
         let isSyncingSilently = false;
 
-        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
+        // Custom asynchronous HTML dialog handlers
         function showCustomAlert(message, title = "Notification") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -1128,7 +1118,7 @@
                     polyline.setAttribute("fill", "none");
                     polyline.setAttribute("stroke-linejoin", "round");
                     polyline.setAttribute("stroke-linecap", "round");
-                    svgRoads.appendChild(polyline); // Appends cleanly to svgRoads ONLY
+                    svgRoads.appendChild(polyline); 
                 }
 
                 if (currentToolMode === "road") {
@@ -1287,7 +1277,7 @@
                     modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
                 } else {
                     modalHouses = [{
-                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact (editable)
+                        cnNo: markerData.cnNo || '0001', 
                         type: markerData.note || '',
                         remarks: markerData.remarks || ''
                     }];
@@ -1388,12 +1378,12 @@
                         id: markerCounter,
                         x: xPercent,
                         y: yPercent,
-                        slNo: 0, // Assigned sequentially in render()
+                        slNo: 0, 
                         name: '',
                         phone: '',
                         buildingNo: `${markers.filter(m => !m.isRoadLabel).length + 1}`,
                         censusHouses: [{
-                            cnNo: '0001', // Every new building always defaults to '0001' first
+                            cnNo: '0001', 
                             type: '',
                             remarks: ''
                         }]
@@ -1404,8 +1394,8 @@
                         markers.push(draftMarker);
                         markerCounter++;
                         render();
-                        saveDataLocally(); // Local persistence is always instantaneous
-                        syncDataWithBackendSilently(); // Background silent sync
+                        saveDataLocally(); 
+                        syncDataWithBackendSilently(); 
                     }
                 };
 
@@ -1416,7 +1406,7 @@
                         id: markerCounter,
                         x: xPercent,
                         y: yPercent,
-                        slNo: "", // Road labels bypass sequential building serials completely
+                        slNo: "", 
                         isRoadLabel: true,
                         name: '',
                         cnNo: "ROAD_LABEL"
@@ -1539,7 +1529,7 @@
             
             const primaryHouse = marker.censusHouses[0];
             const remarkText = String(primaryHouse.remarks || "").toUpperCase().trim();
-            const houseType = String(primaryHouse.type || "").toUpperCase().trim(); // PUCCA, KATCHA, OTHERS
+            const houseType = String(primaryHouse.type || "").toUpperCase().trim(); 
             
             // Default to Home if remark is empty OR contains HOME
             const isOtherType = remarkText !== "" && (
@@ -1573,8 +1563,6 @@
                 }
             });
         }
-
-
 
         // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
         function render() {
@@ -1625,8 +1613,6 @@
                     marker.slNo = bldgCount; 
                 }
             });
-            
-            
 
             markers.forEach((marker, index) => {
                 // 1. Draw Map Element (Geometric markers vs Horizontal road label pill badge)
@@ -1647,7 +1633,7 @@
                         } else if (classification.type === "KATCHA") {
                             markerEl.className = 'marker-base marker-home-katcha';
                         } else {
-                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
+                            markerEl.className = 'marker-base marker-circle'; 
                         }
                     } else {
                         // Other building styles (Triangles drawn with high performance SVG nodes)
@@ -1668,7 +1654,7 @@
                                 ${marker.slNo}
                             `;
                         } else {
-                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
+                            markerEl.className = 'marker-base marker-circle'; 
                         }
                     }
                 }
@@ -1724,7 +1710,7 @@
                             // Save final dropped coordinates to local storage and sync in background
                             saveDataLocally();
                             syncDataWithBackendSilently();
-                            render(); // Refresh elements to clean coordinate references
+                            render(); 
                         };
                         
                         document.addEventListener('mousemove', onDrag, { passive: false });
@@ -1865,8 +1851,8 @@
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
 
-                    m.note = m.censusHouses.map(ch => ch.type).join("\n");
-                    m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
+                    m.note = m.censusHouses.map(ch => { return ch.type; }).join("\n");
+                    m.remarks = m.censusHouses.map(ch => { return ch.remarks; }).join("\n");
                 }
                 m.buildingNo = m.buildingNo ? "'" + String(m.buildingNo).replace(/^'/, "") : "";
             });
@@ -1897,7 +1883,7 @@
                 });
             };
 
-            await showBusyProgress("Saving...", sendAction);
+            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
             updateSyncStatus('synced');
         }
 
@@ -1970,7 +1956,7 @@
             };
 
             if (showProgress) {
-                await showBusyProgress("Syncing...", fetchAction);
+                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
             } else {
                 await fetchAction();
             }
@@ -2107,9 +2093,9 @@
             }
         }
 
-        // ==========================================
-        // RESTRUCTURED TOUCH CONTROLLER FOR PAN & ZOOM
-        // ==========================================
+        // ==========================================================
+        // RESTRUCTURED GESTURE CONTROLLER FOR UNIFIED PAN AND ZOOM
+        // ==========================================================
         const touchState = {
             mode: 'none', // 'none', 'pan', or 'zoom'
             startX: 0,
@@ -2127,18 +2113,18 @@
 
         // 1. Touch Start Handler
         mapScrollContainer.addEventListener('touchstart', function(e) {
-            // Disable CSS animations immediately during manual touch for instant feedback
+            // Disable CSS transition delays immediately during manual touching for instant zoom tracking
             mapWrapper.classList.add('no-transition');
 
             if (e.touches.length === 1) {
-                // Prepare for fluid 360-degree panning
+                // Prepare for fluid 360-degree manual panning
                 touchState.mode = 'pan';
                 touchState.startX = e.touches[0].clientX;
                 touchState.startY = e.touches[0].clientY;
                 touchState.startScrollLeft = mapScrollContainer.scrollLeft;
                 touchState.startScrollTop = mapScrollContainer.scrollTop;
             } else if (e.touches.length === 2) {
-                // Prepare for pinch-to-zoom
+                // Prepare for pinch-to-zoom scaling
                 touchState.mode = 'zoom';
                 touchState.startDistance = getTouchDistance(e.touches[0], e.touches[1]);
                 touchState.startZoom = currentZoom;
@@ -2149,14 +2135,14 @@
         // 2. Touch Move Handler
         mapScrollContainer.addEventListener('touchmove', function(e) {
             if (touchState.mode === 'pan' && e.touches.length === 1) {
-                // Pan map in any direction freely
+                // Shift coordinates smoothly in all directions
                 const dx = e.touches[0].clientX - touchState.startX;
                 const dy = e.touches[0].clientY - touchState.startY;
                 
                 mapScrollContainer.scrollLeft = touchState.startScrollLeft - dx;
                 mapScrollContainer.scrollTop = touchState.startScrollTop - dy;
                 
-                e.preventDefault(); // Stop page pull-to-refresh and default browser pan
+                e.preventDefault(); // Prevents page bouncing and browser native scrolling conflicts
             } else if (touchState.mode === 'zoom' && e.touches.length === 2) {
                 e.preventDefault();
                 
@@ -2165,10 +2151,8 @@
                     const pinchScale = currentDistance / touchState.startDistance;
                     let targetZoom = touchState.startZoom * pinchScale;
                     
-                    // Clamp zoom between 50% and 1000%
+                    // Clamp zoom bounds
                     targetZoom = Math.min(1000, Math.max(50, targetZoom));
-                    
-                    // Round zoom level for visual clarity
                     currentZoom = Math.round(targetZoom);
                     updateZoom();
                 }
@@ -2180,7 +2164,7 @@
             // Re-enable smooth CSS animations for zoom-button clicks
             mapWrapper.classList.remove('no-transition');
             
-            // Reset the state machine to prevent visual jumping on finger lift
+            // Clear tracking states to prevent visual jumping on finger release
             touchState.mode = 'none';
             touchState.startDistance = 0;
         };
@@ -2188,28 +2172,25 @@
         mapScrollContainer.addEventListener('touchend', resetTouchState);
         mapScrollContainer.addEventListener('touchcancel', resetTouchState);
 
-        
-
-        // Auto-initialize portal on page load
+        // ==========================================
+        // AUTO-INITIALIZE PORTAL & OFFLINE-FIRST SYNC
+        // ==========================================
         window.addEventListener('DOMContentLoaded', () => {
-            // 1. Try loading from local storage instantly first
+            // 1. Instantly load local cache for quick loading speed
             const localDataLoaded = loadDataLocally();
-            
             if (localDataLoaded) {
-                console.log("Cached local data loaded instantly.");
+                console.log("Cached local register loaded instantly.");
             }
             
-            // 2. Fetch the latest live data from Google Sheets in the background
-            // Setting showProgress to false prevents a blocking spinner on initial load
+            // 2. Silently fetch live Google Sheet updates in the background
             loadFromCloud(false)
                 .then(() => {
-                    console.log("Latest Google Sheet data synced successfully.");
+                    console.log("Database successfully synchronized on startup.");
                 })
                 .catch((err) => {
-                    console.warn("Could not sync with Google Sheets on startup:", err);
+                    console.warn("Sheet synchronization deferred on startup:", err);
                 });
         });
-
     </script>
 </body>
 </html>
