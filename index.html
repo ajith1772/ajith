@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport configured to block page-level zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Census HLB Register & Mapper</title>
+    <title>My Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -19,22 +18,21 @@
             --text-dark: #2c3e50;
         }
 
-        /* STRICT GLOBAL COPY AND CONTEXT INTERACTION PROTECTION */
+        /* STRICT GLOBAL COPY PROTECTION */
         * {
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-            user-select: none !important;
-            -webkit-touch-callout: none !important; /* Disables standard iOS long-press callout popup */
-            -webkit-user-drag: none !important;      /* Disables dragging elements/images for copy */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none; 
         }
 
         /* Allow typing/editing strictly inside form inputs */
         input, select, textarea {
-            -webkit-user-select: text !important;
-            -moz-user-select: text !important;
-            -ms-user-select: text !important;
-            user-select: text !important;
+            -webkit-user-select: auto !important;
+            -moz-user-select: auto !important;
+            -ms-user-select: auto !important;
+            user-select: auto !important;
         }
 
         body {
@@ -157,7 +155,7 @@
         /* Fixed viewport for Map Zoom only */
         .map-area {
             position: relative;
-            height: 500px;
+            height: 400px;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -233,96 +231,92 @@
         }
 
         /* ========================================================
-           GEOMETRIC MAP MARKERS STYLES (FORTIFIED SPECIFICITY)
+           GEOMETRIC MAP MARKERS STYLES
            ======================================================== */
-        .marker {
+        .marker-base {
             position: absolute;
-            width: 22px !important;
-            height: 22px !important;
-            line-height: 22px !important;
+            width: 22px;
+            height: 22px;
+            line-height: 22px;
             text-align: center;
             font-size: 11px;
             font-weight: bold;
             transform: translate(-50%, -50%);
             cursor: pointer;
-            user-select: none !important;
-            -webkit-user-select: none !important;
-            -webkit-touch-callout: none !important;
-            touch-action: none !important; /* Critical: Locks mobile selection menu overrides completely */
+            user-select: none;
             z-index: 5;
             transition: transform 0.2s ease, background-color 0.2s ease;
-            overflow: visible !important; /* Crucial: Prevents browsers clipping Triangle SVGs */
         }
 
         /* CIRCLE (Default / Others fallback) */
         .marker-circle {
-            border-radius: 50% !important;
-            background-color: var(--primary) !important;
-            color: white !important;
-            border: 2px solid white !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         /* HOME + PUCCA (Solid Square) */
         .marker-home-pucca {
-            border-radius: 0% !important; 
-            background-color: var(--primary) !important;
-            color: white !important;
-            border: 2px solid white !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+            border-radius: 0%; 
+            background-color: white;
+            color: black;
+            border: 2px solid white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         /* HOME + KATCHA (Dashed Lined Square) */
         .marker-home-katcha {
-            border-radius: 0% !important;
-            background-color: white !important;
-            color: var(--primary) !important;
-            border: 2px dashed var(--primary) !important;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+            border-radius: 0%;
+            background-color: white;
+            color: black;
+            border: 2px dashed black;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         /* OTHER + PUCCA (Solid Triangle) */
         .marker-other-pucca {
-            width: 24px !important;
-            height: 24px !important;
-            line-height: 28px !important; 
-            font-size: 9px !important;
+            width: 24px;
+            height: 24px;
+            line-height: 28px; 
+            font-size: 9px;
         }
 
         /* OTHER + KATCHA (Lined Triangle) */
         .marker-other-katcha {
-            width: 24px !important;
-            height: 24px !important;
-            line-height: 28px !important;
-            font-size: 9px !important;
+            width: 24px;
+            height: 24px;
+            line-height: 28px;
+            font-size: 9px;
         }
 
         /* CSS Styling rules for inline SVG shapes inside markers */
         .marker-other-pucca svg polygon {
-            fill: #2980b9 !important;
-            fill: var(--primary) !important;
-            stroke: white !important;
-            stroke-width: 1.5 !important;
+            fill: #2980b9;
+            fill: var(--primary);
+            stroke: white;
+            stroke-width: 1.5;
         }
 
         .marker-other-katcha svg polygon {
-            fill: white !important;
-            stroke: #2980b9 !important;
-            stroke: var(--primary) !important;
-            stroke-width: 1.5 !important;
-            stroke-dasharray: 3, 1.5 !important;
+            fill: white;
+            stroke: #2980b9;
+            stroke: var(--primary);
+            stroke-width: 1.5;
+            stroke-dasharray: 3, 1.5;
         }
 
         /* Global Marker Hover Transitions */
-        .marker:hover {
-            transform: translate(-50%, -50%) scale(1.15) !important;
+        .marker-base:hover {
+            transform: translate(-50%, -50%) scale(1.15);
             background-color: var(--danger) !important;
             border-color: var(--danger-dark) !important;
             color: white !important;
         }
 
         /* Hover color injection for SVG Triangles */
-        .marker:hover svg polygon {
+        .marker-base:hover svg polygon {
             fill: var(--danger) !important;
             stroke: var(--danger-dark) !important;
             stroke-dasharray: none !important; 
@@ -343,10 +337,7 @@
             cursor: pointer;
             box-shadow: 0 1px 3px rgba(0,0,0,0.25);
             z-index: 5;
-            user-select: none !important;
-            -webkit-user-select: none !important;
-            -webkit-touch-callout: none !important;
-            touch-action: none !important;
+            user-select: none;
         }
         .marker-road-label:hover {
             background-color: var(--danger);
@@ -626,7 +617,7 @@
 </head>
 <body>
 
-    <!-- Busy Progress Overlay -->
+    <!-- Busy Progress Overlay (Used strictly on manual sync operations) -->
     <div id="loading-overlay" class="overlay">
         <div id="status-text" style="font-weight: 600; margin-bottom: 15px; font-size: 15px; letter-spacing: 0.5px;">Saving Changes...</div>
         <div class="progress-container">
@@ -652,8 +643,8 @@
         <div class="dialog-box" style="max-width: 320px;">
             <h3 style="margin-top:0; color:var(--primary);">Select Action</h3>
             <p style="font-size:13px; color:#64748b; margin-bottom:15px;">What would you like to add at this point?</p>
-            <button id="btn-choice-building" class="options-menu-btn btn-save">Register Building</button>
-            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Name a Road</button>
+            <button id="btn-choice-building" class="options-menu-btn btn-save">Building</button>
+            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Road</button>
             <button id="btn-choice-cancel" class="options-menu-btn" style="background:#64748b; color:white;">Cancel</button>
         </div>
     </div>
@@ -676,10 +667,10 @@
     <!-- Custom Options Menu Modal (Long Press on Marker) -->
     <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
         <div class="dialog-box" style="max-width: 320px;">
-            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker Options</h3>
-            <button id="options-view" class="options-menu-btn btn-load">View Details</button>
-            <button id="options-edit" class="options-menu-btn btn-save">Edit Details</button>
-            <button id="options-delete" class="options-menu-btn btn-clear">Delete Building</button>
+            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker</h3>
+            <button id="options-view" class="options-menu-btn btn-load">View</button>
+            <button id="options-edit" class="options-menu-btn btn-save">Edit</button>
+            <button id="options-delete" class="options-menu-btn btn-clear">Delete</button>
             <button id="options-close" class="options-menu-btn" style="background:#64748b; color:white;">Close</button>
         </div>
     </div>
@@ -696,11 +687,11 @@
             
             <!-- Forces mobile device numeric keyboard strictly on select -->
             <div class="form-group">
-                <label>PHONE NO</label>
+                <label>MOBILE</label>
                 <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER MOBILE NUMBER">
             </div>
             <div class="form-group">
-                <label>BUILDING NO</label>
+                <label>BLDING NO</label>
                 <input type="text" id="form-building-no" placeholder="BUILDING NUMBER">
             </div>
 
@@ -719,10 +710,11 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="HOME-CLOSED"></option>
+                <option value="HOME-ASBETOS SHEET"></option>
+                <option value="HOME-CLOSED "></option>
                 <option value="HOME-CONCRETE"></option>
                 <option value="HOME-IRON SHEET"></option>
-                <option value="HOME-TILED ROOF"></option>
+                <option value="HOME-TILED (ഓട്)"></option>
                 <option value="HOME-SHOP"></option>
                 <option value="HOME-INSTITUTION"></option>
                 <option value="CHURCH"></option>
@@ -730,10 +722,10 @@
                 <option value="GROUND"></option>
                 <option value="INSTITUTION"></option>
                 <option value="MOSQUE"></option>
-                <option value="SHED WITH IRON SHEET"></option>
                 <option value="SHOP"></option>
                 <option value="SHOP-CLOSED "></option>
-                <option value="TEMPLE"></option>
+                <option value="TEMPLE"></option>               
+                
             </datalist>
 
             <div class="dialog-btn-group">
@@ -746,15 +738,15 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>HLB Map Digitization Portal</h2>
+            <h2>MY MAP</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
             </div>
         </div>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Portrait)</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Portrait)</button>
+            <button onclick="printA4()" class="btn-print">Print A4 </button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
         </div>
     </div>
 
@@ -766,13 +758,13 @@
             <div class="tool-mode-box" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
-                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Register Buildings</button>
-                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw Roads</button>
+                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
+                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Roads</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
-                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New Road</button>
-                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo Node</button>
-                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Roads</button>
+                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New</button>
+                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
+                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
                 </div>
             </div>
 
@@ -811,11 +803,11 @@
         <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
         <div class="sidebar">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
+                <h3 style="margin: 0; font-size: 1.2rem;">Building</h3>
                 <div class="button-group">
-                    <button onclick="loadFromCloud(true)" class="btn-load">Sync from Sheet</button>
-                    <button onclick="saveToCloudManual()" class="btn-save">Save to Sheet</button>
-                    <button onclick="clearAll()" class="btn-clear">Reset Local</button>
+                    <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
+                    <button onclick="saveToCloudManual()" class="btn-save">Save</button>
+                    <button onclick="clearAll()" class="btn-clear">Reset</button>
                 </div>
             </div>
             
@@ -913,9 +905,111 @@
         // Local array to hold census houses in active popup session
         let modalHouses = [];
         let isSyncingSilently = false;
-        let isInteractingWithMarker = false; // Prevents map clicks during marker gestures
 
-        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS (DEFINED AT THE TOP)
+        // GLOBAL GESTURE BLOCKING (Strictly blocks document-level viewport pinch/stretch zoom)
+        document.addEventListener('touchmove', function (event) {
+            if (event.scale !== undefined && event.scale !== 1) { 
+                event.preventDefault(); 
+            }
+        }, { passive: false });
+
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault(); // Blocks rapid double-tap webpage zoom
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // DISABLE CONTEXT MENU GLOBALLY (Right Click & Mobile long-press menus)
+        document.addEventListener('contextmenu', function (e) {
+            e.preventDefault();
+        });
+
+        // DISABLE INSPECT / SOURCE KEY SHORTCUTS
+        document.addEventListener('keydown', function (e) {
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // NATIVE PINCH-TO-ZOOM GESTURE LISTENER (Strictly bound to map area)
+        let startDistance = 0;
+        let startZoom = 100;
+        let isPinching = false;
+
+        mapScrollContainer.addEventListener('touchstart', function (e) {
+            if (e.touches.length === 2) {
+                isPinching = true;
+                mapWrapper.classList.add('no-transition'); 
+                startDistance = getTouchDistance(e.touches[0], e.touches[1]);
+                startZoom = currentZoom;
+            }
+        }, { passive: true });
+
+        mapScrollContainer.addEventListener('touchmove', function (e) {
+            if (isPinching && e.touches.length === 2) {
+                e.preventDefault(); // Lock viewport scrolling while pinching map
+                
+                const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
+                const scale = currentDistance / startDistance;
+                
+                let targetZoom = Math.round(startZoom * scale);
+                
+                if (targetZoom < 50) targetZoom = 50;
+                if (targetZoom > 1000) targetZoom = 1000; 
+                
+                currentZoom = targetZoom;
+                updateZoom();
+            }
+        }, { passive: false });
+
+        mapScrollContainer.addEventListener('touchend', function (e) {
+            if (e.touches.length < 2) {
+                isPinching = false;
+                mapWrapper.classList.remove('no-transition'); 
+            }
+        });
+
+        function getTouchDistance(touch1, touch2) {
+            const dx = touch1.clientX - touch2.clientX;
+            const dy = touch1.clientY - touch2.clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        // ZOOM BUTTON CONTROLS 
+        function zoomIn() {
+            if (currentZoom < 1000) { 
+                currentZoom += 25;
+                updateZoom();
+            }
+        }
+        function zoomOut() {
+            if (currentZoom > 50) {
+                currentZoom -= 25;
+                updateZoom();
+            }
+        }
+        function zoomReset() {
+            currentZoom = 100;
+            updateZoom();
+        }
+        function updateZoom() {
+            mapWrapper.style.width = `${currentZoom}%`;
+            zoomText.innerText = `${currentZoom}%`;
+        }
+
+        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
         function showCustomAlert(message, title = "Notification") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -932,6 +1026,7 @@
             });
         }
 
+        // ASYNC CONFIRM (Used during delete prompts)
         function showCustomConfirm(message, title = "Confirmation") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -958,7 +1053,7 @@
             });
         }
 
-        // BUSY PROGRESS (spinner removed, only bar and % animate with smooth final interpolation)
+        // BUSY PROGRESS (spinner removed, only bar and % animate)
         function showBusyProgress(title, onFinishedAction) {
             loadingOverlay.style.display = 'flex';
             statusText.innerText = title;
@@ -1016,36 +1111,14 @@
             }, 250);
         }
 
-        function printA4() {
-            validateAllFields().then(isValid => {
-                if (isValid) triggerPrint('print-mode-a4', 'A4');
-            });
+        async function printA4() {
+            const isValid = await validateAllFields();
+            if (!isValid) return;
+            triggerPrint('print-mode-a4', 'A4');
         }
 
         function printA3() {
             triggerPrint('print-mode-a3', 'A3');
-        }
-
-        // ZOOM BUTTON CONTROLS 
-        function zoomIn() {
-            if (currentZoom < 1000) { 
-                currentZoom += 25;
-                updateZoom();
-            }
-        }
-        function zoomOut() {
-            if (currentZoom > 50) {
-                currentZoom -= 25;
-                updateZoom();
-            }
-        }
-        function zoomReset() {
-            currentZoom = 100;
-            updateZoom();
-        }
-        function updateZoom() {
-            mapWrapper.style.width = `${currentZoom}%`;
-            zoomText.innerText = `${currentZoom}%`;
         }
 
         // FORCE UPPERCASE INPUT FIELDS AT CODE LEVEL
@@ -1116,7 +1189,7 @@
                     polyline.setAttribute("fill", "none");
                     polyline.setAttribute("stroke-linejoin", "round");
                     polyline.setAttribute("stroke-linecap", "round");
-                    svgRoads.appendChild(polyline); 
+                    svgRoads.appendChild(polyline); // Correctly appends to svgRoads ONLY
                 }
 
                 if (currentToolMode === "road") {
@@ -1275,7 +1348,7 @@
                     modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
                 } else {
                     modalHouses = [{
-                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact (editable)
+                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact
                         type: markerData.note || '',
                         remarks: markerData.remarks || ''
                     }];
@@ -1284,7 +1357,7 @@
                 // Render dynamic houses rows
                 renderModalHouses(isViewOnly);
 
-                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY (No longer references global detached nodes)
+                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY
                 const btnAddHouseElement = document.getElementById('btn-add-house');
                 btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
                 
@@ -1356,11 +1429,6 @@
             const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
             const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
 
-            if (isInteractingWithMarker) {
-                isInteractingWithMarker = false; // Reset blocker state safely
-                return; // Strictly blocks accidental double placements on mouse release
-            }
-
             if (currentToolMode === "building") {
                 // Show action choice dialog
                 clickChoiceDialog.style.display = "flex";
@@ -1378,7 +1446,7 @@
                         phone: '',
                         buildingNo: `${markers.filter(m => !m.isRoadLabel).length + 1}`,
                         censusHouses: [{
-                            cnNo: '0001', // Every new building always defaults to '0001' first (keeps 0001 default)
+                            cnNo: '0001', // Every new building always defaults to '0001' first
                             type: '',
                             remarks: ''
                         }]
@@ -1540,25 +1608,6 @@
             return { isHome: !isOtherType, type: houseType };
         }
 
-        // REAL-TIME PATH STRETCHER ROUTINE (Redraws vectors in memory instantly on drag)
-        function renderRouteLinesOnly() {
-            svgPaths.innerHTML = '';
-            markers.forEach((marker, index) => {
-                if (index < markers.length - 1) {
-                    const nextMarker = markers[index + 1];
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", marker.x);
-                    line.setAttribute("y1", marker.y);
-                    line.setAttribute("x2", nextMarker.x);
-                    line.setAttribute("y2", nextMarker.y);
-                    line.setAttribute("stroke", "#e74c3c");
-                    line.setAttribute("stroke-width", "0.2");
-                    line.setAttribute("marker-end", "url(#arrow)");
-                    svgPaths.appendChild(line);
-                }
-            });
-        }
-
         // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
         function render() {
             markerLayer.innerHTML = '';
@@ -1576,7 +1625,6 @@
                 }
             });
 
-            // REAL-TIME MARKER DRAG AND DROP SYSTEM
             markers.forEach((marker, index) => {
                 // 1. Draw Map Element (Geometric markers vs Horizontal road label pill badge)
                 const markerEl = document.createElement('div');
@@ -1590,7 +1638,7 @@
                     markerEl.innerText = marker.slNo;
 
                     if (classification.isHome) {
-                        // Home styles (Squares with fortified style overrides)
+                        // Home styles (Squares)
                         if (classification.type === "PUCCA") {
                             markerEl.className = 'marker-base marker-home-pucca';
                         } else if (classification.type === "KATCHA") {
@@ -1599,11 +1647,11 @@
                             markerEl.className = 'marker-base marker-circle'; // Fallback circle
                         }
                     } else {
-                        // Other building styles (Triangles drawn with hardware accelerated inline SVGs)
+                        // Other building styles (Triangles drawn with high performance SVG nodes)
                         if (classification.type === "PUCCA") {
                             markerEl.className = 'marker-base marker-other-pucca';
                             markerEl.innerHTML = `
-                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1; overflow:visible;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
                                     <polygon points="12,2 2,22 22,22"/>
                                 </svg>
                                 ${marker.slNo}
@@ -1611,7 +1659,7 @@
                         } else if (classification.type === "KATCHA") {
                             markerEl.className = 'marker-base marker-other-katcha';
                             markerEl.innerHTML = `
-                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1; overflow:visible;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
                                     <polygon points="12,2 2,22 22,22"/>
                                 </svg>
                                 ${marker.slNo}
@@ -1624,97 +1672,29 @@
                 
                 markerEl.style.left = `${marker.x}%`;
                 markerEl.style.top = `${marker.y}%`;
-                markerEl.title = `Drag to reposition. Press-and-hold for options`;
+                markerEl.title = `Press and hold for options`;
                 
-                // DRAG & DROP GESTURE + PRESS-AND-HOLD OPTIONS TRIGGER LOGIC (600MS HOLD)
+                // PRESS-AND-HOLD DETECTOR (Triggers Options Menu after 600ms)
                 let pressTimer;
-                let isDragging = false;
-                let dragStartX = 0;
-                let dragStartY = 0;
-                let dragStartLeft = 0;
-                let dragStartTop = 0;
 
                 const startPress = (e) => {
-                    // If it's a multi-touch (2 fingers), do NOT stop propagation so pinch-to-zoom bubbles up to parent mapScrollContainer
-                    if (e.touches && e.touches.length >= 2) {
-                        return; 
-                    }
-                    isInteractingWithMarker = true; // Block map placement click trigger during any marker touch interaction
-                    
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    
-                    isDragging = true;
-                    dragStartX = clientX;
-                    dragStartY = clientY;
-                    
-                    const rect = markerEl.getBoundingClientRect();
-                    const parentRect = mapImage.getBoundingClientRect();
-                    
-                    dragStartLeft = ((rect.left + rect.width/2 - parentRect.left) / parentRect.width) * 100;
-                    dragStartTop = ((rect.top + rect.height/2 - parentRect.top) / parentRect.height) * 100;
-
-                    // Trigger options popup if held for 600ms without dragging (Optimized 18px movement padding threshold)
+                    e.stopPropagation(); 
                     pressTimer = setTimeout(() => {
-                        if (isDragging) {
-                            isDragging = false; // Cancel drag if options are opened
-                            openOptionsMenu(index);
-                        }
+                        openOptionsMenu(index);
                     }, 600); 
-                };
-
-                const movePress = (e) => {
-                    if (!isDragging) return;
-                    
-                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-                    
-                    const dx = clientX - dragStartX;
-                    const dy = clientY - dragStartY;
-                    
-                    // Cancel options hold timer if they start dragging actively (Optimized 18px movement padding threshold)
-                    if (Math.abs(dx) > 18 || Math.abs(dy) > 18) {
-                        clearTimeout(pressTimer);
-                    }
-                    
-                    const parentRect = mapImage.getBoundingClientRect();
-                    
-                    const deltaXPercent = (dx / parentRect.width) * 100;
-                    const deltaYPercent = (dy / parentRect.height) * 100;
-                    
-                    let newX = dragStartLeft + deltaXPercent;
-                    let newY = dragStartTop + deltaYPercent;
-                    
-                    // Constrain within bounds (0% to 100%)
-                    if (newX < 0) newX = 0; if (newX > 100) newX = 100;
-                    if (newY < 0) newY = 0; if (newY > 100) newY = 100;
-                    
-                    marker.x = newX;
-                    marker.y = newY;
-                    
-                    markerEl.style.left = `${newX}%`;
-                    markerEl.style.top = `${newY}%`;
-                    
-                    renderRouteLinesOnly(); // Real-time line path update
                 };
 
                 const cancelPress = () => {
                     clearTimeout(pressTimer);
-                    if (isDragging) {
-                        isDragging = false;
-                        saveDataLocally();
-                        syncDataWithBackendSilently(); // Quiet background upload
-                    }
                 };
 
-                // Mouse inputs (bound dynamically to window and DOM elements safely to prevent memory leaks)
+                // Mouse inputs
                 markerEl.addEventListener('mousedown', startPress);
-                window.addEventListener('mousemove', movePress);
-                window.addEventListener('mouseup', cancelPress);
+                markerEl.addEventListener('mouseup', cancelPress);
+                markerEl.addEventListener('mouseleave', cancelPress);
 
                 // Touch inputs
                 markerEl.addEventListener('touchstart', startPress);
-                markerEl.addEventListener('touchmove', movePress, { passive: false });
                 markerEl.addEventListener('touchend', cancelPress);
                 markerEl.addEventListener('touchcancel', cancelPress);
 
@@ -1734,12 +1714,12 @@
                     svgPaths.appendChild(line);
                 }
 
-                // 3. Create Table Row (Census House details are vertically aligned under one row)
+                // 3. Create Table Row 
                 const row = document.createElement('tr');
 
                 const cellSl = document.createElement('td');
                 cellSl.style.fontWeight = "bold";
-                cellSl.innerText = marker.isRoadLabel ? "ROAD" : marker.slNo; 
+                cellSl.innerText = marker.isRoadLabel ? "ROAD" : marker.slNo; // Label display in register table
 
                 const cellName = document.createElement('td');
                 const cellPhone = document.createElement('td');
@@ -1749,6 +1729,7 @@
                 const cellRemarks = document.createElement('td');
 
                 if (marker.isRoadLabel) {
+                    // Stylized row layout in table for Road Labels
                     cellName.innerHTML = `<span style="font-weight:bold; color:var(--primary);">ROAD: ${marker.name || 'UNNAMED'}</span>`;
                     cellPhone.innerText = '-';
                     cellBldg.innerText = '-';
@@ -1760,6 +1741,7 @@
                     cellPhone.innerText = marker.phone || '-';
                     cellBldg.innerText = marker.buildingNo || '-';
 
+                    // Display multiple Census Houses split cleanly by line-breaks (same row)
                     if (marker.censusHouses && marker.censusHouses.length > 0) {
                         cellCN.innerHTML = marker.censusHouses.map(ch => ch.cnNo || '-').join('<br>');
                         cellNote.innerHTML = marker.censusHouses.map(ch => ch.type || '-').join('<br>');
@@ -1781,8 +1763,6 @@
 
                 registerBody.appendChild(row);
             });
-
-            renderRouteLinesOnly(); // Primary sequential path generator
         }
 
         function removeMarker(index) {
@@ -1822,14 +1802,10 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
-                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
-                    m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
-
                     m.note = m.censusHouses.map(ch => ch.type).join("\n");
                     m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
-                m.buildingNo = m.buildingNo ? "'" + String(m.buildingNo).replace(/^'/, "") : "";
             });
 
             if (roads.length > 0) {
@@ -1884,25 +1860,13 @@
 
                             const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
 
-                            // Re-deserialize newline-separated strings back into dynamic censusHouses arrays
                             cleanMarkers.forEach(m => {
-                                const rawCN = cleanStringValue(m.cnNo);
-                                const rawNote = cleanStringValue(m.note);
-                                const rawRemarks = cleanStringValue(m.remarks);
-
-                                m.buildingNo = cleanStringValue(m.buildingNo);
-                                m.name = cleanStringValue(m.name);
-                                m.phone = cleanStringValue(m.phone);
-
-                                if (rawCN === "ROAD_LABEL") {
+                                if (m.cnNo === "ROAD_LABEL") {
                                     m.isRoadLabel = true;
-                                    m.cnNo = "ROAD_LABEL";
-                                    m.note = "";
-                                    m.remarks = "";
                                 } else {
-                                    const cns = rawCN.split("\n");
-                                    const types = rawNote.split("\n");
-                                    const remarks = rawRemarks.split("\n");
+                                    const cns = String(m.cnNo || "").split("\n");
+                                    const types = String(m.note || "").split("\n");
+                                    const remarks = String(m.remarks || "").split("\n");
 
                                     const count = Math.max(cns.length, types.length, remarks.length, 1);
                                     m.censusHouses = [];
@@ -1949,13 +1913,25 @@
             }
         }
 
-        // DATABASE DE-SERIALIZATION CLEANER (Strips out leading database-format text apostrophes)
-        function cleanStringValue(val) {
-            let str = String(val || "").trim();
-            if (str.startsWith("'")) {
-                str = str.substring(1);
+        function loadDataLocally() {
+            const localMarkers = localStorage.getItem('census_markers');
+            const localRoads = localStorage.getItem('census_roads');
+            const localCounter = localStorage.getItem('census_marker_counter');
+
+            if (localMarkers) {
+                try {
+                    markers = JSON.parse(localMarkers);
+                    roads = localRoads ? JSON.parse(localRoads) : [];
+                    markerCounter = parseInt(localCounter) || 1;
+                    renderRoads();
+                    render();
+                    return true;
+                } catch(e) {
+                    console.error("Local storage load parse failed:", e);
+                    return false;
+                }
             }
-            return str;
+            return false;
         }
 
         // REAL-TIME CLOUD STATUS LED INDICATOR
@@ -1964,6 +1940,7 @@
             const text = document.getElementById('sync-text');
             if (!led || !text) return;
 
+            // Clear existing indicator classes
             led.className = 'led-indicator';
 
             if (state === 'synced') {
@@ -1997,14 +1974,10 @@
                     m.note = "";
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
-                    // Prepend apostrophe before join array to preserve Text Formatting inside Google Sheets
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
-                    m.cnNo = m.cnNo ? "'" + String(m.cnNo).replace(/^'/, "") : "";
-
                     m.note = m.censusHouses.map(ch => ch.type).join("\n");
                     m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
                 }
-                m.buildingNo = m.buildingNo ? "'" + String(m.buildingNo).replace(/^'/, "") : "";
             });
 
             if (roads.length > 0) {
@@ -2046,73 +2019,6 @@
                 setTimeout(syncDataWithBackendSilently, 10000); 
             }
         }
-
-        // INITIAL LIFE CYCLES AT THE BOTTOM (Prevents hoisting or reference conflicts)
-        function loadDataLocally() {
-            const localMarkers = localStorage.getItem('census_markers');
-            const localRoads = localStorage.getItem('census_roads');
-            const localCounter = localStorage.getItem('census_marker_counter');
-
-            if (localMarkers) {
-                try {
-                    markers = JSON.parse(localMarkers);
-                    roads = localRoads ? JSON.parse(localRoads) : [];
-                    markerCounter = parseInt(localCounter) || 1;
-                    renderRoads();
-                    render();
-                    return true;
-                } catch(e) {
-                    console.error("Local storage load parse failed:", e);
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        window.onload = function() {
-            try {
-                const hasLocalData = loadDataLocally();
-                if (hasLocalData) {
-                    console.log("Loaded cached dataset from local storage.");
-                    syncDataWithBackendSilently(); 
-                } else {
-                    if (GOOGLE_SCRIPT_URL !== "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
-                        loadFromCloud(false); 
-                    }
-                }
-            } catch(err) {
-                console.error("Life cycle bootup error:", err);
-            }
-        };
-
-        // ANTI-INSPECT, VIEW-SOURCE AND RIGHT-CLICK GLOBAL KEY INTERCEPTORS (CAPTURE PHASE)
-        document.addEventListener('keydown', function (e) {
-            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-            
-            // Block F12 Key
-            if (e.keyCode === 123 || e.key === "F12") {
-                e.preventDefault();
-                return false;
-            }
-            
-            // Block Ctrl+Shift+I / J / C (Windows) and Cmd+Opt+I / J / C (Mac)
-            if ((e.ctrlKey || e.metaKey) && (e.shiftKey || e.altKey) && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J' || e.key === 'c' || e.key === 'C')) {
-                e.preventDefault();
-                return false;
-            }
-            
-            // Block Ctrl+U / Cmd+U (View Page Source)
-            if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
-                e.preventDefault();
-                return false;
-            }
-            
-            // Block Ctrl+S / Cmd+S (Save Page)
-            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
-                e.preventDefault();
-                return false;
-            }
-        }, true); // useCapture is true to intercept before other scripts run
     </script>
 </body>
 </html>
