@@ -115,7 +115,7 @@
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            width: auto;
+            width: 100%;
             box-sizing: border-box;
         }
 
@@ -180,7 +180,7 @@
         }
 
         #map-image {
-            width: auto;
+            width: 100%;
             display: block;
             user-select: none;
             -webkit-user-drag: none;
@@ -746,7 +746,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY MAP</h2>
+            <h2>per</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -2113,7 +2113,15 @@
         let startTouchX = 0;
         let startTouchY = 0;
 
-        
+        let initialTouchDistance = -1;
+        let baseZoomOnPinchStart = 100;
+
+        // Touch state variables for unified pan and zoom
+        isPanningMap = false;
+        startScrollLeft = 0;
+        startScrollTop = 0;
+        startTouchX = 0;
+        startTouchY = 0;
 
         // Helper to calculate distance between two touches
         function getTouchDistance(touch1, touch2) {
