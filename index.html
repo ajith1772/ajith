@@ -1230,51 +1230,55 @@
 
         // DYNAMIC NESTED BUILDING STATISTICS CALCULATOR
         function updateStatistics() {
-            let homeCount = 0;
-            let otherBuildingCount = 0;
-            const otherKeywords = ["SHOP", "TEMPLE", "CHURCH", "MOSQUE", "FACTORY", "INSTITUTION", "GROUND"];
+    let homeCount = 0;
+    let otherBuildingCount = 0;
+    const otherKeywords = ["SHOP", "TEMPLE", "CHURCH", "MOSQUE", "FACTORY", "INSTITUTION", "GROUND"];
 
-            markers.forEach(m => {
-                if (m.isRoadLabel) return;
+    markers.forEach(m => {
+        if (m.isRoadLabel) return;
 
-                const houses = m.censusHouses || [];
-                if (houses.length === 0) {
-                    // Fallback to flat fields
-                    const remarkText = String(m.remarks || "").toUpperCase().trim();
-                    const isOther = otherKeywords.some(kw => remarkText.includes(kw));
-                    if (isOther) {
-                        otherBuildingCount++;
-                    } else {
-                        homeCount++;
-                    }
+        const houses = m.censusHouses || [];
+        let hasHome = false;
+        let hasOther = false;
+
+        if (houses.length === 0) {
+            // Fallback for flat fields if censusHouses array is empty
+            const remarkText = String(m.remarks || "").toUpperCase().trim();
+            const isOther = otherKeywords.some(kw => remarkText.includes(kw));
+            if (isOther) {
+                hasOther = true;
+            } else {
+                hasHome = true;
+            }
+        } else {
+            // Evaluate all census houses inside this single serial number
+            houses.forEach(h => {
+                const remarkText = String(h.remarks || "").toUpperCase().trim();
+                const isOther = otherKeywords.some(kw => remarkText.includes(kw));
+                if (isOther) {
+                    hasOther = true;
                 } else {
-                    let localHomes = 0;
-                    let localOthers = 0;
-
-                    houses.forEach(h => {
-                        const remarkText = String(h.remarks || "").toUpperCase().trim();
-                        const isOther = otherKeywords.some(kw => remarkText.includes(kw));
-                        if (isOther) {
-                            localOthers++;
-                        } else {
-                            localHomes++;
-                        }
-                    });
-
-                    homeCount += localHomes;
-
-                    // If a building has NO homes inside, but contains non-home layouts, count as exactly 1 Other Building
-                    // If a building has both homes AND shops, we count the homes, but do not count the shop as a separate other building
-                    if (localHomes === 0 && localOthers > 0) {
-                        otherBuildingCount += 1;
-                    }
+                    hasHome = true;
                 }
             });
-
-            document.getElementById('stat-homes').innerText = homeCount;
-            document.getElementById('stat-others').innerText = otherBuildingCount;
-            document.getElementById('stat-total').innerText = homeCount + otherBuildingCount;
         }
+
+        // Apply classification logic strictly per Serial Number (marker):
+        if (hasHome) {
+            // If there is a Home present, the serial number is counted as 1 House (HOME).
+            // Any other uses (like shops) inside this same serial number are ignored for the other buildings count.
+            homeCount++;
+        } else if (hasOther) {
+            // If there are no homes at all inside this serial number, but other uses exist (e.g. pure shop),
+            // it is counted as 1 Other Building.
+            otherBuildingCount++;
+        }
+    });
+
+    document.getElementById('stat-homes').innerText = homeCount;
+    document.getElementById('stat-others').innerText = otherBuildingCount;
+    document.getElementById('stat-total').innerText = homeCount + otherBuildingCount;
+}
 
         // RENDER INTERACTIVE CENSUS HOUSE ROWS INSIDE POPUP MODAL
         function renderModalHouses(isViewOnly) {
