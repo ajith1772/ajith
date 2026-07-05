@@ -714,18 +714,26 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="HOME"></option>
-                <option value="HOME-SHOP"></option>
+                <option value="HOME-ASBETOS SHEET"></option>
+                <option value="HOME-CLOSED"></option>
+                <option value="HOME-CONCRETE"></option>
+                <option value="HOME-CONCRETE RENT"></option>
+                <option value="HOME-CONCRETE MULTISTROYED"></option>
                 <option value="HOME-INSTITUTION"></option>
+                <option value="HOME-IRON SHEET"></option>
+                <option value="HOME-UNDER CONSTRUCTION"></option>
+                <option value="HOME-PLYWOOD WALL"></option>
+                <option value="HOME-SHOP"></option>
+                <option value="HOME-TILED ROOF"></option>
+                <option value="GROUND"></option>
                 <option value="INSTITUTION"></option>
                 <option value="SHOP"></option>
-                <option value="GROUND"></option>
-                <option value="CLOSED HOME"></option>
-                <option value="CLOSED SHOP"></option>
+                <option value="SHOP CLOSED"></option>
+                <option value="TOILET"></option>
                 <option value="CHURCH"></option>
-                <option value="TEMPLE"></option>
-                <option value="MOSQUE"></option>
                 <option value="FACTORY"></option>
+                <option value="MOSQUE"></option>
+                <option value="TEMPLE"></option>
             </datalist>
 
             <div class="dialog-btn-group">
@@ -905,6 +913,9 @@
         let markerCounter = 1;
         let currentZoom = 100;
         let currentToolMode = "building"; 
+        // Touch pinch-to-zoom state variables
+        let initialTouchDistance = -1;
+        let baseZoomOnPinchStart = 100;
 
         // Local array to hold census houses in active popup session
         let modalHouses = [];
@@ -2042,6 +2053,67 @@
                 setTimeout(syncDataWithBackendSilently, 20000); // Safe 20s retry backoff
             }
         }
+
+        // Helper to calculate distance between two touches
+        function getTouchDistance(touch1, touch2) {
+            return Math.hypot(touch1.clientX - touch2.clientX, touch1.clientY - touch2.clientY);
+        }
+
+        // Pinch-to-zoom event listeners on the scroll container
+        mapScrollContainer.addEventListener('touchstart', function(e) {
+            if (e.touches.length === 2) {
+                // Prevent default browser zoom actions
+                e.preventDefault();
+                initialTouchDistance = getTouchDistance(e.touches[0], e.touches[1]);
+                baseZoomOnPinchStart = currentZoom;
+            }
+        }, { passive: false });
+
+        mapScrollContainer.addEventListener('touchmove', function(e) {
+            if (e.touches.length === 2 && initialTouchDistance > 0) {
+                e.preventDefault();
+                
+                const currentTouchDistance = getTouchDistance(e.touches[0], e.touches[1]);
+                const pinchFactor = currentTouchDistance / initialTouchDistance;
+                
+                // Calculate new zoom level based on starting zoom and pinch factor
+                let targetZoom = baseZoomOnPinchStart * pinchFactor;
+                
+                // Clamp zoom between 50% and 1000%
+                targetZoom = Math.min(1000, Math.max(50, targetZoom));
+                
+                // Keep zoom adjustment to increments of 5% for smoothness
+                currentZoom = Math.round(targetZoom / 5) * 5;
+                updateZoom();
+            }
+        }, { passive: false });
+
+        mapScrollContainer.addEventListener('touchend', function(e) {
+            if (e.touches.length < 2) {
+                initialTouchDistance = -1;
+            }
+        });
+
+        // Auto-initialize portal on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            // 1. Try loading from local storage instantly first
+            const localDataLoaded = loadDataLocally();
+            
+            if (localDataLoaded) {
+                console.log("Cached local data loaded instantly.");
+            }
+            
+            // 2. Fetch the latest live data from Google Sheets in the background
+            // Setting showProgress to false prevents a blocking spinner on initial load
+            loadFromCloud(false)
+                .then(() => {
+                    console.log("Latest Google Sheet data synced successfully.");
+                })
+                .catch((err) => {
+                    console.warn("Could not sync with Google Sheets on startup:", err);
+                });
+        });
+
     </script>
 </body>
 </html>
