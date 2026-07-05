@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport configured to block page-level zooming on mobile devices -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Mapper</title>
+    <title>MY Mapper</title>
     <style>
         :root {
             --primary: #2980b9;
@@ -18,21 +19,22 @@
             --text-dark: #2c3e50;
         }
 
-        /* STRICT GLOBAL COPY PROTECTION */
+        /* STRICT GLOBAL COPY AND CONTEXT INTERACTION PROTECTION */
         * {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none; 
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+            -webkit-touch-callout: none !important; /* Disables standard iOS long-press callout popup */
+            -webkit-user-drag: none !important;      /* Disables dragging elements/images for copy */
         }
 
         /* Allow typing/editing strictly inside form inputs */
         input, select, textarea {
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
+            -webkit-user-select: text !important;
+            -moz-user-select: text !important;
+            -ms-user-select: text !important;
+            user-select: text !important;
         }
 
         body {
@@ -155,7 +157,7 @@
         /* Fixed viewport for Map Zoom only */
         .map-area {
             position: relative;
-            height: 400px;
+            height: 500px;
             overflow: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -247,6 +249,7 @@
             z-index: 5;
             transition: transform 0.2s ease, background-color 0.2s ease;
             overflow: visible !important; /* Crucial: Prevents browsers clipping Triangle SVGs */
+            touch-action: none !important; /* Directs gesture listeners to handle the elements exclusively */
         }
 
         /* CIRCLE (Default / Others fallback) */
@@ -339,6 +342,7 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.25);
             z-index: 5;
             user-select: none;
+            touch-action: none !important;
         }
         .marker-road-label:hover {
             background-color: var(--danger);
@@ -644,8 +648,8 @@
         <div class="dialog-box" style="max-width: 320px;">
             <h3 style="margin-top:0; color:var(--primary);">Select Action</h3>
             <p style="font-size:13px; color:#64748b; margin-bottom:15px;">What would you like to add at this point?</p>
-            <button id="btn-choice-building" class="options-menu-btn btn-save">Building</button>
-            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Road</button>
+            <button id="btn-choice-building" class="options-menu-btn btn-save">Register Building</button>
+            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Name a Road</button>
             <button id="btn-choice-cancel" class="options-menu-btn" style="background:#64748b; color:white;">Cancel</button>
         </div>
     </div>
@@ -668,10 +672,10 @@
     <!-- Custom Options Menu Modal (Long Press on Marker) -->
     <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
         <div class="dialog-box" style="max-width: 320px;">
-            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker</h3>
-            <button id="options-view" class="options-menu-btn btn-load">View</button>
-            <button id="options-edit" class="options-menu-btn btn-save">Edit</button>
-            <button id="options-delete" class="options-menu-btn btn-clear">Delete</button>
+            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker Options</h3>
+            <button id="options-view" class="options-menu-btn btn-load">View Details</button>
+            <button id="options-edit" class="options-menu-btn btn-save">Edit Details</button>
+            <button id="options-delete" class="options-menu-btn btn-clear">Delete Building</button>
             <button id="options-close" class="options-menu-btn" style="background:#64748b; color:white;">Close</button>
         </div>
     </div>
@@ -688,7 +692,7 @@
             
             <!-- Forces mobile device numeric keyboard strictly on select -->
             <div class="form-group">
-                <label>MOBILE</label>
+                <label>PHONE NO</label>
                 <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER MOBILE NUMBER">
             </div>
             <div class="form-group">
@@ -711,7 +715,6 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="HOME-ASBETOS SHEET"></option>
                 <option value="HOME-CLOSED"></option>
                 <option value="HOME-CONCRETE"></option>
                 <option value="HOME-IRON SHEET"></option>
@@ -739,15 +742,15 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY MAP</h2>
+            <h2>HLB Map Digitization Portal</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
             </div>
         </div>
         <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print A4</button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
+            <button onclick="printA4()" class="btn-print">Print Map & Reg (A4 Portrait)</button>
+            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print Map Only (A3 Portrait)</button>
         </div>
     </div>
 
@@ -759,13 +762,13 @@
             <div class="tool-mode-box" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
                 <div style="display: flex; gap: 10px; align-items: center;">
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
-                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
-                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw</button>
+                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Register Buildings</button>
+                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Draw Roads</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
-                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New</button>
-                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
-                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
+                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New Road</button>
+                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo Node</button>
+                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset Roads</button>
                 </div>
             </div>
 
@@ -806,9 +809,9 @@
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <h3 style="margin: 0; font-size: 1.2rem;">Building Register</h3>
                 <div class="button-group">
-                    <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
-                    <button onclick="saveToCloudManual()" class="btn-save">Save</button>
-                    <button onclick="clearAll()" class="btn-clear">Reset</button>
+                    <button onclick="loadFromCloud(true)" class="btn-load">Sync from Sheet</button>
+                    <button onclick="saveToCloudManual()" class="btn-save">Save to Sheet</button>
+                    <button onclick="clearAll()" class="btn-clear">Reset Local</button>
                 </div>
             </div>
             
@@ -907,7 +910,9 @@
         let modalHouses = [];
         let isSyncingSilently = false;
 
-        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS (FULLY HOSTED & COMPILING FIRST)
+        // COGNIZANT AND CLEAN COMPILATION CODES (ALL HOISTED AND ACCESSIBLE SAFELY AT RUNTIME)
+
+        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
         function showCustomAlert(message, title = "Notification") {
             return new Promise((resolve) => {
                 dialogTitle.innerText = title;
@@ -1008,7 +1013,6 @@
             }, 250);
         }
 
-        // ALL EXPLICIT PRINT TARGETS DECLARED SAFELY HERE (Prevents printA4/A3 ReferenceErrors)
         function printA4() {
             validateAllFields().then(isValid => {
                 if (isValid) triggerPrint('print-mode-a4', 'A4');
@@ -1277,7 +1281,7 @@
                 // Render dynamic houses rows
                 renderModalHouses(isViewOnly);
 
-                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY (No longer references global detached nodes)
+                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY
                 const btnAddHouseElement = document.getElementById('btn-add-house');
                 btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
                 
@@ -1551,7 +1555,6 @@
         function render() {
             markerLayer.innerHTML = '';
             registerBody.innerHTML = '';
-            svgPaths.innerHTML = ''; 
 
             // Pre-calculate sequential Sl No strictly bypassing Road Labels
             let bldgCount = 0;
@@ -1564,6 +1567,7 @@
                 }
             });
 
+            // REAL-TIME MARKER DRAG AND DROP SYSTEM
             markers.forEach((marker, index) => {
                 // 1. Draw Map Element (Geometric markers vs Horizontal road label pill badge)
                 const markerEl = document.createElement('div');
@@ -1622,7 +1626,11 @@
                 let dragStartTop = 0;
 
                 const startPress = (e) => {
-                    e.stopPropagation(); // Prevents map clicks underneath
+                    // If it's a multi-touch (2 fingers), do NOT stop propagation so pinch-to-zoom bubbles up to parent mapScrollContainer
+                    if (e.touches && e.touches.length >= 2) {
+                        return; 
+                    }
+                    e.stopPropagation(); // Prevents map clicks underneath for single touch
                     
                     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
                     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -1637,7 +1645,7 @@
                     dragStartLeft = ((rect.left + rect.width/2 - parentRect.left) / parentRect.width) * 100;
                     dragStartTop = ((rect.top + rect.height/2 - parentRect.top) / parentRect.height) * 100;
 
-                    // Trigger options popup if held for 600ms without dragging
+                    // Trigger options popup if held for 600ms without dragging (18px movement padding threshold)
                     pressTimer = setTimeout(() => {
                         if (isDragging) {
                             isDragging = false; // Cancel drag if options are opened
@@ -1655,8 +1663,8 @@
                     const dx = clientX - dragStartX;
                     const dy = clientY - dragStartY;
                     
-                    // Cancel options hold timer if they start dragging actively
-                    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+                    // Cancel options hold timer if they start dragging actively (Optimized 18px movement padding threshold)
+                    if (Math.abs(dx) > 18 || Math.abs(dy) > 18) {
                         clearTimeout(pressTimer);
                     }
                     
@@ -1690,7 +1698,7 @@
                     }
                 };
 
-                // Mouse inputs (bound to window dynamically inside startPress only to prevent memory leaks)
+                // Mouse inputs (bound dynamically to window and DOM elements safely to prevent memory leaks)
                 markerEl.addEventListener('mousedown', startPress);
                 window.addEventListener('mousemove', movePress);
                 window.addEventListener('mouseup', cancelPress);
@@ -1717,7 +1725,7 @@
                     svgPaths.appendChild(line);
                 }
 
-                // 3. Create Table Row (Census House details are vertically aligned under one row)
+                // 3. Create Table Row 
                 const row = document.createElement('tr');
 
                 const cellSl = document.createElement('td');
@@ -1843,7 +1851,7 @@
                 });
             };
 
-            await showBusyProgress("Updating...", sendAction);
+            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
             updateSyncStatus('synced');
         }
 
@@ -1916,7 +1924,7 @@
             };
 
             if (showProgress) {
-                await showBusyProgress("Syncing Data...", fetchAction);
+                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
             } else {
                 await fetchAction();
             }
@@ -2069,6 +2077,35 @@
                 console.error("Life cycle bootup error:", err);
             }
         };
+
+        // ANTI-INSPECT, VIEW-SOURCE AND RIGHT-CLICK GLOBAL KEY INTERCEPTORS (CAPTURE PHASE)
+        document.addEventListener('keydown', function (e) {
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            
+            // Block F12 Key
+            if (e.keyCode === 123 || e.key === "F12") {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Block Ctrl+Shift+I / J / C (Windows) and Cmd+Opt+I / J / C (Mac)
+            if ((e.ctrlKey || e.metaKey) && (e.shiftKey || e.altKey) && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J' || e.key === 'c' || e.key === 'C')) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Block Ctrl+U / Cmd+U (View Page Source)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Block Ctrl+S / Cmd+S (Save Page)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+                e.preventDefault();
+                return false;
+            }
+        }, true); // useCapture is true to intercept before other scripts run
     </script>
 </body>
 </html>
