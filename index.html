@@ -2045,7 +2045,7 @@
                 });
             };
 
-            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
+            await showBusyProgress("Saving...", sendAction);
             updateSyncStatus('synced');
         }
 
@@ -2106,7 +2106,7 @@
             };
 
             if (showProgress) {
-                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
+                await showBusyProgress("Syncing Data...", fetchAction);
             } else {
                 await fetchAction();
             }
@@ -2221,7 +2221,7 @@
                 });
 
                 clearTimeout(timeoutId);
-                isSyncingSilently = false;
+                isSyncingSilently = true;
                 updateSyncStatus('synced');
             } catch (err) {
                 isSyncingSilently = false;
