@@ -588,6 +588,43 @@
                 max-width: 100% !important;
             }
         }
+        /* Dynamic Census Houses grid inside entry modal */
+        .houses-section {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            background: #ffffff;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .house-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            transition: border-color 0.15s ease;
+        }
+        .house-row:hover {
+            border-color: var(--primary);
+        }
+        /* Numeric visual badge index */
+        .house-row-num {
+            font-size: 11px;
+            font-weight: bold;
+            color: #64748b;
+            background: #e2e8f0;
+            border-radius: 4px;
+            padding: 4px 6px;
+            min-width: 16px;
+            text-align: center;
+        }
+
     </style>
 </head>
 <body>
@@ -685,22 +722,34 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="HOME-ASBETOS SHEET"></option>
+                <option value="CATTLE SHED WITH IRON SHEET"></option>
+		            <option value="HOME-ASBETOS SHEET"></option>
                 <option value="HOME-CLOSED "></option>
                 <option value="HOME-CONCRETE"></option>
+                <option value="HOME-CONCRETE MULTISTROYED"></option> 
+                <option value="HOME-CONCRETE UNDER CONSTRUCTION"></option>
                 <option value="HOME-IRON SHEET"></option>
-                <option value="HOME-TILED ROOF"></option>
+                <option value="HOME-PLYWOOD WALL"></option>
+                <option value="HOME-RENT CONCRETE"></option> 
                 <option value="HOME-SHOP"></option>
-                <option value="HOME-INSTITUTION"></option>
-                <option value="CHURCH"></option>
+                <option value="HOME-TEMPORARY HOUSE"></option>
+                <option value="HOME-TILED ROOF"></option>
+                <option value="HOME-TILED ROOF WITH V BOARD WALL"></option>           
+                <option value="HOME-VACENT"></option>                
                 <option value="FACTORY"></option>
                 <option value="GROUND"></option>
                 <option value="INSTITUTION"></option>
+                <option value="INSTITUTION-HOME STAY"></option> 
                 <option value="MOSQUE"></option>
-                <option value="SHED WITH IRON SHEET"></option>
+                <option value="SHED WITH IRON SHEET"></option>                
                 <option value="SHOP"></option>
                 <option value="SHOP-CLOSED"></option>
-                <option value="TEMPLE"></option>               
+                <option value="SHOP-CONCRETE"></option> 
+                <option value="SHOP-WITH PLASTIC WALL TEA SHOP"></option>
+                <option value="SHOP-WITH IRON SHEET ROOF"></option> 
+                <option value="TEMPLE"></option> 
+                <option value="TOILET"></option>  
+                <option value="TOILET WITH WATER TANK"></option>                
                 
             </datalist>
 
@@ -1281,6 +1330,7 @@
 }
 
         // RENDER INTERACTIVE CENSUS HOUSE ROWS INSIDE POPUP MODAL
+        // RENDER INTERACTIVE CENSUS HOUSE ROWS INSIDE POPUP MODAL
         function renderModalHouses(isViewOnly) {
             housesSection.innerHTML = '';
             
@@ -1288,26 +1338,37 @@
                 const row = document.createElement('div');
                 row.className = 'house-row';
 
-                // CN No input
+                // 1. Visual sequential index badge
+                const badge = document.createElement('span');
+                badge.className = 'house-row-num';
+                badge.innerText = index + 1;
+                row.appendChild(badge);
+
+                // 2. CN No Input
                 const inputCN = document.createElement('input');
                 inputCN.type = 'text';
+                inputCN.className = 'input-cell';
                 inputCN.style.width = "22%";
-                inputCN.placeholder = '0001';
+                inputCN.style.padding = "6px";
+                inputCN.placeholder = 'CN NO';
                 inputCN.value = house.cnNo || '';
                 inputCN.disabled = isViewOnly;
                 inputCN.addEventListener('input', (e) => {
                     e.target.value = e.target.value.toUpperCase();
                     house.cnNo = e.target.value;
                 });
+                row.appendChild(inputCN);
 
-                // Type select dropdown
+                // 3. Building Type dropdown select
                 const selectType = document.createElement('select');
-                selectType.style.width = "30%";
+                selectType.className = 'input-cell';
+                selectType.style.width = "28%";
+                selectType.style.padding = "6px";
                 selectType.disabled = isViewOnly;
                 
                 const optDefault = document.createElement('option');
                 optDefault.value = '';
-                optDefault.innerText = '-- TYPE --';
+                optDefault.innerText = 'TYPE';
                 selectType.appendChild(optDefault);
 
                 ['PUCCA', 'KATCHA', 'OTHERS'].forEach(val => {
@@ -1320,32 +1381,35 @@
                 selectType.addEventListener('change', (e) => {
                     house.type = e.target.value;
                 });
+                row.appendChild(selectType);
 
-                // Remarks text datalist lookup
+                // 4. Remarks text datalist lookup
                 const inputRemarks = document.createElement('input');
                 inputRemarks.type = 'text';
-                inputRemarks.style.width = "38%";
+                inputRemarks.className = 'input-cell';
+                inputRemarks.style.width = "40%";
+                inputRemarks.style.padding = "6px";
                 inputRemarks.setAttribute('list', 'remarks-options');
-                inputRemarks.placeholder = 'REMARKS / OTHER';
+                inputRemarks.placeholder = 'REMARKS / USE';
                 inputRemarks.value = house.remarks || '';
                 inputRemarks.disabled = isViewOnly;
                 inputRemarks.addEventListener('input', (e) => {
                     e.target.value = e.target.value.toUpperCase();
                     house.remarks = e.target.value;
                 });
-
-                row.appendChild(inputCN);
-                row.appendChild(selectType);
                 row.appendChild(inputRemarks);
 
-                // Add Delete button only if there is more than 1 house row and not in View mode
+                // 5. Delete button
                 if (modalHouses.length > 1 && !isViewOnly) {
                     const btnDelete = document.createElement('button');
                     btnDelete.type = 'button';
                     btnDelete.className = 'btn-clear';
-                    btnDelete.style.padding = '4px 8px';
-                    btnDelete.style.fontSize = '11px';
-                    btnDelete.innerText = 'X';
+                    btnDelete.style.padding = '6px 10px';
+                    btnDelete.style.fontSize = '12px';
+                    btnDelete.style.borderRadius = '4px';
+                    btnDelete.style.margin = '0';
+                    btnDelete.innerText = '✕';
+                    btnDelete.title = 'Remove Row';
                     btnDelete.addEventListener('click', () => {
                         modalHouses.splice(index, 1);
                         renderModalHouses(isViewOnly);
