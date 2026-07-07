@@ -76,7 +76,7 @@
         .led-indicator {
             width: 20px;
             height: 20px;
-            border-radius: 0%;
+            border-radius: 10%;
             display: inline-block;
             margin-right: 5px;
         }
@@ -438,6 +438,42 @@
             box-sizing: border-box;
         }
 
+        /* Dynamic Census Houses grid inside entry modal */
+        .houses-section {
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            background: #ffffff;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .house-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+            background: #f8fafc;
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            transition: border-color 0.15s ease;
+        }
+        .house-row:hover {
+            border-color: var(--primary);
+        }
+        .house-row-num {
+            font-size: 11px;
+            font-weight: bold;
+            color: #64748b;
+            background: #e2e8f0;
+            border-radius: 4px;
+            padding: 4px 6px;
+            min-width: 16px;
+            text-align: center;
+        }
+
         /* Options Menu Vertical Buttons */
         .options-menu-btn {
             width: 100%;
@@ -588,43 +624,6 @@
                 max-width: 100% !important;
             }
         }
-        /* Dynamic Census Houses grid inside entry modal */
-        .houses-section {
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 15px;
-            background: #ffffff;
-            max-height: 250px;
-            overflow-y: auto;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .house-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-            align-items: center;
-            background: #f8fafc;
-            padding: 6px 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            transition: border-color 0.15s ease;
-        }
-        .house-row:hover {
-            border-color: var(--primary);
-        }
-        /* Numeric visual badge index */
-        .house-row-num {
-            font-size: 11px;
-            font-weight: bold;
-            color: #64748b;
-            background: #e2e8f0;
-            border-radius: 4px;
-            padding: 4px 6px;
-            min-width: 16px;
-            text-align: center;
-        }
-
     </style>
 </head>
 <body>
@@ -722,8 +721,8 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="CATTLE SHED WITH IRON SHEET"></option>
-		            <option value="HOME-ASBETOS SHEET"></option>
+                <option value="HOME-"></option>
+		<option value="HOME-ASBETOS SHEET"></option>
                 <option value="HOME-CLOSED "></option>
                 <option value="HOME-CONCRETE"></option>
                 <option value="HOME-CONCRETE MULTISTROYED"></option> 
@@ -735,21 +734,22 @@
                 <option value="HOME-TEMPORARY HOUSE"></option>
                 <option value="HOME-TILED ROOF"></option>
                 <option value="HOME-TILED ROOF WITH V BOARD WALL"></option>           
-                <option value="HOME-VACENT"></option>                
-                <option value="FACTORY"></option>
-                <option value="GROUND"></option>
-                <option value="INSTITUTION"></option>
-                <option value="INSTITUTION-HOME STAY"></option> 
-                <option value="MOSQUE"></option>
-                <option value="SHED WITH IRON SHEET"></option>                
-                <option value="SHOP"></option>
-                <option value="SHOP-CLOSED"></option>
-                <option value="SHOP-CONCRETE"></option> 
-                <option value="SHOP-WITH PLASTIC WALL TEA SHOP"></option>
-                <option value="SHOP-WITH IRON SHEET ROOF"></option> 
-                <option value="TEMPLE"></option> 
-                <option value="TOILET"></option>  
-                <option value="TOILET WITH WATER TANK"></option>                
+                <option value="HOME-VACENT"></option>
+                <option value="OTHER-"></option>
+                <option value="OTHER-CATTLE SHED WITH IRON SHEET"></option>               
+                <option value="OTHER-FACTORY"></option>
+                <option value="OTHER-INSTITUTION"></option>  
+                <option value="OTHER-INSTITUTION UNDER CONSTRUCTION"></option>                 
+                <option value="OTHER-MOSQUE"></option>
+                <option value="OTHER-RESORT"></option>
+                <option value="OTHER-SHED WITH IRON SHEET"></option>                
+                <option value="OTHER-SHOP"></option>
+                <option value="OTHER-SHOP-CLOSED"></option>
+                <option value="OTHER-SHOP-CONCRETE"></option> 
+                <option value="OTHER-SHOP-WITH PLASTIC WALL TEA SHOP"></option>
+                <option value="OTHER-SHOP-WITH IRON SHEET ROOF"></option> 
+                <option value="OTHER-TEMPLE"></option> 
+                <option value="OTHER-TOILET"></option>              
                 
             </datalist>
 
@@ -763,7 +763,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY HLB</h2>
+            <h2>MY MAP</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -794,13 +794,16 @@
                 </div>
             </div>
 
-            <!-- Real-time Nested Building Statistics Panel -->
+            <!-- Real-time Statistics Panel with Local Refresh Trigger -->
             <div id="stats-panel" style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; font-weight: bold; color: #334155;">
                 <div>Houses (HOME): <span id="stat-homes" style="color: var(--success-dark); font-size: 13px;">0</span></div>
                 <div style="color: #cbd5e1;">|</div>
                 <div>Other Buildings: <span id="stat-others" style="color: var(--primary); font-size: 13px;">0</span></div>
                 <div style="color: #cbd5e1;">|</div>
-                <div>Total: <span id="stat-total" style="color: var(--text-dark); font-size: 13px;">0</span></div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    Total: <span id="stat-total" style="color: var(--text-dark); font-size: 13px;">0</span>
+                    <button onclick="updateStatistics()" class="btn-zoom" style="padding: 2px 6px; font-size: 10px; background-color: var(--primary); font-weight: bold; border-radius: 3px; height: 18px; line-height: 14px;">Refresh</button>
+                </div>
             </div>
 
             <div class="map-controls">
@@ -870,7 +873,7 @@
     <script>
         // ==========================================
         // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9MLDWWfLUt0wZcom6W8BQySt6te2wD5s-7grjeY0tjPZ_nnLQusKDJl0UZkjOE4AS4A/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVOROFw-3IzU74buKvxfKgG5tWg4FdXtn0Iv-QTU9GV0t839IlF7DWwFb39R2TmnOnuQ/exec";
         // ==========================================
 
         const mapImage = document.getElementById('map-image');
@@ -1277,59 +1280,61 @@
             return count;
         }
 
-        // DYNAMIC NESTED BUILDING STATISTICS CALCULATOR
-        function updateStatistics() {
-    let homeCount = 0;
-    let otherBuildingCount = 0;
-    const otherKeywords = ["SHOP", "TEMPLE", "CHURCH", "MOSQUE", "FACTORY", "INSTITUTION", "GROUND"];
-
-    markers.forEach(m => {
-        if (m.isRoadLabel) return;
-
-        const houses = m.censusHouses || [];
-        let hasHome = false;
-        let hasOther = false;
-
-        if (houses.length === 0) {
-            // Fallback for flat fields if censusHouses array is empty
-            const remarkText = String(m.remarks || "").toUpperCase().trim();
-            const isOther = otherKeywords.some(kw => remarkText.includes(kw));
-            if (isOther) {
-                hasOther = true;
-            } else {
-                hasHome = true;
-            }
-        } else {
-            // Evaluate all census houses inside this single serial number
-            houses.forEach(h => {
-                const remarkText = String(h.remarks || "").toUpperCase().trim();
-                const isOther = otherKeywords.some(kw => remarkText.includes(kw));
-                if (isOther) {
-                    hasOther = true;
-                } else {
-                    hasHome = true;
+        // ALWAYS-INCREMENTING CN FINDER ENGINE
+        function getNextGlobalCNNo() {
+            let maxCN = 0;
+            markers.forEach(m => {
+                if (m.isRoadLabel) return;
+                const houses = m.censusHouses || [];
+                houses.forEach(ch => {
+                    const val = parseInt(ch.cnNo);
+                    if (!isNaN(val) && val > maxCN) {
+                        maxCN = val;
+                    }
+                });
+                const flatVal = parseInt(m.cnNo);
+                if (!isNaN(flatVal) && flatVal > maxCN) {
+                    maxCN = flatVal;
                 }
             });
+            return String(maxCN + 1).padStart(4, '0');
         }
 
-        // Apply classification logic strictly per Serial Number (marker):
-        if (hasHome) {
-            // If there is a Home present, the serial number is counted as 1 House (HOME).
-            // Any other uses (like shops) inside this same serial number are ignored for the other buildings count.
-            homeCount++;
-        } else if (hasOther) {
-            // If there are no homes at all inside this serial number, but other uses exist (e.g. pure shop),
-            // it is counted as 1 Other Building.
-            otherBuildingCount++;
+        // DYNAMIC NESTED BUILDING STATISTICS CALCULATOR WITH CN NO AND REMARKS
+        function updateStatistics() {
+            let homeCount = 0;
+            let otherBuildingCount = 0;
+
+            markers.forEach(m => {
+                if (m.isRoadLabel) return;
+
+                const houses = m.censusHouses || [];
+                if (houses.length === 0) {
+                    // Fallback for flat fields if census houses array is empty
+                    const remarkText = String(m.remarks || "").toUpperCase().trim();
+                    if (remarkText.startsWith("HOME-")) {
+                        homeCount++;
+                    } else {
+                        otherBuildingCount++;
+                    }
+                } else {
+                    // Consider each single census house row as an independent building
+                    houses.forEach(h => {
+                        const remarkText = String(h.remarks || "").toUpperCase().trim();
+                        if (remarkText.startsWith("HOME-")) {
+                            homeCount++;
+                        } else {
+                            otherBuildingCount++;
+                        }
+                    });
+                }
+            });
+
+            document.getElementById('stat-homes').innerText = homeCount;
+            document.getElementById('stat-others').innerText = otherBuildingCount;
+            document.getElementById('stat-total').innerText = homeCount + otherBuildingCount;
         }
-    });
 
-    document.getElementById('stat-homes').innerText = homeCount;
-    document.getElementById('stat-others').innerText = otherBuildingCount;
-    document.getElementById('stat-total').innerText = homeCount + otherBuildingCount;
-}
-
-        // RENDER INTERACTIVE CENSUS HOUSE ROWS INSIDE POPUP MODAL
         // RENDER INTERACTIVE CENSUS HOUSE ROWS INSIDE POPUP MODAL
         function renderModalHouses(isViewOnly) {
             housesSection.innerHTML = '';
@@ -1476,7 +1481,7 @@
                     modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
                 } else {
                     modalHouses = [{
-                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact
+                        cnNo: markerData.cnNo || getNextGlobalCNNo(),
                         type: markerData.note || '',
                         remarks: markerData.remarks || ''
                     }];
@@ -1494,8 +1499,21 @@
                 btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
                 
                 newBtnAddHouse.addEventListener('click', () => {
-                    // Sequentially increment CN No inside this row list only (First is always 0001, next is 0002)
-                    const formattedCN = String(modalHouses.length + 1).padStart(4, '0');
+                    // Find the maximum CN number globally across other markers AND currently active popup form inputs
+                    let maxCN = 0;
+                    markers.forEach(m => {
+                        if (m.id === markerData.id || m.isRoadLabel) return;
+                        (m.censusHouses || []).forEach(ch => {
+                            const val = parseInt(ch.cnNo);
+                            if (!isNaN(val) && val > maxCN) maxCN = val;
+                        });
+                    });
+                    modalHouses.forEach(ch => {
+                        const val = parseInt(ch.cnNo);
+                        if (!isNaN(val) && val > maxCN) maxCN = val;
+                    });
+                    
+                    const formattedCN = String(maxCN + 1).padStart(4, '0');
                     modalHouses.push({
                         cnNo: formattedCN,
                         type: '',
@@ -1566,6 +1584,7 @@
                 const onChoiceBuilding = async () => {
                     cleanupChoice();
                     const nextIndex = markers.length + 1;
+                    const nextCN = getNextGlobalCNNo();
 
                     const draftMarker = {
                         id: markerCounter,
@@ -1576,7 +1595,7 @@
                         phone: '',
                         buildingNo: `${markers.filter(m => !m.isRoadLabel).length + 1}`,
                         censusHouses: [{
-                            cnNo: '0001', // Every new building always defaults to '0001' first
+                            cnNo: nextCN, // Set dynamically to next available global CN No
                             type: '',
                             remarks: ''
                         }]
@@ -1996,7 +2015,7 @@
             }
         }
 
-        // SAVE DATA MANUAL (Called explicitly from the button with full screen animation)
+        // SAVE DATA MANUAL (CORS-safe simple cross-origin write layout)
         async function saveToCloudManual() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
                 await showCustomAlert("Please write your Apps Script URL into the constant variable first.", "Setup Required");
@@ -2038,14 +2057,11 @@
                 return fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
                     body: JSON.stringify(payload)
                 });
             };
 
-            await showBusyProgress("Saving...", sendAction);
+            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
             updateSyncStatus('synced');
         }
 
@@ -2106,7 +2122,7 @@
             };
 
             if (showProgress) {
-                await showBusyProgress("Syncing Data...", fetchAction);
+                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
             } else {
                 await fetchAction();
             }
@@ -2169,7 +2185,7 @@
             }
         }
 
-        // IMMEDATE BACKGROUND SYNC CONTROLLER
+        // IMMEDATE BACKGROUND SYNC CONTROLLER (Simple CORS payload transmission)
         async function syncDataWithBackendSilently() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
             if (isSyncingSilently) return;
@@ -2213,15 +2229,12 @@
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
                     body: JSON.stringify(payload),
                     signal: controller.signal
                 });
 
                 clearTimeout(timeoutId);
-                isSyncingSilently = true;
+                isSyncingSilently = false;
                 updateSyncStatus('synced');
             } catch (err) {
                 isSyncingSilently = false;
@@ -2236,6 +2249,9 @@
             const hasLocal = loadDataLocally();
             if (!hasLocal) {
                 loadFromCloud(false);
+            } else {
+                updateSyncStatus('pending');
+                syncDataWithBackendSilently();
             }
         };
     </script>
