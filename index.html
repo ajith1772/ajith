@@ -74,9 +74,9 @@
 
         /* LED INDICATOR KEYFRAMES AND CLASSES */
         .led-indicator {
-            width: 20px;
-            height: 20px;
-            border-radius: 10%;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
             display: inline-block;
             margin-right: 5px;
         }
@@ -487,6 +487,22 @@
             cursor: pointer;
         }
 
+        /* Tabs styling */
+        .tab-btn {
+            background: transparent;
+            color: #64748b;
+            border-radius: 6px 6px 0 0;
+            padding: 10px 20px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .tab-btn.active-tab {
+            background: #e2e8f0;
+            color: #2c3e50;
+        }
+
         /* Buttons styles */
         button {
             padding: 8px 14px;
@@ -518,12 +534,15 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
-            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box, .sync-badge, #stats-panel {
+            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box, .sync-badge, #stats-panel, .tab-headers, #tab-pane-data {
                 display: none !important;
             }
             .container {
                 display: block !important;
                 width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
             }
             .map-panel, .sidebar {
                 box-shadow: none !important;
@@ -536,9 +555,23 @@
             .map-area {
                 border: none !important;
                 background: transparent !important;
+                overflow: visible !important;
+                height: auto !important;
+                width: 100% !important;
             }
             .map-wrapper {
+                position: relative !important;
+                display: block !important;
                 width: 100% !important;
+                height: auto !important;
+                transition: none !important;
+            }
+            #map-image {
+                width: 100% !important;
+                height: auto !important;
+                max-height: 90vh !important;
+                object-fit: contain !important;
+                display: block !important;
             }
             table {
                 min-width: 100% !important;
@@ -550,78 +583,67 @@
                 appearance: none;
             }
 
+            /* A4 Print layout: Page 1 Map ONLY, Page 2 Building Register table ONLY */
             body.print-mode-a4 {
                 width: 100%;
             }
             body.print-mode-a4 .map-panel {
                 width: 100% !important;
-                height: 95vh !important;  
+                height: auto !important;  
+                max-height: 95vh !important;
                 page-break-after: always !important; 
                 page-break-inside: avoid !important;
                 box-sizing: border-box;
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
+                display: block !important;
             }
-            body.print-mode-a4 .map-area {
-                width: 100% !important;
-                height: 85vh !important;  
-                overflow: hidden !important; 
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-            }
-            body.print-mode-a4 .map-wrapper {
-                width: auto !important;
-                height: 100% !important; 
-                max-width: 100% !important;
-                display: inline-block;
-            }
-            body.print-mode-a4 #map-image {
-                width: auto !important;
-                height: 100% !important;
-                max-width: 100% !important;
-            }
-            body.print-mode-a4 .sidebar {
+            body.print-mode-a4 .tab-container {
                 page-break-before: always !important; 
                 display: block !important;
                 width: 100% !important;
-                margin-top: 20px !important;
+                margin-top: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+            body.print-mode-a4 #tab-pane-register {
+                display: block !important;
+            }
+            body.print-mode-a4 #tab-pane-data {
+                display: none !important;
+            }
+            body.print-mode-a4 table {
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto !important;
+            }
+            body.print-mode-a4 tr {
+                page-break-inside: avoid !important;
+                page-break-after: auto !important;
+            }
+            body.print-mode-a4 th, body.print-mode-a4 td {
+                border: 1px solid #cbd5e1 !important;
+                padding: 8px !important;
             }
 
+            /* A3 Print layout: Single page Portrait map ONLY */
             body.print-mode-a3 {
                 width: 100%;
             }
-            body.print-mode-a3 .sidebar {
+            body.print-mode-a3 .tab-container, body.print-mode-a3 .sidebar {
                 display: none !important; 
             }
             body.print-mode-a3 .map-panel {
                 width: 100% !important;
-                height: 95vh !important;  
+                height: auto !important;  
+                max-height: 95vh !important;
                 page-break-inside: avoid !important;
                 box-sizing: border-box;
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-            }
-            body.print-mode-a3 .map-area {
-                width: 100% !important;
-                height: 85vh !important;
-                overflow: hidden !important;
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-            }
-            body.print-mode-a3 .map-wrapper {
-                width: auto !important;
-                height: 100% !important;
-                max-width: 100% !important;
-                display: inline-block;
+                display: block !important;
             }
             body.print-mode-a3 #map-image {
-                width: auto !important;
-                height: 100% !important;
-                max-width: 100% !important;
+                width: 100% !important;
+                height: auto !important;
+                max-height: 94vh !important;
+                object-fit: contain !important;
             }
         }
     </style>
@@ -675,6 +697,7 @@
         </div>
     </div>
 
+    <!-- Custom Options Menu Modal (Long Press on Marker) -->
     <!-- Custom Options Menu Modal (Long Press on Marker) -->
     <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
         <div class="dialog-box" style="max-width: 320px;">
@@ -749,7 +772,7 @@
                 <option value="OTHER-SHOP-WITH PLASTIC WALL TEA SHOP"></option>
                 <option value="OTHER-SHOP-WITH IRON SHEET ROOF"></option> 
                 <option value="OTHER-TEMPLE"></option> 
-                <option value="OTHER-TOILET"></option>              
+                <option value="OTHER-TOILET"></option>             
                 
             </datalist>
 
@@ -776,7 +799,7 @@
     </div>
 
     <div class="container">
-        <!-- Map Panel (TOP) -->
+        <!-- Map Panel (TOP - remains visible above both tabs) -->
         <div class="map-panel">
             
             <!-- Interactive Tool Mode Box -->
@@ -838,34 +861,74 @@
             </div>
         </div>
 
-        <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
-        <div class="sidebar">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building</h3>
-                <div class="button-group">
-                    <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
-                    <button onclick="saveToCloudManual()" class="btn-save">Save</button>
-                    <button onclick="clearAll()" class="btn-clear">Reset</button>
+        <!-- Tab Layout Structure placed directly below the map section -->
+        <div class="tab-container" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; padding: 15px;">
+            <div class="tab-headers" style="display: flex; gap: 5px; border-bottom: 2px solid #e2e8f0; margin-bottom: 15px;">
+                <button id="tab-btn-register" class="tab-btn active-tab" onclick="switchTab('register')">Building Register</button>
+                <button id="tab-btn-data" class="tab-btn" onclick="switchTab('data')">DATA</button>
+            </div>
+
+            <!-- Tab Pane 1: Building Register Content -->
+            <div id="tab-pane-register" style="display: block;">
+                <div class="sidebar" style="box-shadow: none; padding: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="margin: 0; font-size: 1.2rem;">Building</h3>
+                        <div class="button-group">
+                            <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
+                            <button onclick="saveToCloudManual()" class="btn-save">Save</button>
+                            <button onclick="clearAll()" class="btn-clear">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 6%">Sl No</th>
+                                    <th style="width: 20%">Name</th>
+                                    <th style="width: 14%">Phone</th>
+                                    <th style="width: 10%">Bldg No</th>
+                                    <th style="width: 12%">CN No</th>
+                                    <th style="width: 18%">Pucca/Katcha/Others</th>
+                                    <th style="width: 20%">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="register-body">
+                                <!-- Rows generated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 6%">Sl No</th>
-                            <th style="width: 20%">Name</th>
-                            <th style="width: 14%">Phone</th>
-                            <th style="width: 10%">Bldg No</th>
-                            <th style="width: 12%">CN No</th>
-                            <th style="width: 18%">Pucca/Katcha/Others</th>
-                            <th style="width: 20%">Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="register-body">
-                        <!-- Rows generated dynamically -->
-                    </tbody>
-                </table>
+
+            <!-- Tab Pane 2: DATA Monitor View Content -->
+            <div id="tab-pane-data" style="display: none;">
+                <div class="sidebar" style="box-shadow: none; padding: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <h3 style="margin: 0; font-size: 1.2rem;">DATA Status Monitor</h3>
+                        <div class="button-group">
+                            <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
+                            <button onclick="saveToCloudManual()" class="btn-save">Save</button>
+                            <button onclick="clearAll()" class="btn-clear">Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 15%">Building No</th>
+                                    <th style="width: 25%">CN No</th>
+                                    <th style="width: 40%">Remarks</th>
+                                    <th style="width: 20%">DATA STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="data-tab-body">
+                                <!-- Rows generated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -873,7 +936,7 @@
     <script>
         // ==========================================
         // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVOROFw-3IzU74buKvxfKgG5tWg4FdXtn0Iv-QTU9GV0t839IlF7DWwFb39R2TmnOnuQ/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOKXwsSb3vGPTqKokZcE2luFVHZf48yi6rI5tfnV9CvEzIOtMu2DnLRUF-xsTruE8Byg/exec";
         // ==========================================
 
         const mapImage = document.getElementById('map-image');
@@ -941,6 +1004,9 @@
         let currentZoom = 100;
         let currentToolMode = "building"; 
         let isMoveMode = false; // Controls Drag-and-Drop state
+
+        // Local storage status mapping dictionary
+        let localDataStatusMap = {};
 
         // Local array to hold census houses in active popup session
         let modalHouses = [];
@@ -1049,6 +1115,28 @@
             zoomText.innerText = `${currentZoom}%`;
         }
 
+        // TAB SWITCH CONTROLLER
+        function switchTab(tabName) {
+            const btnReg = document.getElementById('tab-btn-register');
+            const btnData = document.getElementById('tab-btn-data');
+            const paneReg = document.getElementById('tab-pane-register');
+            const paneData = document.getElementById('tab-pane-data');
+
+            btnReg.classList.remove('active-tab');
+            btnData.classList.remove('active-tab');
+
+            if (tabName === 'register') {
+                btnReg.classList.add('active-tab');
+                paneReg.style.display = 'block';
+                paneData.style.display = 'none';
+            } else {
+                btnData.classList.add('active-tab');
+                paneReg.style.display = 'none';
+                paneData.style.display = 'block';
+                renderDataTab(); // Populate contents
+            }
+        }
+
         // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
         function showCustomAlert(message, title = "Notification") {
             return new Promise((resolve) => {
@@ -1130,7 +1218,7 @@
             }).catch((err) => {
                 clearInterval(interval);
                 loadingOverlay.style.display = 'none';
-                showCustomAlert("Operation failed: " + err, "Error");
+                showCustomAlert("Low network or network offline detected.\n\nDetails: " + err.message, "Network Issue");
             });
         }
 
@@ -1138,7 +1226,7 @@
         function triggerPrint(sizeClass, pageSize) {
             const printStyle = document.createElement('style');
             printStyle.id = "print-page-style";
-            printStyle.innerHTML = `@media print { @page { size: ${pageSize} portrait; margin: 5mm; } }`;
+            printStyle.innerHTML = `@media print { @page { size: ${pageSize} portrait; margin: 8mm; } }`;
             document.head.appendChild(printStyle);
 
             document.body.classList.add(sizeClass);
@@ -1373,7 +1461,7 @@
                 
                 const optDefault = document.createElement('option');
                 optDefault.value = '';
-                optDefault.innerText = 'TYPE';
+                optDefault.innerText = '-- TYPE --';
                 selectType.appendChild(optDefault);
 
                 ['PUCCA', 'KATCHA', 'OTHERS'].forEach(val => {
@@ -1840,6 +1928,63 @@
             markerEl.addEventListener('touchstart', onDragStart, { passive: false });
         }
 
+        // POPUP NEW DATA STATUS MONITOR TABLE VIEW PANELS
+        function renderDataTab() {
+            const dataBody = document.getElementById('data-tab-body');
+            dataBody.innerHTML = '';
+
+            markers.forEach((marker) => {
+                if (marker.isRoadLabel) return;
+
+                const row = document.createElement('tr');
+
+                const cellBldg = document.createElement('td');
+                cellBldg.innerText = marker.buildingNo || '-';
+
+                const cellCN = document.createElement('td');
+                const cellRemarks = document.createElement('td');
+
+                if (marker.censusHouses && marker.censusHouses.length > 0) {
+                    cellCN.innerHTML = marker.censusHouses.map(ch => ch.cnNo || '-').join('<br>');
+                    cellRemarks.innerHTML = marker.censusHouses.map(ch => ch.remarks || '-').join('<br>');
+                } else {
+                    cellCN.innerText = marker.cnNo || '-';
+                    cellRemarks.innerText = marker.remarks || '-';
+                }
+
+                const cellStatus = document.createElement('td');
+                const selectStatus = document.createElement('select');
+                selectStatus.className = 'input-cell';
+                selectStatus.style.width = '100px';
+
+                ['YES', 'NO'].forEach(val => {
+                    const opt = document.createElement('option');
+                    opt.value = val;
+                    opt.innerText = val;
+                    const currentStatus = localDataStatusMap[marker.id] || 'NO';
+                    if (currentStatus === val) opt.selected = true;
+                    selectStatus.appendChild(opt);
+                });
+
+                selectStatus.addEventListener('change', (e) => {
+                    localDataStatusMap[marker.id] = e.target.value;
+                    localStorage.setItem('local_data_status', JSON.stringify(localDataStatusMap));
+                    saveDataLocally();
+                    syncDataWithBackendSilently();
+                    render(); // Instantly update building marker background colors on map
+                });
+
+                cellStatus.appendChild(selectStatus);
+
+                row.appendChild(cellBldg);
+                row.appendChild(cellCN);
+                row.appendChild(cellRemarks);
+                row.appendChild(cellStatus);
+
+                dataBody.appendChild(row);
+            });
+        }
+
         // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
         function render() {
             markerLayer.innerHTML = '';
@@ -1874,35 +2019,52 @@
                     const classification = getBuildingClassification(marker);
                     markerEl.innerText = marker.slNo;
 
+                    // Fetch dynamic status color (YES = Green, NO = Red)
+                    const statusVal = localDataStatusMap[marker.id] || 'NO';
+                    const statusColor = (statusVal === 'YES') ? '#2ecc71' : '#e74c3c';
+
                     if (classification.isHome) {
                         // Home styles (Squares)
                         if (classification.type === "PUCCA") {
                             markerEl.className = 'marker-base marker-home-pucca';
+                            markerEl.style.setProperty('background-color', statusColor, 'important');
+                            markerEl.style.setProperty('color', 'white', 'important');
+                            markerEl.style.setProperty('border-color', 'white', 'important');
                         } else if (classification.type === "KATCHA") {
                             markerEl.className = 'marker-base marker-home-katcha';
+                            markerEl.style.setProperty('background-color', statusColor, 'important');
+                            markerEl.style.setProperty('color', 'white', 'important');
+                            markerEl.style.setProperty('border-color', 'white', 'important');
+                            markerEl.style.setProperty('border-style', 'dashed', 'important');
                         } else {
                             markerEl.className = 'marker-base marker-circle'; // Fallback circle
+                            markerEl.style.setProperty('background-color', statusColor, 'important');
+                            markerEl.style.setProperty('color', 'white', 'important');
                         }
                     } else {
-                        // Other building styles (Triangles drawn with high performance SVG nodes)
+                        // Other building styles (Triangles drawn with dynamic inline SVG nodes reflecting colors)
                         if (classification.type === "PUCCA") {
                             markerEl.className = 'marker-base marker-other-pucca';
+                            markerEl.style.setProperty('color', 'white', 'important');
                             markerEl.innerHTML = `
                                 <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
-                                    <polygon points="12,2 2,22 22,22"/>
+                                    <polygon points="12,2 2,22 22,22" style="fill: ${statusColor} !important; stroke: white !important; stroke-width: 1.5;" />
                                 </svg>
                                 ${marker.slNo}
                             `;
                         } else if (classification.type === "KATCHA") {
                             markerEl.className = 'marker-base marker-other-katcha';
+                            markerEl.style.setProperty('color', 'white', 'important');
                             markerEl.innerHTML = `
                                 <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
-                                    <polygon points="12,2 2,22 22,22"/>
+                                    <polygon points="12,2 2,22 22,22" style="fill: ${statusColor} !important; stroke: white !important; stroke-width: 1.5; stroke-dasharray: 3, 1.5;" />
                                 </svg>
                                 ${marker.slNo}
                             `;
                         } else {
                             markerEl.className = 'marker-base marker-circle'; // Fallback circle
+                            markerEl.style.setProperty('background-color', statusColor, 'important');
+                            markerEl.style.setProperty('color', 'white', 'important');
                         }
                     }
                 }
@@ -2000,23 +2162,34 @@
             render();
         }
 
+        // RESET PROGRESS (Clears only local device storage and maps without touching Google Sheets)
         async function clearAll() {
-            const confirmed = await showCustomConfirm("Reset local modifications? This clears your screen. Database remains unchanged unless you push to save.", "Reset Progress");
+            const confirmed = await showCustomConfirm("Reset local modifications? This clears your device screen. Google Sheets database remains completely unchanged.", "Reset Progress");
             if (confirmed) {
                 markers = [];
                 markerCounter = 1;
                 roads = []; 
+                localDataStatusMap = {};
                 localStorage.removeItem('census_markers');
                 localStorage.removeItem('census_roads');
                 localStorage.removeItem('census_marker_counter');
-                updateSyncStatus('pending');
+                localStorage.removeItem('local_data_status');
+                
+                // Set synced status cleanly to prevent automated sync from pushing an empty map to Sheets
+                updateSyncStatus('synced'); 
                 renderRoads();
                 render();
             }
         }
 
-        // SAVE DATA MANUAL (CORS-safe simple cross-origin write layout)
+        // SAVE DATA MANUAL (CORS-safe simple cross-origin write layout with 15-second abort watchdog)
         async function saveToCloudManual() {
+            // Check internet connectivity immediately
+            if (!navigator.onLine) {
+                await showCustomAlert("No internet connection detected. Please connect to a stable network and try again later.", "Network Offline");
+                return;
+            }
+
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
                 await showCustomAlert("Please write your Apps Script URL into the constant variable first.", "Setup Required");
                 return;
@@ -2033,8 +2206,8 @@
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
-                    m.note = m.censusHouses.map(ch => ch.type).join("\n");
-                    m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
+                    m.note = m.censusHouses.map(ch => ch.type || "").join("\n"); // Preserves building house types securely
+                    m.remarks = m.censusHouses.map(ch => ch.remarks || "").join("\n");
                 }
             });
 
@@ -2054,24 +2227,52 @@
             }
 
             const sendAction = () => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second manual timeout
+
                 return fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: controller.signal
+                }).then(() => {
+                    clearTimeout(timeoutId);
+                }).catch(err => {
+                    clearTimeout(timeoutId);
+                    throw new Error("Weak connection or request timed out. Please try again later.");
                 });
             };
 
-            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
-            updateSyncStatus('synced');
+            try {
+                await showBusyProgress("Saving...", sendAction);
+                updateSyncStatus('synced');
+            } catch (err) {
+                // Handled gracefully inside showBusyProgress catcher
+            }
         }
 
-        // FETCH DATA (GET - loads directly from sheet with spinner progress)
+        // FETCH DATA (GET - loads directly from sheet with spinner progress and 15s timeout handler)
         async function loadFromCloud(showProgress = true) {
+            // Check connection active state
+            if (!navigator.onLine) {
+                if (showProgress) {
+                    await showCustomAlert("No internet connection detected. Please connect to a stable network and try again later.", "Network Offline");
+                }
+                return;
+            }
+
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
 
             const fetchAction = () => {
-                return fetch(GOOGLE_SCRIPT_URL)
-                    .then(response => response.json())
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+                return fetch(GOOGLE_SCRIPT_URL, { signal: controller.signal })
+                    .then(response => {
+                        clearTimeout(timeoutId);
+                        if (!response.ok) throw new Error("Server responded with error status");
+                        return response.json();
+                    })
                     .then(data => {
                         if (data && data.length > 0) {
                             const roadsRecord = data.find(m => m.id === "ROADS_DATA");
@@ -2105,6 +2306,7 @@
                                         });
                                     }
 
+                                    // Restore fallback properties
                                     m.cnNo = cns[0] || "";
                                     m.note = types[0] || "";
                                     m.remarks = remarks[0] || "";
@@ -2118,13 +2320,16 @@
                             render();
                             updateSyncStatus('synced');
                         }
+                    }).catch(err => {
+                        clearTimeout(timeoutId);
+                        throw new Error("Weak connection or request timed out. Please try again later.");
                     });
             };
 
             if (showProgress) {
-                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
+                await showBusyProgress("Syncing...", fetchAction);
             } else {
-                await fetchAction();
+                await fetchAction().catch(e => console.warn("Background auto load failed:", e));
             }
         }
 
@@ -2134,6 +2339,7 @@
                 localStorage.setItem('census_markers', JSON.stringify(markers));
                 localStorage.setItem('census_roads', JSON.stringify(roads));
                 localStorage.setItem('census_marker_counter', markerCounter);
+                localStorage.setItem('local_data_status', JSON.stringify(localDataStatusMap));
                 updateSyncStatus('pending');
             } catch(e) {
                 console.error("Local storage write failed:", e);
@@ -2144,12 +2350,14 @@
             const localMarkers = localStorage.getItem('census_markers');
             const localRoads = localStorage.getItem('census_roads');
             const localCounter = localStorage.getItem('census_marker_counter');
+            const localStatus = localStorage.getItem('local_data_status');
 
             if (localMarkers) {
                 try {
                     markers = JSON.parse(localMarkers);
                     roads = localRoads ? JSON.parse(localRoads) : [];
                     markerCounter = parseInt(localCounter) || 1;
+                    localDataStatusMap = localStatus ? JSON.parse(localStatus) : {};
                     renderRoads();
                     render();
                     return true;
@@ -2185,10 +2393,16 @@
             }
         }
 
-        // IMMEDATE BACKGROUND SYNC CONTROLLER (Simple CORS payload transmission)
+        // IMMEDATE BACKGROUND SYNC CONTROLLER (Simple CORS payload transmission with 30-second safe threshold limit)
         async function syncDataWithBackendSilently() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
             if (isSyncingSilently) return;
+            
+            // Skip automated background updates silently if browser environment detects off-grid states
+            if (!navigator.onLine) {
+                updateSyncStatus('offline');
+                return;
+            }
 
             isSyncingSilently = true;
             updateSyncStatus('syncing');
@@ -2202,8 +2416,8 @@
                     m.remarks = "";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
-                    m.note = m.censusHouses.map(ch => ch.type).join("\n");
-                    m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
+                    m.note = m.censusHouses.map(ch => ch.type || "").join("\n"); // Carry classifications safely to Apps Script
+                    m.remarks = m.censusHouses.map(ch => ch.remarks || "").join("\n");
                 }
             });
 
@@ -2224,7 +2438,7 @@
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30-second background write safe guard threshold limit
 
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
