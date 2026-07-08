@@ -74,9 +74,9 @@
 
         /* LED INDICATOR KEYFRAMES AND CLASSES */
         .led-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            border-radius: 10%;
             display: inline-block;
             margin-right: 5px;
         }
@@ -441,26 +441,37 @@
         /* Dynamic Census Houses grid inside entry modal */
         .houses-section {
             border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 10px;
+            border-radius: 8px;
+            padding: 12px;
             margin-top: 15px;
-            background: #f8fafc;
+            background: #ffffff;
             max-height: 250px;
             overflow-y: auto;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         }
         .house-row {
             display: flex;
             gap: 8px;
             margin-bottom: 8px;
             align-items: center;
+            background: #f8fafc;
+            padding: 6px 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            transition: border-color 0.15s ease;
         }
-        .house-row input, .house-row select {
-            padding: 6px;
-            border: 1px solid #cbd5e1;
+        .house-row:hover {
+            border-color: var(--primary);
+        }
+        .house-row-num {
+            font-size: 11px;
+            font-weight: bold;
+            color: #64748b;
+            background: #e2e8f0;
             border-radius: 4px;
-            font-size: 12px;
-            text-transform: uppercase;
-            box-sizing: border-box;
+            padding: 4px 6px;
+            min-width: 16px;
+            text-align: center;
         }
 
         /* Options Menu Vertical Buttons */
@@ -507,7 +518,7 @@
                 padding: 0 !important;
                 margin: 0 !important;
             }
-            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box, .sync-badge {
+            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box, .sync-badge, #stats-panel {
                 display: none !important;
             }
             .container {
@@ -710,22 +721,35 @@
 
             <!-- Remarks Datalist lookup helper -->
             <datalist id="remarks-options">
-                <option value="HOME-ASBETOS SHEET"></option>
+                <option value="HOME-"></option>
+		<option value="HOME-ASBETOS SHEET"></option>
                 <option value="HOME-CLOSED "></option>
                 <option value="HOME-CONCRETE"></option>
+                <option value="HOME-CONCRETE MULTISTROYED"></option> 
+                <option value="HOME-CONCRETE UNDER CONSTRUCTION"></option>
                 <option value="HOME-IRON SHEET"></option>
-                <option value="HOME-TILED ROOF"></option>
+                <option value="HOME-PLYWOOD WALL"></option>
+                <option value="HOME-RENT CONCRETE"></option> 
                 <option value="HOME-SHOP"></option>
-                <option value="HOME-INSTITUTION"></option>
-                <option value="CHURCH"></option>
-                <option value="FACTORY"></option>
-                <option value="GROUND"></option>
-                <option value="INSTITUTION"></option>
-                <option value="MOSQUE"></option>
-                <option value="SHED WITH IRON SHEET"></option>
-                <option value="SHOP"></option>
-                <option value="SHOP-CLOSED"></option>
-                <option value="TEMPLE"></option>               
+                <option value="HOME-TEMPORARY HOUSE"></option>
+                <option value="HOME-TILED ROOF"></option>
+                <option value="HOME-TILED ROOF WITH V BOARD WALL"></option>           
+                <option value="HOME-VACENT"></option>
+                <option value="OTHER-"></option>
+                <option value="OTHER-CATTLE SHED WITH IRON SHEET"></option>               
+                <option value="OTHER-FACTORY"></option>
+                <option value="OTHER-INSTITUTION"></option>  
+                <option value="OTHER-INSTITUTION UNDER CONSTRUCTION"></option>                 
+                <option value="OTHER-MOSQUE"></option>
+                <option value="OTHER-RESORT"></option>
+                <option value="OTHER-SHED WITH IRON SHEET"></option>                
+                <option value="OTHER-SHOP"></option>
+                <option value="OTHER-SHOP-CLOSED"></option>
+                <option value="OTHER-SHOP-CONCRETE"></option> 
+                <option value="OTHER-SHOP-WITH PLASTIC WALL TEA SHOP"></option>
+                <option value="OTHER-SHOP-WITH IRON SHEET ROOF"></option> 
+                <option value="OTHER-TEMPLE"></option> 
+                <option value="OTHER-TOILET"></option>              
                 
             </datalist>
 
@@ -757,15 +781,28 @@
             
             <!-- Interactive Tool Mode Box -->
             <div class="tool-mode-box" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
                     <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
                     <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Roads</button>
+                    <button id="btn-mode-move" onclick="toggleMoveMode()" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Move Buildings</button>
                 </div>
                 <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
                     <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New</button>
                     <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
                     <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
+                </div>
+            </div>
+
+            <!-- Real-time Statistics Panel with Local Refresh Trigger -->
+            <div id="stats-panel" style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; font-weight: bold; color: #334155;">
+                <div>Houses (HOME): <span id="stat-homes" style="color: var(--success-dark); font-size: 13px;">0</span></div>
+                <div style="color: #cbd5e1;">|</div>
+                <div>Other Buildings: <span id="stat-others" style="color: var(--primary); font-size: 13px;">0</span></div>
+                <div style="color: #cbd5e1;">|</div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    Total: <span id="stat-total" style="color: var(--text-dark); font-size: 13px;">0</span>
+                    <button onclick="updateStatistics()" class="btn-zoom" style="padding: 2px 6px; font-size: 10px; background-color: var(--primary); font-weight: bold; border-radius: 3px; height: 18px; line-height: 14px;">Refresh</button>
                 </div>
             </div>
 
@@ -836,7 +873,7 @@
     <script>
         // ==========================================
         // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxSSqI5sQWkXlQVrphxjmQe_pWvytoaCADqVu-MU4ulaXdTTNzePoS7OhNLQjXniEJzXw/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVOROFw-3IzU74buKvxfKgG5tWg4FdXtn0Iv-QTU9GV0t839IlF7DWwFb39R2TmnOnuQ/exec";
         // ==========================================
 
         const mapImage = document.getElementById('map-image');
@@ -894,6 +931,7 @@
         // Mode elements
         const btnModeBuilding = document.getElementById('btn-mode-building');
         const btnModeRoad = document.getElementById('btn-mode-road');
+        const btnModeMove = document.getElementById('btn-mode-move');
         const roadTools = document.getElementById('road-tools');
         const instructionHint = document.getElementById('instruction-hint');
 
@@ -902,6 +940,7 @@
         let markerCounter = 1;
         let currentZoom = 100;
         let currentToolMode = "building"; 
+        let isMoveMode = false; // Controls Drag-and-Drop state
 
         // Local array to hold census houses in active popup session
         let modalHouses = [];
@@ -1132,8 +1171,31 @@
             e.target.value = e.target.value.replace(/[^0-9]/g, '');
         });
 
+        // TOGGLE MOVE MODE (DRAG & DROP)
+        function toggleMoveMode() {
+            isMoveMode = !isMoveMode;
+            if (isMoveMode) {
+                // Deactivate styles on normal buttons
+                btnModeBuilding.style.backgroundColor = "#64748b";
+                btnModeRoad.style.backgroundColor = "#64748b";
+                roadTools.style.display = "none";
+                
+                // Active color indicator
+                btnModeMove.style.backgroundColor = "#e67e22";
+                instructionHint.innerText = "MOVE BUILDINGS TOOL ACTIVE: Hold and drag markers on the map to reposition. Press 'Move Buildings' again to stop.";
+            } else {
+                btnModeMove.style.backgroundColor = "#64748b";
+                setToolMode(currentToolMode);
+            }
+            render();
+        }
+
         // INTERACTIVE TOOL MODE CONTROLLER
         function setToolMode(mode) {
+            if (isMoveMode) {
+                isMoveMode = false;
+                btnModeMove.style.backgroundColor = "#64748b";
+            }
             currentToolMode = mode;
             if (mode === "building") {
                 btnModeBuilding.style.backgroundColor = "var(--success)";
@@ -1147,6 +1209,7 @@
                 instructionHint.innerText = "Click sequential points on the map to draw roads/paths. Click 'New Road' to draw separate segments.";
             }
             renderRoads(); 
+            render();
         }
 
         // ROAD DRAWING UTILITIES
@@ -1217,6 +1280,61 @@
             return count;
         }
 
+        // ALWAYS-INCREMENTING CN FINDER ENGINE
+        function getNextGlobalCNNo() {
+            let maxCN = 0;
+            markers.forEach(m => {
+                if (m.isRoadLabel) return;
+                const houses = m.censusHouses || [];
+                houses.forEach(ch => {
+                    const val = parseInt(ch.cnNo);
+                    if (!isNaN(val) && val > maxCN) {
+                        maxCN = val;
+                    }
+                });
+                const flatVal = parseInt(m.cnNo);
+                if (!isNaN(flatVal) && flatVal > maxCN) {
+                    maxCN = flatVal;
+                }
+            });
+            return String(maxCN + 1).padStart(4, '0');
+        }
+
+        // DYNAMIC NESTED BUILDING STATISTICS CALCULATOR WITH CN NO AND REMARKS
+        function updateStatistics() {
+            let homeCount = 0;
+            let otherBuildingCount = 0;
+
+            markers.forEach(m => {
+                if (m.isRoadLabel) return;
+
+                const houses = m.censusHouses || [];
+                if (houses.length === 0) {
+                    // Fallback for flat fields if census houses array is empty
+                    const remarkText = String(m.remarks || "").toUpperCase().trim();
+                    if (remarkText.startsWith("HOME-")) {
+                        homeCount++;
+                    } else {
+                        otherBuildingCount++;
+                    }
+                } else {
+                    // Consider each single census house row as an independent building
+                    houses.forEach(h => {
+                        const remarkText = String(h.remarks || "").toUpperCase().trim();
+                        if (remarkText.startsWith("HOME-")) {
+                            homeCount++;
+                        } else {
+                            otherBuildingCount++;
+                        }
+                    });
+                }
+            });
+
+            document.getElementById('stat-homes').innerText = homeCount;
+            document.getElementById('stat-others').innerText = otherBuildingCount;
+            document.getElementById('stat-total').innerText = homeCount + otherBuildingCount;
+        }
+
         // RENDER INTERACTIVE CENSUS HOUSE ROWS INSIDE POPUP MODAL
         function renderModalHouses(isViewOnly) {
             housesSection.innerHTML = '';
@@ -1225,26 +1343,37 @@
                 const row = document.createElement('div');
                 row.className = 'house-row';
 
-                // CN No input
+                // 1. Visual sequential index badge
+                const badge = document.createElement('span');
+                badge.className = 'house-row-num';
+                badge.innerText = index + 1;
+                row.appendChild(badge);
+
+                // 2. CN No Input
                 const inputCN = document.createElement('input');
                 inputCN.type = 'text';
+                inputCN.className = 'input-cell';
                 inputCN.style.width = "22%";
-                inputCN.placeholder = '0001';
+                inputCN.style.padding = "6px";
+                inputCN.placeholder = 'CN NO';
                 inputCN.value = house.cnNo || '';
                 inputCN.disabled = isViewOnly;
                 inputCN.addEventListener('input', (e) => {
                     e.target.value = e.target.value.toUpperCase();
                     house.cnNo = e.target.value;
                 });
+                row.appendChild(inputCN);
 
-                // Type select dropdown
+                // 3. Building Type dropdown select
                 const selectType = document.createElement('select');
-                selectType.style.width = "30%";
+                selectType.className = 'input-cell';
+                selectType.style.width = "28%";
+                selectType.style.padding = "6px";
                 selectType.disabled = isViewOnly;
                 
                 const optDefault = document.createElement('option');
                 optDefault.value = '';
-                optDefault.innerText = '-- TYPE --';
+                optDefault.innerText = 'TYPE';
                 selectType.appendChild(optDefault);
 
                 ['PUCCA', 'KATCHA', 'OTHERS'].forEach(val => {
@@ -1257,32 +1386,35 @@
                 selectType.addEventListener('change', (e) => {
                     house.type = e.target.value;
                 });
+                row.appendChild(selectType);
 
-                // Remarks text datalist lookup
+                // 4. Remarks text datalist lookup
                 const inputRemarks = document.createElement('input');
                 inputRemarks.type = 'text';
-                inputRemarks.style.width = "38%";
+                inputRemarks.className = 'input-cell';
+                inputRemarks.style.width = "40%";
+                inputRemarks.style.padding = "6px";
                 inputRemarks.setAttribute('list', 'remarks-options');
-                inputRemarks.placeholder = 'REMARKS / OTHER';
+                inputRemarks.placeholder = 'REMARKS / USE';
                 inputRemarks.value = house.remarks || '';
                 inputRemarks.disabled = isViewOnly;
                 inputRemarks.addEventListener('input', (e) => {
                     e.target.value = e.target.value.toUpperCase();
                     house.remarks = e.target.value;
                 });
-
-                row.appendChild(inputCN);
-                row.appendChild(selectType);
                 row.appendChild(inputRemarks);
 
-                // Add Delete button only if there is more than 1 house row and not in View mode
+                // 5. Delete button
                 if (modalHouses.length > 1 && !isViewOnly) {
                     const btnDelete = document.createElement('button');
                     btnDelete.type = 'button';
                     btnDelete.className = 'btn-clear';
-                    btnDelete.style.padding = '4px 8px';
-                    btnDelete.style.fontSize = '11px';
-                    btnDelete.innerText = 'X';
+                    btnDelete.style.padding = '6px 10px';
+                    btnDelete.style.fontSize = '12px';
+                    btnDelete.style.borderRadius = '4px';
+                    btnDelete.style.margin = '0';
+                    btnDelete.innerText = '✕';
+                    btnDelete.title = 'Remove Row';
                     btnDelete.addEventListener('click', () => {
                         modalHouses.splice(index, 1);
                         renderModalHouses(isViewOnly);
@@ -1349,7 +1481,7 @@
                     modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
                 } else {
                     modalHouses = [{
-                        cnNo: markerData.cnNo || '0001', // Keeps default format 0001 intact
+                        cnNo: markerData.cnNo || getNextGlobalCNNo(),
                         type: markerData.note || '',
                         remarks: markerData.remarks || ''
                     }];
@@ -1367,8 +1499,21 @@
                 btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
                 
                 newBtnAddHouse.addEventListener('click', () => {
-                    // Sequentially increment CN No inside this row list only (First is always 0001, next is 0002)
-                    const formattedCN = String(modalHouses.length + 1).padStart(4, '0');
+                    // Find the maximum CN number globally across other markers AND currently active popup form inputs
+                    let maxCN = 0;
+                    markers.forEach(m => {
+                        if (m.id === markerData.id || m.isRoadLabel) return;
+                        (m.censusHouses || []).forEach(ch => {
+                            const val = parseInt(ch.cnNo);
+                            if (!isNaN(val) && val > maxCN) maxCN = val;
+                        });
+                    });
+                    modalHouses.forEach(ch => {
+                        const val = parseInt(ch.cnNo);
+                        if (!isNaN(val) && val > maxCN) maxCN = val;
+                    });
+                    
+                    const formattedCN = String(maxCN + 1).padStart(4, '0');
                     modalHouses.push({
                         cnNo: formattedCN,
                         type: '',
@@ -1426,6 +1571,8 @@
 
         // INTERACTIVE MAP CLICK DISTRIBUTOR
         mapImage.addEventListener('click', async function(e) {
+            if (isMoveMode) return; // Do not register buildings when Move Mode is enabled
+
             const rect = mapImage.getBoundingClientRect();
             const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
             const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
@@ -1437,6 +1584,7 @@
                 const onChoiceBuilding = async () => {
                     cleanupChoice();
                     const nextIndex = markers.length + 1;
+                    const nextCN = getNextGlobalCNNo();
 
                     const draftMarker = {
                         id: markerCounter,
@@ -1447,7 +1595,7 @@
                         phone: '',
                         buildingNo: `${markers.filter(m => !m.isRoadLabel).length + 1}`,
                         censusHouses: [{
-                            cnNo: '0001', // Every new building always defaults to '0001' first
+                            cnNo: nextCN, // Set dynamically to next available global CN No
                             type: '',
                             remarks: ''
                         }]
@@ -1609,12 +1757,94 @@
             return { isHome: !isOtherType, type: houseType };
         }
 
+        // RENDERS THE SEQUENCE ARROWS (SVG paths) ON THE MAP
+        function renderSvgPaths() {
+            svgPaths.innerHTML = '';
+            for (let i = 0; i < markers.length - 1; i++) {
+                const marker = markers[i];
+                const nextMarker = markers[i + 1];
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", marker.x);
+                line.setAttribute("y1", marker.y);
+                line.setAttribute("x2", nextMarker.x);
+                line.setAttribute("y2", nextMarker.y);
+                line.setAttribute("stroke", "#e74c3c");
+                line.setAttribute("stroke-width", "0.2");
+                line.setAttribute("marker-end", "url(#arrow)");
+                svgPaths.appendChild(line);
+            }
+        }
+
+        // DOCK ELEMENT FOR COORDINATE DRAGGING (MOUSE & TOUCH ENGINES)
+        function makeMarkerDraggable(markerEl, markerObj, index) {
+            let isDragging = false;
+
+            const onDragStart = (e) => {
+                if (!isMoveMode) return;
+                isDragging = true;
+                e.preventDefault();
+                e.stopPropagation();
+
+                const onDragMove = (moveEvent) => {
+                    if (!isDragging) return;
+                    const rect = mapImage.getBoundingClientRect();
+                    let clientX, clientY;
+
+                    if (moveEvent.touches && moveEvent.touches.length > 0) {
+                        clientX = moveEvent.touches[0].clientX;
+                        clientY = moveEvent.touches[0].clientY;
+                    } else {
+                        clientX = moveEvent.clientX;
+                        clientY = moveEvent.clientY;
+                    }
+
+                    let xPercent = ((clientX - rect.left) / rect.width) * 100;
+                    let yPercent = ((clientY - rect.top) / rect.height) * 100;
+
+                    // Clamping
+                    if (xPercent < 0) xPercent = 0;
+                    if (xPercent > 100) xPercent = 100;
+                    if (yPercent < 0) yPercent = 0;
+                    if (yPercent > 100) yPercent = 100;
+
+                    markerObj.x = xPercent;
+                    markerObj.y = yPercent;
+
+                    markerEl.style.left = `${xPercent}%`;
+                    markerEl.style.top = `${yPercent}%`;
+
+                    renderSvgPaths(); // Updates route connectors in real-time
+                };
+
+                const onDragEnd = () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        document.removeEventListener('mousemove', onDragMove);
+                        document.removeEventListener('mouseup', onDragEnd);
+                        document.removeEventListener('touchmove', onDragMove);
+                        document.removeEventListener('touchend', onDragEnd);
+
+                        saveDataLocally();
+                        syncDataWithBackendSilently();
+                        render(); // Completes coordinate synchronization in bottom table view
+                    }
+                };
+
+                document.addEventListener('mousemove', onDragMove, { passive: false });
+                document.addEventListener('mouseup', onDragEnd);
+                document.addEventListener('touchmove', onDragMove, { passive: false });
+                document.addEventListener('touchend', onDragEnd);
+            };
+
+            markerEl.addEventListener('mousedown', onDragStart);
+            markerEl.addEventListener('touchstart', onDragStart, { passive: false });
+        }
+
         // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
         function render() {
             markerLayer.innerHTML = '';
             registerBody.innerHTML = '';
-            svgPaths.innerHTML = ''; 
-
+            
             // Pre-calculate sequential Sl No strictly bypassing Road Labels
             let bldgCount = 0;
             markers.forEach((marker) => {
@@ -1625,6 +1855,12 @@
                     marker.slNo = bldgCount; // Integer sequential count representing buildings only
                 }
             });
+
+            // Update realtime statistics block
+            updateStatistics();
+
+            // Render SVG connection paths
+            renderSvgPaths();
 
             markers.forEach((marker, index) => {
                 // 1. Draw Map Element (Geometric markers vs Horizontal road label pill badge)
@@ -1673,49 +1909,42 @@
                 
                 markerEl.style.left = `${marker.x}%`;
                 markerEl.style.top = `${marker.y}%`;
-                markerEl.title = `Press and hold for options`;
                 
-                // PRESS-AND-HOLD DETECTOR (Triggers Options Menu after 600ms)
-                let pressTimer;
+                if (isMoveMode) {
+                    markerEl.title = `Drag to move this marker`;
+                    makeMarkerDraggable(markerEl, marker, index);
+                } else {
+                    markerEl.title = `Press and hold for options`;
+                    
+                    // PRESS-AND-HOLD DETECTOR (Triggers Options Menu after 600ms)
+                    let pressTimer;
 
-                const startPress = (e) => {
-                    e.stopPropagation(); 
-                    pressTimer = setTimeout(() => {
-                        openOptionsMenu(index);
-                    }, 600); 
-                };
+                    const startPress = (e) => {
+                        if (isMoveMode) return;
+                        e.stopPropagation(); 
+                        pressTimer = setTimeout(() => {
+                            openOptionsMenu(index);
+                        }, 600); 
+                    };
 
-                const cancelPress = () => {
-                    clearTimeout(pressTimer);
-                };
+                    const cancelPress = () => {
+                        clearTimeout(pressTimer);
+                    };
 
-                // Mouse inputs
-                markerEl.addEventListener('mousedown', startPress);
-                markerEl.addEventListener('mouseup', cancelPress);
-                markerEl.addEventListener('mouseleave', cancelPress);
+                    // Mouse inputs
+                    markerEl.addEventListener('mousedown', startPress);
+                    markerEl.addEventListener('mouseup', cancelPress);
+                    markerEl.addEventListener('mouseleave', cancelPress);
 
-                // Touch inputs
-                markerEl.addEventListener('touchstart', startPress);
-                markerEl.addEventListener('touchend', cancelPress);
-                markerEl.addEventListener('touchcancel', cancelPress);
+                    // Touch inputs
+                    markerEl.addEventListener('touchstart', startPress);
+                    markerEl.addEventListener('touchend', cancelPress);
+                    markerEl.addEventListener('touchcancel', cancelPress);
+                }
 
                 markerLayer.appendChild(markerEl);
 
-                // 2. Draw SVG Route Line (Connects every consecutive point, including roads, without gaps)
-                if (index < markers.length - 1) {
-                    const nextMarker = markers[index + 1];
-                    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                    line.setAttribute("x1", marker.x);
-                    line.setAttribute("y1", marker.y);
-                    line.setAttribute("x2", nextMarker.x);
-                    line.setAttribute("y2", nextMarker.y);
-                    line.setAttribute("stroke", "#e74c3c");
-                    line.setAttribute("stroke-width", "0.2");
-                    line.setAttribute("marker-end", "url(#arrow)");
-                    svgPaths.appendChild(line);
-                }
-
-                // 3. Create Table Row 
+                // 2. Create Table Row 
                 const row = document.createElement('tr');
 
                 const cellSl = document.createElement('td');
@@ -1786,7 +2015,7 @@
             }
         }
 
-        // SAVE DATA MANUAL (Called explicitly from the button with full screen animation)
+        // SAVE DATA MANUAL (CORS-safe simple cross-origin write layout)
         async function saveToCloudManual() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
                 await showCustomAlert("Please write your Apps Script URL into the constant variable first.", "Setup Required");
@@ -1828,9 +2057,6 @@
                 return fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
                     body: JSON.stringify(payload)
                 });
             };
@@ -1959,7 +2185,7 @@
             }
         }
 
-        // IMMEDATE BACKGROUND SYNC CONTROLLER
+        // IMMEDATE BACKGROUND SYNC CONTROLLER (Simple CORS payload transmission)
         async function syncDataWithBackendSilently() {
             if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
             if (isSyncingSilently) return;
@@ -2003,9 +2229,6 @@
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
                     body: JSON.stringify(payload),
                     signal: controller.signal
                 });
@@ -2020,6 +2243,17 @@
                 setTimeout(syncDataWithBackendSilently, 10000); 
             }
         }
+
+        // Initialize state on window load
+        window.onload = () => {
+            const hasLocal = loadDataLocally();
+            if (!hasLocal) {
+                loadFromCloud(false);
+            } else {
+                updateSyncStatus('pending');
+                syncDataWithBackendSilently();
+            }
+        };
     </script>
 </body>
 </html>
