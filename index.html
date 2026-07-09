@@ -786,7 +786,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY MAPPER</h2>
+            <h2>MY HLB</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -905,7 +905,7 @@
             <div id="tab-pane-data" style="display: none;">
                 <div class="sidebar" style="box-shadow: none; padding: 0;">
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                        <h3 style="margin: 0; font-size: 1.2rem;">DATA Status Monitor</h3>
+                        <h3 style="margin: 0; font-size: 1.2rem;">Data Status Monitor</h3>
                         <div class="button-group">
                             <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
                             <button onclick="saveToCloudManual()" class="btn-save">Save</button>
@@ -917,10 +917,11 @@
                         <table>
                             <thead>
                                 <tr>
+                                    <th style="width: 20%">Status</th>
                                     <th style="width: 15%">Building No</th>
                                     <th style="width: 25%">CN No</th>
                                     <th style="width: 40%">Remarks</th>
-                                    <th style="width: 20%">DATA STATUS</th>
+                                    
                                 </tr>
                             </thead>
                             <tbody id="data-tab-body">
@@ -1976,10 +1977,11 @@
 
                 cellStatus.appendChild(selectStatus);
 
+                row.appendChild(cellStatus);
                 row.appendChild(cellBldg);
                 row.appendChild(cellCN);
                 row.appendChild(cellRemarks);
-                row.appendChild(cellStatus);
+                
 
                 dataBody.appendChild(row);
             });
