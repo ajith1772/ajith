@@ -884,13 +884,13 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th style="width: 6%">Sl No</th>
-                                    <th style="width: 20%">Name</th>
-                                    <th style="width: 14%">Phone</th>
+                                    <th style="width: 4%">Sl No</th>
+                                    <th style="width: 15%">Name</th>
+                                    <th style="width: 10%">Phone</th>
                                     <th style="width: 10%">Bldg No</th>
                                     <th style="width: 12%">CN No</th>
-                                    <th style="width: 18%">Pucca/Katcha/Others</th>
-                                    <th style="width: 20%">Remarks</th>
+                                    <th style="width: 19%">Type</th>
+                                    <th style="width: 30%">Remarks</th>
                                 </tr>
                             </thead>
                             <tbody id="register-body">
@@ -918,10 +918,12 @@
                             <thead>
                                 <tr>
                                     <th style="width: 10%">Building No</th>
-                                    <th style="width: 10%">Status</th>
+                                    <th style="width: 12%">STATUS</th>
                                     <th style="width: 10%">CN No</th>
-                                    <th style="width: 60%">Remarks</th>
-                                    
+                                    <th style="width: 20%">Remarks</th>
+                                    <th style="width: 15%">Phone No</th>
+                                    <th style="width: 20%">Name</th>
+                                    <th style="width: 13%">Type</th>                                   
                                 </tr>
                             </thead>
                             <tbody id="data-tab-body">
@@ -1929,6 +1931,7 @@
             markerEl.addEventListener('touchstart', onDragStart, { passive: false });
         }
 
+        
         // POPUP NEW DATA STATUS MONITOR TABLE VIEW PANELS
         function renderDataTab() {
             const dataBody = document.getElementById('data-tab-body');
@@ -1953,6 +1956,32 @@
                     cellRemarks.innerText = marker.remarks || '-';
                 }
 
+                // 1. Add Name Cell
+                const cellName = document.createElement('td');
+                cellName.innerText = marker.name || '-';
+
+                // 2. Add Phone Cell with Direct Call Link
+                const cellPhone = document.createElement('td');
+                if (marker.phone && marker.phone.trim() !== "" && marker.phone !== "-") {
+                    const phoneLink = document.createElement('a');
+                    phoneLink.href = `tel:${marker.phone.trim()}`;
+                    phoneLink.innerText = marker.phone;
+                    phoneLink.style.color = "var(--primary)";
+                    phoneLink.style.textDecoration = "underline";
+                    phoneLink.style.fontWeight = "600";
+                    cellPhone.appendChild(phoneLink);
+                } else {
+                    cellPhone.innerText = '-';
+                }
+
+                // 3. Add House Type Cell (Supports multi-row line breaks)
+                const cellType = document.createElement('td');
+                if (marker.censusHouses && marker.censusHouses.length > 0) {
+                    cellType.innerHTML = marker.censusHouses.map(ch => ch.type || '-').join('<br>');
+                } else {
+                    cellType.innerText = marker.note || '-';
+                }
+
                 const cellStatus = document.createElement('td');
                 const selectStatus = document.createElement('select');
                 selectStatus.className = 'input-cell';
@@ -1972,7 +2001,6 @@
                     localStorage.setItem('local_data_status', JSON.stringify(localDataStatusMap));
                     saveDataLocally();
                     
-                    // Force-break background lock to guarantee instant sheet update
                     isSyncingSilently = false; 
                     syncDataWithBackendSilently();
                     
@@ -1981,11 +2009,14 @@
 
                 cellStatus.appendChild(selectStatus);
 
+                // Append cells sequentially
                 row.appendChild(cellBldg);
                 row.appendChild(cellStatus);
-                row.appendChild(cellCN); 
+                row.appendChild(cellCN);
                 row.appendChild(cellRemarks);
-                
+                row.appendChild(cellPhone);  // Added Phone
+                row.appendChild(cellName);   // Added Name                
+                row.appendChild(cellType);   // Added Type               
 
                 dataBody.appendChild(row);
             });
