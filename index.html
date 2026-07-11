@@ -786,7 +786,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY HLB MAP </h2>
+            <h2>MY HLB</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -937,7 +937,7 @@
     <script>
         // ==========================================
         // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwOKXwsSb3vGPTqKokZcE2luFVHZf48yi6rI5tfnV9CvEzIOtMu2DnLRUF-xsTruE8Byg/exec";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLVzZizcIq6iqwuUEaf78hBTke9aYmT1dBa9-c1RR1AFfDclsGjKdZG5DNbbMT8aj3Og/exec";
         // ==========================================
 
         const mapImage = document.getElementById('map-image');
@@ -2206,10 +2206,12 @@
                     m.cnNo = "ROAD_LABEL";
                     m.note = "";
                     m.remarks = "";
+                    m.dataStatus = "NO";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
                     m.note = m.censusHouses.map(ch => ch.type || "").join("\n"); // Preserves building house types securely
                     m.remarks = m.censusHouses.map(ch => ch.remarks || "").join("\n");
+                    m.dataStatus = localDataStatusMap[m.id] || "NO"; // Fetch status values dynamically to save in sheets
                 }
             });
 
@@ -2312,8 +2314,12 @@
                                     m.cnNo = cns[0] || "";
                                     m.note = types[0] || "";
                                     m.remarks = remarks[0] || "";
+                                    
+                                    // Synchronize downloaded sheet status values into local device caches
+                                    localDataStatusMap[m.id] = m.dataStatus || "NO";
                                 }
                             });
+                            localStorage.setItem('local_data_status', JSON.stringify(localDataStatusMap)); // Persist locally
 
                             markers = cleanMarkers;
                             markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
@@ -2416,10 +2422,12 @@
                     m.cnNo = "ROAD_LABEL";
                     m.note = "";
                     m.remarks = "";
+                    m.dataStatus = "NO";
                 } else if (m.censusHouses && m.censusHouses.length > 0) {
                     m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
-                    m.note = m.censusHouses.map(ch => ch.type || "").join("\n"); // Carry classifications safely to Apps Script
+                    m.note = m.censusHouses.map(ch => ch.type || "").join("\n"); // Preserves building house types securely
                     m.remarks = m.censusHouses.map(ch => ch.remarks || "").join("\n");
+                    m.dataStatus = localDataStatusMap[m.id] || "NO"; // Fetch status values dynamically to save in sheets
                 }
             });
 
