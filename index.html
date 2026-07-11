@@ -74,9 +74,9 @@
 
         /* LED INDICATOR KEYFRAMES AND CLASSES */
         .led-indicator {
-            width: 10px;
+            width: 30px;
             height: 10px;
-            border-radius: 50%;
+            border-radius: 0%;
             display: inline-block;
             margin-right: 5px;
         }
@@ -786,7 +786,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY HLB</h2>
+            <h2>MY HLB MAP</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -1971,7 +1971,11 @@
                     localDataStatusMap[marker.id] = e.target.value;
                     localStorage.setItem('local_data_status', JSON.stringify(localDataStatusMap));
                     saveDataLocally();
+                    
+                    // Force-break background lock to guarantee instant sheet update
+                    isSyncingSilently = false; 
                     syncDataWithBackendSilently();
+                    
                     render(); // Instantly update building marker background colors on map
                 });
 
