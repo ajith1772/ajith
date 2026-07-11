@@ -786,7 +786,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY HLB MAP</h2>
+            <h2>MY HLB</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -917,9 +917,9 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th style="width: 10%">CN No</th>
-                                    <th style="width: 10%">Status</th>
                                     <th style="width: 10%">Building No</th>
+                                    <th style="width: 10%">Status</th>
+                                    <th style="width: 10%">CN No</th>
                                     <th style="width: 60%">Remarks</th>
                                     
                                 </tr>
@@ -1981,9 +1981,9 @@
 
                 cellStatus.appendChild(selectStatus);
 
-                row.appendChild(cellCN);
-                row.appendChild(cellStatus);
                 row.appendChild(cellBldg);
+                row.appendChild(cellStatus);
+                row.appendChild(cellCN); 
                 row.appendChild(cellRemarks);
                 
 
