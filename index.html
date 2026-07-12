@@ -702,7 +702,18 @@
     <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
         <div class="dialog-box" style="max-width: 320px;">
             <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker</h3>
-            <button id="options-view" class="options-menu-btn btn-load">View</button>
+            
+            <!-- Metadata Section -->
+            <div id="options-meta" style="font-size: 13px; font-weight: bold; margin-bottom: 12px; color: #475569;">
+                Bldg No: <span id="opt-bldg"></span> | CN No: <span id="opt-cn"></span>
+            </div>
+
+            <!-- YES/NO Status Instant-Sync Toggle Button -->
+            <div style="margin-bottom: 15px;">
+                <button id="options-status-toggle" class="options-menu-btn" style="color: white; width: 100%; padding: 10px; font-weight: bold; border-radius: 4px; border: none;">Status: NO</button>
+            </div>
+
+            <!-- Modal Action Buttons (No View Button) -->
             <button id="options-edit" class="options-menu-btn btn-save">Edit</button>
             <button id="options-delete" class="options-menu-btn btn-clear">Delete</button>
             <button id="options-close" class="options-menu-btn" style="background:#64748b; color:white;">Close</button>
@@ -786,7 +797,7 @@
     <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
     <div class="header">
         <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY HLB 2026</h2>
+            <h2>MY HLB</h2>
             <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
                 <span id="sync-led" class="led-indicator led-green"></span>
                 <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
@@ -979,7 +990,7 @@
         // Options modal elements
         const optionsModal = document.getElementById('options-modal');
         const optionsTitle = document.getElementById('options-title');
-        const optionsView = document.getElementById('options-view');
+        const optionsStatusToggle = document.getElementById('options-status-toggle'); // Added Status Toggle Reference
         const optionsEdit = document.getElementById('options-edit');
         const optionsDelete = document.getElementById('options-delete');
         const optionsClose = document.getElementById('options-close');
@@ -1765,19 +1776,40 @@
         }
 
         // OPTIONS MENU CONTROLLER (View / Edit / Delete)
+        // OPTIONS MENU CONTROLLER (Edit / Delete / Close)
         function openOptionsMenu(index) {
             const m = markers[index];
             optionsTitle.innerText = m.isRoadLabel ? `Road Label Options` : `Building Sl No ${m.slNo} Options`;
+            
+            // Populate dynamic Bldg No and CN No metadata
+            document.getElementById('opt-bldg').innerText = m.isRoadLabel ? '-' : (m.buildingNo || '-');
+            document.getElementById('opt-cn').innerText = m.isRoadLabel ? 'ROAD' : (m.cnNo || '-');
+
+            // Initialize status toggle button styles
+            let currentStatus = localDataStatusMap[m.id] || 'NO';
+            optionsStatusToggle.innerText = `Status: ${currentStatus}`;
+            optionsStatusToggle.style.backgroundColor = (currentStatus === 'YES') ? 'var(--success)' : 'var(--danger)';
+
             optionsModal.style.display = 'flex';
 
-            const onView = async () => {
-                optionsModal.style.display = 'none';
-                cleanup();
-                if (m.isRoadLabel) {
-                    await openRoadLabelModal(m, m.slNo, true);
-                } else {
-                    await openEntryModal(m, m.slNo, true);
-                }
+            // Instant-sync status toggle trigger on click
+            const onToggleStatus = () => {
+                let s = localDataStatusMap[m.id] || 'NO';
+                let nextStatus = (s === 'YES') ? 'NO' : 'YES';
+                
+                localDataStatusMap[m.id] = nextStatus;
+                localStorage.setItem('local_data_status', JSON.stringify(localDataStatusMap));
+                
+                // Update button UI immediately
+                optionsStatusToggle.innerText = `Status: ${nextStatus}`;
+                optionsStatusToggle.style.backgroundColor = (nextStatus === 'YES') ? 'var(--success)' : 'var(--danger)';
+                
+                // Save locally and execute an instant cloud update
+                saveDataLocally();
+                isSyncingSilently = false; 
+                syncDataWithBackendSilently();
+                
+                render(); // Update map marker colors instantly
             };
 
             const onEdit = async () => {
@@ -1812,13 +1844,13 @@
             };
 
             function cleanup() {
-                optionsView.removeEventListener('click', onView);
+                optionsStatusToggle.removeEventListener('click', onToggleStatus);
                 optionsEdit.removeEventListener('click', onEdit);
                 optionsDelete.removeEventListener('click', onDelete);
                 optionsClose.removeEventListener('click', onClose);
             }
 
-            optionsView.addEventListener('click', onView);
+            optionsStatusToggle.addEventListener('click', onToggleStatus);
             optionsEdit.addEventListener('click', onEdit);
             optionsDelete.addEventListener('click', onDelete);
             optionsClose.addEventListener('click', onClose);
