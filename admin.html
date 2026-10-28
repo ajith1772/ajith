@@ -1,2259 +1,1171 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Mapper</title>
-    <style>
-        :root {
-            --primary: #2980b9;
-            --primary-dark: #1f618d;
-            --success: #2ecc71;
-            --success-dark: #27ae60;
-            --danger: #e74c3c;
-            --danger-dark: #c0392b;
-            --info: #8e44ad;
-            --info-dark: #732d91;
-            --bg-light: #f5f7fa;
-            --text-dark: #2c3e50;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TDTTI THURAVOOR — Little KITES Junior Tie Breaker</title>
+  <style>
+    :root {
+      --primary: #1d4ed8;
+      --primary-hover: #1e40af;
+      --secondary: #059669;
+      --bg: #f1f5f9;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --danger: #dc2626;
+    }
 
-        /* STRICT GLOBAL COPY PROTECTION */
-        * {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: none; 
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', 'Nirmala UI', Manjari, sans-serif;
+    }
 
-        /* Allow typing/editing strictly inside form inputs */
-        input, select, textarea {
-            -webkit-user-select: auto !important;
-            -moz-user-select: auto !important;
-            -ms-user-select: auto !important;
-            user-select: auto !important;
-        }
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 15px;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            overscroll-behavior: contain; 
-        }
+    /* 100% Full-Width Header */
+    header {
+      width: 100%;
+      background: linear-gradient(135deg, #0f172a, #1e3a8a, #2563eb);
+      color: white;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
 
-        .header {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
+    .school-brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
 
-        @media (min-width: 900px) {
-            .header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
+    .school-logo {
+      width: 54px;
+      height: 54px;
+      object-fit: contain;
+      background: #ffffff;
+      border-radius: 50%;
+      padding: 2px;
+      border: 2px solid rgba(255, 255, 255, 0.85);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
 
-        .header h2 {
-            margin: 0;
-            font-size: 1.6rem;
-            text-align: center;
-        }
+    .school-details h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #ffffff;
+      line-height: 1.2;
+    }
 
-        .button-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
+    .school-details .sub-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #93c5fd;
+      margin-top: 2px;
+    }
 
-        /* LED INDICATOR KEYFRAMES AND CLASSES */
-        .led-indicator {
-            width: 20px;
-            height: 20px;
-            border-radius: 10%;
-            display: inline-block;
-            margin-right: 5px;
-        }
+    .school-details .sub-mal {
+      font-size: 0.8rem;
+      color: #e2e8f0;
+      opacity: 0.9;
+    }
 
-        @keyframes blink-green {
-            0% { background-color: #2ecc71; box-shadow: 0 0 3px #2ecc71; }
-            50% { background-color: #27ae60; box-shadow: 0 0 10px #2ecc71; }
-            100% { background-color: #2ecc71; box-shadow: 0 0 3px #2ecc71; }
-        }
-        @keyframes blink-orange {
-            0% { background-color: #e67e22; box-shadow: 0 0 3px #e67e22; }
-            50% { background-color: #d35400; box-shadow: 0 0 10px #e67e22; }
-            100% { background-color: #e67e22; box-shadow: 0 0 3px #e67e22; }
-        }
-        @keyframes blink-red {
-            0% { background-color: #e74c3c; box-shadow: 0 0 3px #e74c3c; }
-            50% { background-color: #c0392b; box-shadow: 0 0 10px #e74c3c; }
-            100% { background-color: #e74c3c; box-shadow: 0 0 3px #e74c3c; }
-        }
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
 
-        .led-green { animation: blink-green 1.5s infinite; }
-        .led-orange { animation: blink-orange 0.8s infinite; } 
-        .led-red { animation: blink-red 1.5s infinite; }
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
 
-        /* STACKED LAYOUT: MAP TOP, REGISTER BOTTOM */
-        .container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
-        }
+    /* 100% Full-Width Main Area */
+    main {
+      flex: 1;
+      width: 100%;
+      max-width: 100% !important;
+      margin: 0;
+      padding: 1rem 1.5rem;
+    }
 
-        .map-panel {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            width: 100%;
-            box-sizing: border-box;
-        }
+    /* 100% Full-Width Card */
+    .card {
+      width: 100% !important;
+      max-width: 100% !important;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.75rem;
+      box-shadow: 0 6px 14px -3px rgba(0,0,0,0.06);
+      border: 1px solid var(--border);
+    }
 
-        .sidebar {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            width: 100%;
-            box-sizing: border-box;
-        }
+    .form-group {
+      margin-bottom: 1.25rem;
+      width: 100%;
+    }
 
-        .map-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 12px;
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 6px;
-        }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      color: #334155;
+    }
 
-        @media (min-width: 576px) {
-            .map-controls {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
+    input, select {
+      width: 100%;
+      padding: 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+    }
 
-        .zoom-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            justify-content: center;
-        }
+    #studentName {
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
 
-        /* Fixed viewport for Map Zoom only */
-        .map-area {
-            position: relative;
-            height: 400px;
-            overflow: auto;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: #e9ecef;
-            touch-action: pan-x pan-y; 
-            scroll-behavior: smooth;              
-            -webkit-overflow-scrolling: touch;    
-        }
+    input:focus, select:focus {
+      border-color: var(--primary);
+    }
 
-        .map-wrapper {
-            position: relative;
-            display: inline-block;
-            width: 100%;
-            transition: width 0.3s cubic-bezier(0.25, 1, 0.5, 1); 
-            will-change: width; 
-        }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+    }
 
-        .no-transition {
-            transition: none !important;
-        }
+    @media (max-width: 600px) {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      main {
+        padding: 0.75rem;
+      }
+      .card {
+        padding: 1.25rem;
+      }
+    }
 
-        #map-image {
-            width: 100%;
-            display: block;
-            user-select: none;
-            -webkit-user-drag: none;
-        }
+    .btn {
+      background: var(--primary);
+      color: white;
+      padding: 0.85rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
 
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-        }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #64748b; }
+    .btn-secondary:hover { background: #475569; }
+    .btn-success { background: var(--secondary); }
+    .btn-success:hover { background: #047857; }
+    .btn-danger { background: var(--danger); }
+    .btn-danger:hover { background: #b91c1c; }
+    .btn-outline {
+      background: #f8fafc;
+      color: var(--primary);
+      border: 1.5px solid var(--primary);
+    }
+    .btn-outline:hover { background: #eff6ff; }
+    .btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 850px; 
-        }
+    /* Quiz Bar */
+    .quiz-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      width: 100%;
+    }
 
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-            font-size: 13px;
-        }
+    .pill {
+      background: #eff6ff;
+      color: var(--primary);
+      padding: 0.35rem 0.9rem;
+      border-radius: 9999px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
 
-        th {
-            background-color: #f8fafc;
-            font-weight: 600;
-        }
+    .timer-text {
+      font-family: monospace;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--danger);
+    }
 
-        .required-star {
-            color: var(--danger);
-            margin-left: 2px;
-        }
+    .question-box {
+      margin-bottom: 1.75rem;
+      width: 100%;
+    }
 
-        .input-cell {
-            width: 90%;
-            padding: 5px 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 13px;
-            text-transform: uppercase; 
-            box-sizing: border-box;
-        }
+    .q-indicator {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
 
-        .input-cell:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
+    .q-eng {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.4;
+      margin-bottom: 0.35rem;
+    }
 
-        /* ========================================================
-           GEOMETRIC MAP MARKERS STYLES
-           ======================================================== */
-        .marker-base {
-            position: absolute;
-            width: 22px;
-            height: 22px;
-            line-height: 22px;
-            text-align: center;
-            font-size: 11px;
-            font-weight: bold;
-            transform: translate(-50%, -50%);
-            cursor: pointer;
-            user-select: none;
-            z-index: 5;
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
+    .q-mal {
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: #1e3a8a;
+      line-height: 1.5;
+      margin-bottom: 1.25rem;
+    }
 
-        /* CIRCLE (Default / Others fallback) */
-        .marker-circle {
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            border: 2px solid white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-        }
+    .option-item {
+      display: block;
+      width: 100%;
+      position: relative;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.85rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
 
-        /* HOME + PUCCA (Solid Square) */
-        .marker-home-pucca {
-            border-radius: 0%; 
-            background-color: white;
-            color: black;
-            border: 2px solid white;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-        }
+    .option-item:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
 
-        /* HOME + KATCHA (Dashed Lined Square) */
-        .marker-home-katcha {
-            border-radius: 0%;
-            background-color: white;
-            color: black;
-            border: 2px dashed black;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-        }
+    .option-item.selected {
+      background: #eff6ff;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 1px var(--primary);
+    }
 
-        /* OTHER + PUCCA (Solid Triangle) */
-        .marker-other-pucca {
-            width: 24px;
-            height: 24px;
-            line-height: 28px; 
-            font-size: 9px;
-        }
+    .option-item input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
 
-        /* OTHER + KATCHA (Lined Triangle) */
-        .marker-other-katcha {
-            width: 24px;
-            height: 24px;
-            line-height: 28px;
-            font-size: 9px;
-        }
+    .option-text-eng {
+      font-weight: 600;
+      font-size: 1.05rem;
+      display: block;
+    }
 
-        /* CSS Styling rules for inline SVG shapes inside markers */
-        .marker-other-pucca svg polygon {
-            fill: #2980b9;
-            fill: var(--primary);
-            stroke: white;
-            stroke-width: 1.5;
-        }
+    .option-text-mal {
+      font-size: 0.95rem;
+      color: #475569;
+      display: block;
+      margin-top: 3px;
+    }
 
-        .marker-other-katcha svg polygon {
-            fill: white;
-            stroke: #2980b9;
-            stroke: var(--primary);
-            stroke-width: 1.5;
-            stroke-dasharray: 3, 1.5;
-        }
+    .nav-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      width: 100%;
+    }
 
-        /* Global Marker Hover Transitions */
-        .marker-base:hover {
-            transform: translate(-50%, -50%) scale(1.15);
-            background-color: var(--danger) !important;
-            border-color: var(--danger-dark) !important;
-            color: white !important;
-        }
+    /* Summary Card */
+    .score-banner {
+      width: 100%;
+      background: #ecfdf5;
+      border: 1.5px solid #a7f3d0;
+      color: #065f46;
+      padding: 1.75rem;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
 
-        /* Hover color injection for SVG Triangles */
-        .marker-base:hover svg polygon {
-            fill: var(--danger) !important;
-            stroke: var(--danger-dark) !important;
-            stroke-dasharray: none !important; 
-        }
+    .score-banner h2 {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-top: 0.25rem;
+    }
 
-        /* STYLISH HORIZONTAL ROAD LABEL BADGE */
-        .marker-road-label {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.95);
-            color: #2c3e50;
-            padding: 3px 8px;
-            border: 1.5px solid #7f8c8d;
-            border-radius: 12px;
-            font-size: 9px;
-            font-weight: bold;
-            transform: translate(-50%, -50%);
-            white-space: nowrap;
-            cursor: pointer;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
-            z-index: 5;
-            user-select: none;
-        }
-        .marker-road-label:hover {
-            background-color: var(--danger);
-            color: white;
-            border-color: var(--danger-dark);
-        }
+    .detail-box {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+    }
 
-        /* Spinner & Dialog Overlays */
-        .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.85);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            color: white;
-        }
+    .detail-box p {
+      margin-bottom: 0.5rem;
+    }
 
-        .progress-container {
-            width: 250px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            overflow: hidden;
-            height: 8px;
-            margin-bottom: 10px;
-        }
+    /* 100% Width Rank List Table */
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
 
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background-color: #3498db;
-            transition: width 0.1s ease-out;
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
 
-        /* MODAL DIALOG BOXES */
-        .dialog-box {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
-            width: 85%;
-            text-align: center;
-            color: var(--text-dark);
-            animation: modalFadeIn 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-        }
+    th, td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 1rem;
+    }
 
-        @keyframes modalFadeIn {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
+    th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #334155;
+    }
 
-        #dialog-title {
-            margin-top: 0;
-            color: var(--primary);
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
+    .rank-1 { background-color: #fef9c3; font-weight: bold; }
+    .rank-2 { background-color: #f1f5f9; font-weight: bold; }
+    .rank-3 { background-color: #fff7ed; font-weight: bold; }
 
-        #dialog-message {
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+    /* Teacher Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
 
-        .dialog-btn-group {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-        }
+    .modal {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 380px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+    }
 
-        /* Custom Form Layout inside Modals */
-        .form-group {
-            margin-bottom: 12px;
-            text-align: left;
-            width: 100%;
-        }
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #555;
-        }
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #cbd5e1;
-            border-radius: 4px;
-            font-size: 13px;
-            text-transform: uppercase;
-            box-sizing: border-box;
-        }
+    .print-only-zone {
+      display: none;
+    }
 
-        /* Dynamic Census Houses grid inside entry modal */
-        .houses-section {
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            padding: 12px;
-            margin-top: 15px;
-            background: #ffffff;
-            max-height: 250px;
-            overflow-y: auto;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .house-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 8px;
-            align-items: center;
-            background: #f8fafc;
-            padding: 6px 10px;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            transition: border-color 0.15s ease;
-        }
-        .house-row:hover {
-            border-color: var(--primary);
-        }
-        .house-row-num {
-            font-size: 11px;
-            font-weight: bold;
-            color: #64748b;
-            background: #e2e8f0;
-            border-radius: 4px;
-            padding: 4px 6px;
-            min-width: 16px;
-            text-align: center;
-        }
+    /* Print Specs: A4 Portrait, .30 mm margin */
+    @page {
+      size: A4 portrait;
+      margin: 0.30mm;
+    }
 
-        /* Options Menu Vertical Buttons */
-        .options-menu-btn {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 4px;
-            font-weight: bold;
-            text-align: center;
-            font-size: 13px;
-            border: none;
-            cursor: pointer;
-        }
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 5mm !important;
+      }
 
-        /* Buttons styles */
-        button {
-            padding: 8px 14px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 13px;
-            transition: background 0.2s ease;
-        }
-        .btn-save { background-color: var(--success); color: white; }
-        .btn-save:hover { background-color: var(--success-dark); }
-        .btn-load { background-color: var(--primary); color: white; }
-        .btn-load:hover { background-color: var(--primary-dark); }
-        .btn-clear { background-color: var(--danger); color: white; }
-        .btn-clear:hover { background-color: var(--danger-dark); }
-        .btn-print { background-color: var(--info); color: white; }
-        .btn-print:hover { background-color: var(--info-dark); }
-        .btn-zoom { background-color: #64748b; color: white; padding: 5px 10px; }
-        .btn-zoom:hover { background-color: #475569; }
+      header, main, .modal-overlay {
+        display: none !important;
+      }
 
-        /* ========================================================
-           PRINT STYLES
-           ======================================================== */
-        @media print {
-            body {
-                background: white !important;
-                color: black !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            .header, .map-controls, .button-group, .btn-clear, .zoom-controls, .btn-print, button, .tool-mode-box, .dialog-box, .sync-badge, #stats-panel {
-                display: none !important;
-            }
-            .container {
-                display: block !important;
-                width: 100% !important;
-            }
-            .map-panel, .sidebar {
-                box-shadow: none !important;
-                border: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                width: 100% !important;
-                background: transparent !important;
-            }
-            .map-area {
-                border: none !important;
-                background: transparent !important;
-            }
-            .map-wrapper {
-                width: 100% !important;
-            }
-            table {
-                min-width: 100% !important;
-            }
-            input, select {
-                border: none !important;
-                background: transparent !important;
-                padding: 2px !important;
-                appearance: none;
-            }
+      body.print-q-only #printableQuestionsOnly { display: block !important; }
+      body.print-q-ans #printableQuestionsWithAnswers { display: block !important; }
+      body.print-rank #printableRankReport { display: block !important; }
 
-            body.print-mode-a4 {
-                width: 100%;
-            }
-            body.print-mode-a4 .map-panel {
-                width: 100% !important;
-                height: 95vh !important;  
-                page-break-after: always !important; 
-                page-break-inside: avoid !important;
-                box-sizing: border-box;
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-            }
-            body.print-mode-a4 .map-area {
-                width: 100% !important;
-                height: 85vh !important;  
-                overflow: hidden !important; 
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-            }
-            body.print-mode-a4 .map-wrapper {
-                width: auto !important;
-                height: 100% !important; 
-                max-width: 100% !important;
-                display: inline-block;
-            }
-            body.print-mode-a4 #map-image {
-                width: auto !important;
-                height: 100% !important;
-                max-width: 100% !important;
-            }
-            body.print-mode-a4 .sidebar {
-                page-break-before: always !important; 
-                display: block !important;
-                width: 100% !important;
-                margin-top: 20px !important;
-            }
+      .print-doc {
+        width: 100% !important;
+        color: #000;
+      }
 
-            body.print-mode-a3 {
-                width: 100%;
-            }
-            body.print-mode-a3 .sidebar {
-                display: none !important; 
-            }
-            body.print-mode-a3 .map-panel {
-                width: 100% !important;
-                height: 95vh !important;  
-                page-break-inside: avoid !important;
-                box-sizing: border-box;
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-            }
-            body.print-mode-a3 .map-area {
-                width: 100% !important;
-                height: 85vh !important;
-                overflow: hidden !important;
-                display: flex !important;
-                justify-content: center;
-                align-items: center;
-            }
-            body.print-mode-a3 .map-wrapper {
-                width: auto !important;
-                height: 100% !important;
-                max-width: 100% !important;
-                display: inline-block;
-            }
-            body.print-mode-a3 #map-image {
-                width: auto !important;
-                height: 100% !important;
-                max-width: 100% !important;
-            }
-        }
-    </style>
+      .print-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        border-bottom: 2px solid #000;
+        padding-bottom: 8px;
+        margin-bottom: 12px;
+      }
+
+      .print-header img {
+        width: 52px;
+        height: 52px;
+        object-fit: contain;
+      }
+
+      .print-header-text h2 {
+        font-size: 16pt;
+        font-weight: 800;
+        margin: 0;
+        text-transform: uppercase;
+      }
+
+      .print-header-text p {
+        font-size: 10pt;
+        font-weight: 600;
+        margin: 2px 0 0 0;
+      }
+
+      .candidate-strip {
+        display: flex;
+        justify-content: space-between;
+        border: 1px dashed #333;
+        padding: 6px 10px;
+        margin-bottom: 12px;
+        font-size: 9.5pt;
+      }
+
+      .print-q-item {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        margin-bottom: 11px;
+        padding-bottom: 6px;
+        border-bottom: 1px dotted #ccc;
+      }
+
+      .print-q-title-eng {
+        font-size: 10.5pt;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+
+      .print-q-title-mal {
+        font-size: 9.5pt;
+        color: #222;
+        margin-bottom: 5px;
+      }
+
+      .print-options-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 12px;
+        font-size: 9pt;
+      }
+
+      .print-option {
+        padding: 3px 6px;
+        border-radius: 4px;
+      }
+
+      .correct-ans-highlight {
+        background-color: #e2e8f0 !important;
+        font-weight: bold !important;
+        border: 1px solid #475569 !important;
+      }
+
+      .answer-badge {
+        display: inline-block;
+        background: #000;
+        color: #fff;
+        font-size: 8pt;
+        padding: 1px 5px;
+        border-radius: 3px;
+        margin-left: 4px;
+      }
+
+      .compact-key-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+        font-size: 9.5pt;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+
+      .compact-key-table th, .compact-key-table td {
+        border: 1px solid #000;
+        padding: 5px;
+        text-align: center;
+      }
+      .compact-key-table th { background: #f1f5f9; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- Busy Progress Overlay (Used strictly on manual sync operations) -->
-    <div id="loading-overlay" class="overlay">
-        <div id="status-text" style="font-weight: 600; margin-bottom: 15px; font-size: 15px; letter-spacing: 0.5px;">Saving Changes...</div>
-        <div class="progress-container">
-            <div id="progress-bar" class="progress-bar"></div>
-        </div>
-        <div id="percentage-text" style="font-size: 14px; font-weight: bold;">0%</div>
+  <!-- 100% Full Width School Header -->
+  <header>
+    <div class="school-brand">
+      <img 
+        src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGka-p7C45PTqBMBKqSjulqicQlHmW_Ee1BCfUPpaW888vYnoPjElzW9DVm8az1kCOjdlabjA3qb_vS00GpCApyVWh2C0aIcOcvb-BWeeTI8AdLojSf25iCvNpMS6aENxrWO-SgM5xjqePEMsHfCLy4HinnGk2xAnDlKaapXYFY05jXQM/s56-c/Logo2.png" 
+        alt="TDTTI Thuravoor Logo" 
+        class="school-logo"
+      />
+      <div class="school-details">
+        <h1>TDTTI THURAVOOR</h1>
+        <div class="sub-title">Little KITES Junior — Tie Breaker Quiz</div>
+        <div class="sub-mal">ലിറ്റിൽ കൈറ്റ്സ് ജൂനിയർ - ടൈ ബ്രേക്കർ ക്വിസ്</div>
+      </div>
     </div>
+    <button class="nav-btn" id="modeBtn" onclick="promptTeacherPin()">Teacher Dashboard</button>
+  </header>
 
-    <!-- Custom Alert/Confirm HTML Dialog Box -->
-    <div id="custom-dialog" class="overlay" style="z-index: 10000; background: rgba(15, 23, 42, 0.75);">
-        <div class="dialog-box">
-            <h3 id="dialog-title">Notification</h3>
-            <p id="dialog-message">Message text...</p>
-            <div class="dialog-btn-group">
-                <button id="dialog-ok" class="btn-save">OK</button>
-                <button id="dialog-cancel" class="btn-clear" style="display: none;">Cancel</button>
-            </div>
+  <!-- 100% Full Width Main Container -->
+  <main>
+    <!-- Screen 1: Registration (100% Width) -->
+    <section id="regScreen" class="card">
+      <h2 style="margin-bottom: 0.25rem;">Student Registration</h2>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem;">വിദ്യാർത്ഥിയുടെ വിവരങ്ങൾ നൽകുക</p>
+      
+      <div class="form-group">
+        <label for="studentName">Student Name / വിദ്യാർത്ഥിയുടെ പേര് (CAPITAL LETTERS ONLY)</label>
+        <input 
+          type="text" 
+          id="studentName" 
+          placeholder="ENTER FULL NAME IN CAPITAL" 
+          autocomplete="off" 
+          oninput="this.value = this.value.toUpperCase()" 
+          required 
+        />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="studentClass">Class / ക്ലാസ്</label>
+          <select id="studentClass">
+            <option value="5">Class 5</option>
+            <option value="6">Class 6</option>
+            <option value="7" selected>Class 7</option>
+          </select>
         </div>
+
+        <div class="form-group">
+          <label for="studentDiv">Division / ഡിവിഷൻ (A/B/C/D ONLY)</label>
+          <select id="studentDiv">
+            <option value="A">Division A</option>
+            <option value="B">Division B</option>
+            <option value="C">Division C</option>
+            <option value="D">Division D</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="btn" style="width: 100%; margin-top: 0.5rem;" onclick="startQuiz()">
+        Start Quiz / ക്വിസ് ആരംഭിക്കുക
+      </button>
+    </section>
+
+    <!-- Screen 2: 1-by-1 Question Screen (100% Width) -->
+    <section id="quizScreen" class="card" style="display: none;">
+      <div class="quiz-bar">
+        <span class="pill" id="studentTag">STUDENT</span>
+        <span class="timer-text" id="timerDisplay">⏱ 00:00</span>
+      </div>
+
+      <div class="q-indicator" id="questionNumber">Question 1 of 10</div>
+      
+      <div class="question-box">
+        <div class="q-eng" id="qTextEng"></div>
+        <div class="q-mal" id="qTextMal"></div>
+        <div id="optionsList"></div>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>
+          ← Previous / മുൻപത്തേത്
+        </button>
+        <button class="btn" id="nextBtn" onclick="nextQuestion()">
+          Next / അടുത്തത് →
+        </button>
+        <button class="btn btn-success" id="submitBtn" onclick="submitQuiz()" style="display: none;">
+          ✓ Submit Quiz / പൂർത്തിയാക്കുക
+        </button>
+      </div>
+    </section>
+
+    <!-- Screen 3: Student Summary Screen (100% Width) -->
+    <section id="summaryScreen" class="card" style="display: none;">
+      <div class="score-banner">
+        <p style="font-weight: 600;">Quiz Completed / ക്വിസ് പൂർത്തിയായി</p>
+        <h2 id="finalScore">0 / 10</h2>
+      </div>
+
+      <div class="detail-box">
+        <p><strong>School:</strong> TDTTI THURAVOOR</p>
+        <p><strong>Name:</strong> <span id="summaryName"></span></p>
+        <p><strong>Class & Division:</strong> <span id="summaryClassDiv"></span></p>
+        <p><strong>Total Time Taken:</strong> <span id="summaryTime"></span></p>
+      </div>
+
+      <button class="btn" style="width: 100%;" onclick="nextStudent()">
+        Next Student / അടുത്ത വിദ്യാർത്ഥി
+      </button>
+    </section>
+
+    <!-- Screen 4: Teacher Dashboard (100% Width) -->
+    <section id="teacherScreen" class="card" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+          <h2>Teacher Dashboard / റാങ്ക് ലിസ്റ്റ്</h2>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">
+            Ranked by: <strong>Highest Score</strong> &rarr; <strong>Fastest Time</strong> (Tie Breaker)
+          </p>
+        </div>
+        <button class="btn btn-secondary" onclick="exitTeacherView()">Back to Quiz</button>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem; flex-wrap: wrap; background: #f8fafc; padding: 1.25rem; border-radius: 10px; border: 1px solid var(--border); width: 100%;">
+        <strong style="width: 100%; font-size: 0.95rem; color: #334155;">Print Sections (A4 Portrait, 0.30mm margin):</strong>
+        <button class="btn btn-outline" onclick="triggerPrint('print-q-only')">
+          📄 Print Questions Only (ചോദ്യപേപ്പർ)
+        </button>
+        <button class="btn btn-outline" onclick="triggerPrint('print-q-ans')">
+          📑 Print Questions With Answers (ഉത്തരസൂചിക)
+        </button>
+        <button class="btn btn-secondary" onclick="triggerPrint('print-rank')">
+          🏆 Print Rank List
+        </button>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th>Class & Div</th>
+              <th>Score</th>
+              <th>Time Taken</th>
+            </tr>
+          </thead>
+          <tbody id="rankTableBody"></tbody>
+        </table>
+      </div>
+
+      <div style="margin-top: 1.5rem;">
+        <button class="btn btn-danger" onclick="clearAllData()">Reset All Records</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- PIN Prompt Modal (PIN: 1996) -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal">
+      <h3 style="margin-bottom: 0.5rem;">Teacher Authentication</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+        Enter PIN to access rank list & print sections
+      </p>
+      <input type="password" id="pinInput" placeholder="PIN" maxlength="6" style="text-align: center; font-size: 1.35rem; letter-spacing: 4px; margin-bottom: 1rem;" />
+      <div style="display: flex; gap: 0.5rem;">
+        <button class="btn btn-secondary" style="flex: 1;" onclick="closePinModal()">Cancel</button>
+        <button class="btn" style="flex: 1;" onclick="verifyPin()">Login</button>
+      </div>
     </div>
+  </div>
 
-    <!-- Interactive click distributor choice popup -->
-    <div id="click-choice-dialog" class="overlay" style="z-index: 9995; background: rgba(15, 23, 42, 0.75);">
-        <div class="dialog-box" style="max-width: 320px;">
-            <h3 style="margin-top:0; color:var(--primary);">Select Action</h3>
-            <p style="font-size:13px; color:#64748b; margin-bottom:15px;">What would you like to add at this point?</p>
-            <button id="btn-choice-building" class="options-menu-btn btn-save">Building</button>
-            <button id="btn-choice-roadname" class="options-menu-btn btn-load">Road</button>
-            <button id="btn-choice-cancel" class="options-menu-btn" style="background:#64748b; color:white;">Cancel</button>
-        </div>
+  <!-- PRINT SECTION 1: QUESTIONS ONLY -->
+  <div id="printableQuestionsOnly" class="print-only-zone print-doc">
+    <div class="print-header">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGka-p7C45PTqBMBKqSjulqicQlHmW_Ee1BCfUPpaW888vYnoPjElzW9DVm8az1kCOjdlabjA3qb_vS00GpCApyVWh2C0aIcOcvb-BWeeTI8AdLojSf25iCvNpMS6aENxrWO-SgM5xjqePEMsHfCLy4HinnGk2xAnDlKaapXYFY05jXQM/s56-c/Logo2.png" alt="TDTTI Logo" />
+      <div class="print-header-text">
+        <h2>TDTTI THURAVOOR</h2>
+        <p>LITTLE KITES JUNIOR — TIE BREAKER SELECTION QUESTION PAPER</p>
+        <small>Classes: 5, 6, 7 | Max Time: Tie-Break Clock | Total Marks: 10</small>
+      </div>
     </div>
-
-    <!-- Road name labeling modal -->
-    <div id="road-label-modal" class="overlay" style="z-index: 9985; background: rgba(15, 23, 42, 0.75);">
-        <div class="dialog-box" style="max-width: 380px;">
-            <h3 id="road-label-title" style="margin-top:0; color:var(--primary);">Name Road</h3>
-            <div class="form-group">
-                <label>ROAD NAME / LABEL</label>
-                <input type="text" id="form-road-label-input" placeholder="ENTER ROAD NAME (E.G. MG ROAD)">
-            </div>
-            <div class="dialog-btn-group">
-                <button id="road-label-save" class="btn-save">Save</button>
-                <button id="road-label-cancel" class="btn-clear">Cancel</button>
-            </div>
-        </div>
+    <div class="candidate-strip">
+      <span><strong>Student Name:</strong> ____________________________________</span>
+      <span><strong>Class & Div:</strong> _______ - _______</span>
+      <span><strong>Score:</strong> _____ / 10</span>
     </div>
+    <div id="printQOnlyList"></div>
+  </div>
 
-    <!-- Custom Options Menu Modal (Long Press on Marker) -->
-    <div id="options-modal" class="overlay" style="z-index: 9990; background: rgba(15, 23, 42, 0.75);">
-        <div class="dialog-box" style="max-width: 320px;">
-            <h3 id="options-title" style="margin-top:0; color:var(--primary);">Marker</h3>
-            <button id="options-view" class="options-menu-btn btn-load">View</button>
-            <button id="options-edit" class="options-menu-btn btn-save">Edit</button>
-            <button id="options-delete" class="options-menu-btn btn-clear">Delete</button>
-            <button id="options-close" class="options-menu-btn" style="background:#64748b; color:white;">Close</button>
-        </div>
+  <!-- PRINT SECTION 2: QUESTIONS WITH ANSWERS -->
+  <div id="printableQuestionsWithAnswers" class="print-only-zone print-doc">
+    <div class="print-header">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGka-p7C45PTqBMBKqSjulqicQlHmW_Ee1BCfUPpaW888vYnoPjElzW9DVm8az1kCOjdlabjA3qb_vS00GpCApyVWh2C0aIcOcvb-BWeeTI8AdLojSf25iCvNpMS6aENxrWO-SgM5xjqePEMsHfCLy4HinnGk2xAnDlKaapXYFY05jXQM/s56-c/Logo2.png" alt="TDTTI Logo" />
+      <div class="print-header-text">
+        <h2>TDTTI THURAVOOR</h2>
+        <p>LITTLE KITES JUNIOR — OFFICIAL ANSWER KEY & SOLUTIONS</p>
+        <small>Classes: 5, 6, 7 | Evaluation & Master Answer Scheme</small>
+      </div>
     </div>
+    <table class="compact-key-table">
+      <thead>
+        <tr>
+          <th>Q.No</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="quickKeyRow"></tr>
+      </tbody>
+    </table>
+    <div style="margin-top: 15px;" id="printQWithAnsList"></div>
+  </div>
 
-    <!-- Custom Data Entry/Edit Form Modal -->
-    <div id="entry-modal" class="overlay" style="z-index: 9980; background: rgba(15, 23, 42, 0.75);">
-        <div class="dialog-box" style="max-width: 480px;">
-            <h3 id="entry-title" style="margin-top:0; color:var(--primary);">Add Building Details</h3>
-            
-            <div class="form-group">
-                <label>OWNER NAME</label>
-                <input type="text" id="form-name" placeholder="ENTER OWNER NAME">
-            </div>
-            
-            <!-- Forces mobile device numeric keyboard strictly on select -->
-            <div class="form-group">
-                <label>MOBILE</label>
-                <input type="tel" id="form-phone" inputmode="numeric" pattern="[0-9]*" maxlength="10" placeholder="ENTER MOBILE NUMBER">
-            </div>
-            <div class="form-group">
-                <label>BLDING NO</label>
-                <input type="text" id="form-building-no" placeholder="BUILDING NUMBER">
-            </div>
-
-            <!-- Dynamic Multiple Census Houses Area (CN No, Type, Remarks) -->
-            <div style="text-align: left; font-size: 13px; font-weight: bold; color: var(--primary); margin-top: 15px;">
-                Census Houses inside this Building:
-            </div>
-            
-            <div class="houses-section" id="houses-section">
-                <!-- Dynamically generated rows sit here -->
-            </div>
-
-            <div style="text-align: left; margin-top: 10px;">
-                <button type="button" id="btn-add-house" class="btn-load" style="padding: 5px 10px; font-size: 11px;">+ Add Census House</button>
-            </div>
-
-            <!-- Remarks Datalist lookup helper -->
-            <datalist id="remarks-options">
-                <option value="HOME-"></option>
-		<option value="HOME-ASBETOS SHEET"></option>
-                <option value="HOME-CLOSED "></option>
-                <option value="HOME-CONCRETE"></option>
-                <option value="HOME-CONCRETE MULTISTROYED"></option> 
-                <option value="HOME-CONCRETE UNDER CONSTRUCTION"></option>
-                <option value="HOME-IRON SHEET"></option>
-                <option value="HOME-PLYWOOD WALL"></option>
-                <option value="HOME-RENT CONCRETE"></option> 
-                <option value="HOME-SHOP"></option>
-                <option value="HOME-TEMPORARY HOUSE"></option>
-                <option value="HOME-TILED ROOF"></option>
-                <option value="HOME-TILED ROOF WITH V BOARD WALL"></option>           
-                <option value="HOME-VACENT"></option>
-                <option value="OTHER-"></option>
-                <option value="OTHER-CATTLE SHED WITH IRON SHEET"></option>               
-                <option value="OTHER-FACTORY"></option>
-                <option value="OTHER-INSTITUTION"></option>  
-                <option value="OTHER-INSTITUTION UNDER CONSTRUCTION"></option>                 
-                <option value="OTHER-MOSQUE"></option>
-                <option value="OTHER-RESORT"></option>
-                <option value="OTHER-SHED WITH IRON SHEET"></option>                
-                <option value="OTHER-SHOP"></option>
-                <option value="OTHER-SHOP-CLOSED"></option>
-                <option value="OTHER-SHOP-CONCRETE"></option> 
-                <option value="OTHER-SHOP-WITH PLASTIC WALL TEA SHOP"></option>
-                <option value="OTHER-SHOP-WITH IRON SHEET ROOF"></option> 
-                <option value="OTHER-TEMPLE"></option> 
-                <option value="OTHER-TOILET"></option>              
-                
-            </datalist>
-
-            <div class="dialog-btn-group">
-                <button id="entry-save" class="btn-save">Save</button>
-                <button id="entry-cancel" class="btn-clear">Cancel</button>
-            </div>
-        </div>
+  <!-- PRINT SECTION 3: RANK REPORT -->
+  <div id="printableRankReport" class="print-only-zone print-doc">
+    <div class="print-header">
+      <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjGka-p7C45PTqBMBKqSjulqicQlHmW_Ee1BCfUPpaW888vYnoPjElzW9DVm8az1kCOjdlabjA3qb_vS00GpCApyVWh2C0aIcOcvb-BWeeTI8AdLojSf25iCvNpMS6aENxrWO-SgM5xjqePEMsHfCLy4HinnGk2xAnDlKaapXYFY05jXQM/s56-c/Logo2.png" alt="TDTTI Logo" />
+      <div class="print-header-text">
+        <h2>TDTTI THURAVOOR</h2>
+        <p>LITTLE KITES JUNIOR TIE BREAKER — OFFICIAL RANK LIST</p>
+        <small>Sorted by Score (Descending), then Time Taken (Ascending)</small>
+      </div>
     </div>
+    <div id="printRankTableContainer"></div>
+  </div>
 
-    <!-- Simplified Header with Print Options & Silent Blinking LED Status Indicator -->
-    <div class="header">
-        <div style="display: flex; align-items: center; justify-content: center;">
-            <h2>MY MAP</h2>
-            <div style="display: flex; align-items: center; margin-left: 15px; font-size: 12px; font-weight: bold;">
-                <span id="sync-led" class="led-indicator led-green"></span>
-                <span id="sync-text" style="color: #065f46; letter-spacing: 0.3px;">Online & Synced</span>
-            </div>
-        </div>
-        <div class="button-group">
-            <button onclick="printA4()" class="btn-print">Print A4 </button>
-            <button onclick="printA3()" class="btn-print" style="background-color: var(--info-dark)">Print A3</button>
-        </div>
-    </div>
+  <script>
+    const questions = [
+      {
+        eng: "Which software is used for block-based visual programming in Little KITES?",
+        mal: "ലിറ്റിൽ കൈറ്റ്സിൽ ബ്ലോക്ക് അടിസ്ഥാനമാക്കിയുള്ള പ്രോഗ്രാമിംഗിനായി ഉപയോഗിക്കുന്ന സോഫ്റ്റ്‌വെയർ ഏത്?",
+        options: [
+          { eng: "Tux Paint", mal: "ടക്സ് പെയിന്റ്" },
+          { eng: "Scratch", mal: "സ്ക്രാച്ച്" },
+          { eng: "LibreOffice Writer", mal: "ലിബ്രെഓഫീസ് റൈറ്റർ" },
+          { eng: "GIMP", mal: "ജിമ്പ്" }
+        ],
+        ans: 1
+      },
+      {
+        eng: "Which of the following is an Input Device?",
+        mal: "താഴെ പറയുന്നവയിൽ ഇൻപുട്ട് ഉപകരണം (Input Device) ഏതാണ്?",
+        options: [
+          { eng: "Monitor", mal: "മോണിറ്റർ" },
+          { eng: "Speaker", mal: "സ്പീക്കർ" },
+          { eng: "Keyboard", mal: "കീബോർഡ്" },
+          { eng: "Projector", mal: "പ്രൊജക്റ്റർ" }
+        ],
+        ans: 2
+      },
+      {
+        eng: "Which free operating system is used in Kerala school IT labs?",
+        mal: "കേരളത്തിലെ സ്കൂൾ ഐ.ടി ലാബുകളിൽ ഉപയോഗിക്കുന്ന സ്വതന്ത്ര ഓപ്പറേറ്റിംഗ് സിസ്റ്റം ഏതാണ്?",
+        options: [
+          { eng: "Windows", mal: "വിൻഡോസ്" },
+          { eng: "KITE GNU/Linux", mal: "കൈറ്റ് ഗ്നൂ/ലിനക്സ്" },
+          { eng: "macOS", mal: "മാക് ഒ.എസ്" },
+          { eng: "Android", mal: "ആൻഡ്രോയിഡ്" }
+        ],
+        ans: 1
+      },
+      {
+        eng: "In Scratch software, what is the default character (cat) called?",
+        mal: "സ്ക്രാച്ച് സോഫ്റ്റ്‌വെയറിലെ പ്രധാന കഥാപാത്രത്തെ (പൂച്ച) എന്ത് വിളിക്കുന്നു?",
+        options: [
+          { eng: "Block", mal: "ബ്ലോക്ക്" },
+          { eng: "Stage", mal: "സ്റ്റേജ്" },
+          { eng: "Sprite", mal: "സ്പ്രൈറ്റ്" },
+          { eng: "Backdrop", mal: "ബാക്ക്ഡ്രോപ്പ്" }
+        ],
+        ans: 2
+      },
+      {
+        eng: "Tux Paint is a software primarily used for what purpose?",
+        mal: "ടക്സ് പെയിന്റ് (Tux Paint) പ്രധാനമായും എന്തിനാണ് ഉപയോഗിക്കുന്നത്?",
+        options: [
+          { eng: "Mathematical Calculations", mal: "കണക്കുകൂട്ടലുകൾക്ക്" },
+          { eng: "Drawing and Painting", mal: "ചിത്രം വരയ്ക്കാനും നിറം നൽകാനും" },
+          { eng: "Audio Recording", mal: "ശബ്ദം റെക്കോർഡ് ചെയ്യാൻ" },
+          { eng: "Web Browsing", mal: "ഇന്റർനെറ്റ് ഉപയോഗിക്കാൻ" }
+        ],
+        ans: 1
+      },
+      {
+        eng: "What is the keyboard shortcut to Copy selected text or an image?",
+        mal: "തിരഞ്ഞെടുത്ത ടെക്സ്റ്റോ ചിത്രമോ കോപ്പി (Copy) ചെയ്യാനുള്ള കീബോർഡ് കുറുക്കുവഴി ഏത്?",
+        options: [
+          { eng: "Ctrl + V", mal: "Ctrl + V" },
+          { eng: "Ctrl + Z", mal: "Ctrl + Z" },
+          { eng: "Ctrl + C", mal: "Ctrl + C" },
+          { eng: "Ctrl + X", mal: "Ctrl + X" }
+        ],
+        ans: 2
+      },
+      {
+        eng: "Which block category in Scratch is used to move a sprite?",
+        mal: "സ്ക്രാച്ചിൽ ഒരു സ്പ്രൈറ്റിനെ ചലിപ്പിക്കാൻ ഏത് ബ്ലോക്ക് ഗ്രൂപ്പാണ് ഉപയോഗിക്കുന്നത്?",
+        options: [
+          { eng: "Looks", mal: "ലുക്സ് (Looks)" },
+          { eng: "Motion", mal: "മോഷൻ (Motion)" },
+          { eng: "Sound", mal: "സൗണ്ട് (Sound)" },
+          { eng: "Control", mal: "കൺട്രോൾ (Control)" }
+        ],
+        ans: 1
+      },
+      {
+        eng: "What is the full form of CPU?",
+        mal: "സി.പി.യു (CPU) എന്നതിന്റെ പൂർണ്ണരൂപം എന്ത്?",
+        options: [
+          { eng: "Central Processing Unit", mal: "സെൻട്രൽ പ്രോസസ്സിംഗ് യൂണിറ്റ്" },
+          { eng: "Computer Power Unit", mal: "കംപ്യൂട്ടർ പവർ യൂണിറ്റ്" },
+          { eng: "Central Print Unit", mal: "സെൻട്രൽ പ്രിന്റ് യൂണിറ്റ്" },
+          { eng: "Control Program Unit", mal: "കൺട്രോൾ പ്രോഗ്രാം യൂണിറ്റ്" }
+        ],
+        ans: 0
+      },
+      {
+        eng: "In LibreOffice Writer, which key is pressed to start a new paragraph/line?",
+        mal: "ലിബ്രെഓഫീസ് റൈറ്ററിൽ പുതിയ ഖണ്ഡികയോ വരിയോ തുടങ്ങാൻ അമർത്തേണ്ട കീ ഏത്?",
+        options: [
+          { eng: "Spacebar", mal: "സ്പേസ്ബാർ" },
+          { eng: "Shift", mal: "ഷിഫ്റ്റ്" },
+          { eng: "Enter", mal: "എന്റർ" },
+          { eng: "Tab", mal: "ടാബ്" }
+        ],
+        ans: 2
+      },
+      {
+        eng: "Which of the following is a safe practice while using the Internet?",
+        mal: "ഇന്റർനെറ്റ് ഉപയോഗിക്കുമ്പോൾ ശ്രദ്ധിക്കേണ്ട നല്ല ശീലം ഏത്?",
+        options: [
+          { eng: "Share passwords with strangers", mal: "അപരിചിതർക്ക് പാസ്‌വേഡ് നൽകുക" },
+          { eng: "Click on unknown download popups", mal: "അപരിചിതമായ ഡൗൺലോഡ് ലിങ്കുകളിൽ ക്ലിക്ക് ചെയ്യുക" },
+          { eng: "Inform teachers or parents if unsafe content appears", mal: "സംശയകരമായ വിവരങ്ങൾ കണ്ടാൽ മുതിർന്നവരെ അറിയിക്കുക" },
+          { eng: "Share personal phone number publicly", mal: "ഫോൺ നമ്പർ പരസ്യമായി പോസ്റ്റ് ചെയ്യുക" }
+        ],
+        ans: 2
+      }
+    ];
 
-    <div class="container">
-        <!-- Map Panel (TOP) -->
-        <div class="map-panel">
-            
-            <!-- Interactive Tool Mode Box -->
-            <div class="tool-mode-box" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 12px; background: #f1f5f9; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                    <strong style="font-size: 13px; color: #475569;">Active Tool:</strong>
-                    <button id="btn-mode-building" onclick="setToolMode('building')" class="btn-save" style="padding: 5px 10px; font-size: 11px;">Buildings</button>
-                    <button id="btn-mode-road" onclick="setToolMode('road')" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Roads</button>
-                    <button id="btn-mode-move" onclick="toggleMoveMode()" style="background-color: #64748b; color: white; padding: 5px 10px; font-size: 11px;">Move Buildings</button>
+    let currentStudent = null;
+    let currentIndex = 0;
+    let userAnswers = new Array(questions.length).fill(null);
+    let secondsElapsed = 0;
+    let timerInterval = null;
+
+    function startQuiz() {
+      const name = document.getElementById("studentName").value.trim().toUpperCase();
+      const sClass = document.getElementById("studentClass").value;
+      const sDiv = document.getElementById("studentDiv").value;
+
+      if (!name) {
+        alert("Please enter Student Name (CAPITAL LETTERS) / വിദ്യാർത്ഥിയുടെ പേര് നൽകുക.");
+        return;
+      }
+
+      currentStudent = { name, class: sClass, div: sDiv };
+      userAnswers = new Array(questions.length).fill(null);
+      currentIndex = 0;
+
+      document.getElementById("studentTag").textContent = `${name} (${sClass}-${sDiv})`;
+      document.getElementById("regScreen").style.display = "none";
+      document.getElementById("quizScreen").style.display = "block";
+
+      secondsElapsed = 0;
+      updateTimerDisplay();
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        secondsElapsed++;
+        updateTimerDisplay();
+      }, 1000);
+
+      loadQuestion(0);
+    }
+
+    function updateTimerDisplay() {
+      const m = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+      const s = (secondsElapsed % 60).toString().padStart(2, '0');
+      document.getElementById("timerDisplay").textContent = `⏱ ${m}:${s}`;
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    function loadQuestion(index) {
+      currentIndex = index;
+      const q = questions[index];
+
+      document.getElementById("questionNumber").textContent = `Question ${index + 1} of ${questions.length} (ചോദ്യം ${index + 1} / ${questions.length})`;
+      document.getElementById("qTextEng").textContent = q.eng;
+      document.getElementById("qTextMal").textContent = q.mal;
+
+      const optionsList = document.getElementById("optionsList");
+      optionsList.innerHTML = "";
+
+      q.options.forEach((opt, oIdx) => {
+        const item = document.createElement("label");
+        const isSelected = userAnswers[index] === oIdx;
+        item.className = `option-item ${isSelected ? 'selected' : ''}`;
+
+        item.innerHTML = `
+          <input type="radio" name="opt" value="${oIdx}" ${isSelected ? 'checked' : ''} onchange="selectOption(${oIdx})">
+          <span class="option-text-eng">${String.fromCharCode(65 + oIdx)}. ${opt.eng}</span>
+          <span class="option-text-mal">${opt.mal}</span>
+        `;
+        optionsList.appendChild(item);
+      });
+
+      document.getElementById("prevBtn").disabled = (index === 0);
+      if (index === questions.length - 1) {
+        document.getElementById("nextBtn").style.display = "none";
+        document.getElementById("submitBtn").style.display = "inline-flex";
+      } else {
+        document.getElementById("nextBtn").style.display = "inline-flex";
+        document.getElementById("submitBtn").style.display = "none";
+      }
+    }
+
+    function selectOption(optionIndex) {
+      userAnswers[currentIndex] = optionIndex;
+      const options = document.querySelectorAll('.option-item');
+      options.forEach((el, idx) => {
+        if (idx === optionIndex) el.classList.add('selected');
+        else el.classList.remove('selected');
+      });
+    }
+
+    function nextQuestion() {
+      if (currentIndex < questions.length - 1) loadQuestion(currentIndex + 1);
+    }
+
+    function prevQuestion() {
+      if (currentIndex > 0) loadQuestion(currentIndex - 1);
+    }
+
+    function submitQuiz() {
+      const unanswered = userAnswers.filter(a => a === null).length;
+      if (unanswered > 0) {
+        const confirmSubmit = confirm(`You have ${unanswered} unanswered question(s). Submit now? / ${unanswered} ചോദ്യങ്ങൾക്ക് ഉത്തരം നൽകിയിട്ടില്ല. സബ്മിറ്റ് ചെയ്യണമെന്നുറപ്പാണോ?`);
+        if (!confirmSubmit) return;
+      }
+
+      clearInterval(timerInterval);
+
+      let score = 0;
+      questions.forEach((q, idx) => {
+        if (userAnswers[idx] === q.ans) score++;
+      });
+
+      const record = {
+        name: currentStudent.name,
+        class: currentStudent.class,
+        div: currentStudent.div,
+        score: score,
+        seconds: secondsElapsed,
+        timeFormatted: formatTime(secondsElapsed),
+        date: new Date().toLocaleTimeString()
+      };
+
+      const records = JSON.parse(localStorage.getItem("littleKitesResults") || "[]");
+      records.push(record);
+      localStorage.setItem("littleKitesResults", JSON.stringify(records));
+
+      document.getElementById("finalScore").textContent = `${score} / 10`;
+      document.getElementById("summaryName").textContent = currentStudent.name;
+      document.getElementById("summaryClassDiv").textContent = `Class ${currentStudent.class} - ${currentStudent.div}`;
+      document.getElementById("summaryTime").textContent = `${formatTime(secondsElapsed)} (${secondsElapsed} seconds)`;
+
+      document.getElementById("quizScreen").style.display = "none";
+      document.getElementById("summaryScreen").style.display = "block";
+    }
+
+    function nextStudent() {
+      document.getElementById("studentName").value = "";
+      document.getElementById("studentDiv").value = "A";
+      document.getElementById("summaryScreen").style.display = "none";
+      document.getElementById("regScreen").style.display = "block";
+    }
+
+    function promptTeacherPin() {
+      document.getElementById("pinInput").value = "";
+      document.getElementById("pinModal").style.display = "flex";
+      setTimeout(() => document.getElementById("pinInput").focus(), 100);
+    }
+
+    function closePinModal() {
+      document.getElementById("pinModal").style.display = "none";
+    }
+
+    function verifyPin() {
+      const pin = document.getElementById("pinInput").value.trim();
+      if (pin === "1996") {
+        closePinModal();
+        openTeacherDashboard();
+      } else {
+        alert("Invalid PIN! / തെറ്റായ പിൻ നമ്പർ!");
+        document.getElementById("pinInput").value = "";
+        document.getElementById("pinInput").focus();
+      }
+    }
+
+    function openTeacherDashboard() {
+      document.getElementById("regScreen").style.display = "none";
+      document.getElementById("quizScreen").style.display = "none";
+      document.getElementById("summaryScreen").style.display = "none";
+      document.getElementById("teacherScreen").style.display = "block";
+      document.getElementById("modeBtn").style.display = "none";
+      loadRankList();
+      preparePrintTemplates();
+    }
+
+    function exitTeacherView() {
+      document.getElementById("teacherScreen").style.display = "none";
+      document.getElementById("regScreen").style.display = "block";
+      document.getElementById("modeBtn").style.display = "block";
+    }
+
+    function loadRankList() {
+      const records = JSON.parse(localStorage.getItem("littleKitesResults") || "[]");
+      const tbody = document.getElementById("rankTableBody");
+      tbody.innerHTML = "";
+
+      if (records.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:1.5rem; color:#94a3b8;">No results recorded yet.</td></tr>`;
+        return;
+      }
+
+      records.sort((a, b) => {
+        if (b.score !== a.score) return b.score - a.score;
+        return a.seconds - b.seconds;
+      });
+
+      records.forEach((rec, idx) => {
+        const tr = document.createElement("tr");
+        if (idx === 0) tr.className = "rank-1";
+        else if (idx === 1) tr.className = "rank-2";
+        else if (idx === 2) tr.className = "rank-3";
+
+        tr.innerHTML = `
+          <td><strong>#${idx + 1}</strong></td>
+          <td>${escapeHtml(rec.name)}</td>
+          <td>Class ${escapeHtml(rec.class)} - ${escapeHtml(rec.div)}</td>
+          <td><strong>${rec.score} / 10</strong></td>
+          <td>${rec.timeFormatted} <small>(${rec.seconds}s)</small></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function clearAllData() {
+      if (confirm("Are you sure you want to delete all student records? This action cannot be undone.")) {
+        localStorage.removeItem("littleKitesResults");
+        loadRankList();
+      }
+    }
+
+    function preparePrintTemplates() {
+      const qOnlyContainer = document.getElementById("printQOnlyList");
+      const qWithAnsContainer = document.getElementById("printQWithAnsList");
+      const quickKeyRow = document.getElementById("quickKeyRow");
+
+      qOnlyContainer.innerHTML = "";
+      qWithAnsContainer.innerHTML = "";
+      quickKeyRow.innerHTML = "";
+
+      const optLetters = ["A", "B", "C", "D"];
+
+      questions.forEach((q, idx) => {
+        const td = document.createElement("td");
+        td.innerHTML = `<strong>${optLetters[q.ans]}</strong>`;
+        quickKeyRow.appendChild(td);
+
+        const item1 = document.createElement("div");
+        item1.className = "print-q-item";
+        item1.innerHTML = `
+          <div class="print-q-title-eng">${idx + 1}. ${q.eng}</div>
+          <div class="print-q-title-mal">${q.mal}</div>
+          <div class="print-options-grid">
+            ${q.options.map((opt, oIdx) => `
+              <div class="print-option">[ &nbsp; ] (${optLetters[oIdx]}) ${opt.eng} / ${opt.mal}</div>
+            `).join("")}
+          </div>
+        `;
+        qOnlyContainer.appendChild(item1);
+
+        const item2 = document.createElement("div");
+        item2.className = "print-q-item";
+        item2.innerHTML = `
+          <div class="print-q-title-eng">${idx + 1}. ${q.eng}</div>
+          <div class="print-q-title-mal">${q.mal}</div>
+          <div class="print-options-grid">
+            ${q.options.map((opt, oIdx) => {
+              const isCorrect = oIdx === q.ans;
+              return `
+                <div class="print-option ${isCorrect ? 'correct-ans-highlight' : ''}">
+                  (${optLetters[oIdx]}) ${opt.eng} / ${opt.mal}
+                  ${isCorrect ? '<span class="answer-badge">✓ CORRECT</span>' : ''}
                 </div>
-                <div id="road-tools" style="display: none; gap: 10px; align-items: center;">
-                    <button onclick="startNewRoad()" class="btn-load" style="padding: 5px 10px; font-size: 11px;">New</button>
-                    <button onclick="undoLastRoadNode()" style="background-color: #e67e22; color: white; padding: 5px 10px; font-size: 11px;">Undo</button>
-                    <button onclick="clearRoads()" class="btn-clear" style="padding: 5px 10px; font-size: 11px;">Reset</button>
-                </div>
-            </div>
-
-            <!-- Real-time Statistics Panel with Local Refresh Trigger -->
-            <div id="stats-panel" style="display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 12px; font-weight: bold; color: #334155;">
-                <div>Houses (HOME): <span id="stat-homes" style="color: var(--success-dark); font-size: 13px;">0</span></div>
-                <div style="color: #cbd5e1;">|</div>
-                <div>Other Buildings: <span id="stat-others" style="color: var(--primary); font-size: 13px;">0</span></div>
-                <div style="color: #cbd5e1;">|</div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    Total: <span id="stat-total" style="color: var(--text-dark); font-size: 13px;">0</span>
-                    <button onclick="updateStatistics()" class="btn-zoom" style="padding: 2px 6px; font-size: 10px; background-color: var(--primary); font-weight: bold; border-radius: 3px; height: 18px; line-height: 14px;">Refresh</button>
-                </div>
-            </div>
-
-            <div class="map-controls">
-                <span id="instruction-hint" style="font-size: 11px; font-weight: 600; color: #64748b; text-align: center;">
-                    Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.
-                </span>
-                <div class="zoom-controls">
-                    <strong>Zoom Map:</strong>
-                    <button onclick="zoomOut()" class="btn-zoom">-</button>
-                    <span id="zoom-text" style="font-size: 13px; font-weight: bold; min-width: 45px; text-align: center;">100%</span>
-                    <button onclick="zoomIn()" class="btn-zoom">+</button>
-                    <button onclick="zoomReset()" class="btn-zoom" style="background-color: #475569;">Reset</button>
-                </div>
-            </div>
-            
-            <div class="map-area" id="map-scroll-container">
-                <div class="map-wrapper" id="map-wrapper">
-                    <img id="map-image" src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhkhXiJggAB3j_4qeJjS256c2vjUsJcIkUIl7Sy67zJ8xl9IrBDUHMo-kyiyMHCtJWHgxTEXGe6zUWpWfFxDTZngOoHdTCjQwjcIYCuoJ0m3l2AJie6adT1Qd8jOKOwRVTJstBb51M9c2igWPXr2cw31BrBA5Q2jzXYXpqlwAHxVUf8q4bguQElzhGQ1SRK/s1600/D.png" alt="HLB Map Boundary" onerror="this.src='https://via.placeholder.com/800x500.png?text=Please+upload+your+map.png+to+GitHub'">
-                    
-                    <svg id="arrow-svg" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <defs>
-                            <marker id="arrow" viewBox="0 0 10 10" refX="11" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                                <path d="M 0 1.5 L 10 5 L 0 8.5 z" fill="#e74c3c" />
-                            </marker>
-                        </defs>
-                        <g id="svg-roads"></g>
-                        <g id="svg-paths"></g>
-                    </svg>
-
-                    <div id="marker-layer"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Building Register Form (BOTTOM - with Repositioned Sync & Save Actions) -->
-        <div class="sidebar">
-            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
-                <h3 style="margin: 0; font-size: 1.2rem;">Building</h3>
-                <div class="button-group">
-                    <button onclick="loadFromCloud(true)" class="btn-load">Sync</button>
-                    <button onclick="saveToCloudManual()" class="btn-save">Save</button>
-                    <button onclick="clearAll()" class="btn-clear">Reset</button>
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 6%">Sl No</th>
-                            <th style="width: 20%">Name</th>
-                            <th style="width: 14%">Phone</th>
-                            <th style="width: 10%">Bldg No</th>
-                            <th style="width: 12%">CN No</th>
-                            <th style="width: 18%">Pucca/Katcha/Others</th>
-                            <th style="width: 20%">Remarks</th>
-                        </tr>
-                    </thead>
-                    <tbody id="register-body">
-                        <!-- Rows generated dynamically -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // ==========================================
-        // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE:
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVOROFw-3IzU74buKvxfKgG5tWg4FdXtn0Iv-QTU9GV0t839IlF7DWwFb39R2TmnOnuQ/exec";
-        // ==========================================
-
-        const mapImage = document.getElementById('map-image');
-        const mapWrapper = document.getElementById('map-wrapper');
-        const mapScrollContainer = document.getElementById('map-scroll-container');
-        const markerLayer = document.getElementById('marker-layer');
-        const registerBody = document.getElementById('register-body');
-        const zoomText = document.getElementById('zoom-text');
-        const svgPaths = document.getElementById('svg-paths');
-        const svgRoads = document.getElementById('svg-roads');
-        
-        const loadingOverlay = document.getElementById('loading-overlay');
-        const statusText = document.getElementById('status-text');
-        const progressBar = document.getElementById('progress-bar');
-        const percentageText = document.getElementById('percentage-text');
-
-        // Custom modal elements
-        const customDialog = document.getElementById('custom-dialog');
-        const dialogTitle = document.getElementById('dialog-title');
-        const dialogMessage = document.getElementById('dialog-message');
-        const dialogOk = document.getElementById('dialog-ok');
-        const dialogCancel = document.getElementById('dialog-cancel');
-
-        // Click Choice dialog elements
-        const clickChoiceDialog = document.getElementById('click-choice-dialog');
-        const btnChoiceBuilding = document.getElementById('btn-choice-building');
-        const btnChoiceRoadname = document.getElementById('btn-choice-roadname');
-        const btnChoiceCancel = document.getElementById('btn-choice-cancel');
-
-        // Road labeling modal elements
-        const roadLabelModal = document.getElementById('road-label-modal');
-        const roadLabelTitle = document.getElementById('road-label-title');
-        const formRoadLabelInput = document.getElementById('form-road-label-input');
-        const roadLabelSave = document.getElementById('road-label-save');
-        const roadLabelCancel = document.getElementById('road-label-cancel');
-
-        // Options modal elements
-        const optionsModal = document.getElementById('options-modal');
-        const optionsTitle = document.getElementById('options-title');
-        const optionsView = document.getElementById('options-view');
-        const optionsEdit = document.getElementById('options-edit');
-        const optionsDelete = document.getElementById('options-delete');
-        const optionsClose = document.getElementById('options-close');
-
-        // Entry Form modal elements
-        const entryModal = document.getElementById('entry-modal');
-        const entryTitle = document.getElementById('entry-title');
-        const formName = document.getElementById('form-name');
-        const formPhone = document.getElementById('form-phone');
-        const formBuildingNo = document.getElementById('form-building-no');
-        const housesSection = document.getElementById('houses-section');
-        const entrySave = document.getElementById('entry-save');
-        const entryCancel = document.getElementById('entry-cancel');
-
-        // Mode elements
-        const btnModeBuilding = document.getElementById('btn-mode-building');
-        const btnModeRoad = document.getElementById('btn-mode-road');
-        const btnModeMove = document.getElementById('btn-mode-move');
-        const roadTools = document.getElementById('road-tools');
-        const instructionHint = document.getElementById('instruction-hint');
-
-        let markers = [];
-        let roads = []; 
-        let markerCounter = 1;
-        let currentZoom = 100;
-        let currentToolMode = "building"; 
-        let isMoveMode = false; // Controls Drag-and-Drop state
-
-        // Local array to hold census houses in active popup session
-        let modalHouses = [];
-        let isSyncingSilently = false;
-
-        // GLOBAL GESTURE BLOCKING (Strictly blocks document-level viewport pinch/stretch zoom)
-        document.addEventListener('touchmove', function (event) {
-            if (event.scale !== undefined && event.scale !== 1) { 
-                event.preventDefault(); 
-            }
-        }, { passive: false });
-
-        let lastTouchEnd = 0;
-        document.addEventListener('touchend', function (event) {
-            const now = (new Date()).getTime();
-            if (now - lastTouchEnd <= 300) {
-                event.preventDefault(); // Blocks rapid double-tap webpage zoom
-            }
-            lastTouchEnd = now;
-        }, false);
-
-        // DISABLE CONTEXT MENU GLOBALLY (Right Click & Mobile long-press menus)
-        document.addEventListener('contextmenu', function (e) {
-            e.preventDefault();
-        });
-
-        // DISABLE INSPECT / SOURCE KEY SHORTCUTS
-        document.addEventListener('keydown', function (e) {
-            if (e.keyCode === 123) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.keyCode === 85) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        // NATIVE PINCH-TO-ZOOM GESTURE LISTENER (Strictly bound to map area)
-        let startDistance = 0;
-        let startZoom = 100;
-        let isPinching = false;
-
-        mapScrollContainer.addEventListener('touchstart', function (e) {
-            if (e.touches.length === 2) {
-                isPinching = true;
-                mapWrapper.classList.add('no-transition'); 
-                startDistance = getTouchDistance(e.touches[0], e.touches[1]);
-                startZoom = currentZoom;
-            }
-        }, { passive: true });
-
-        mapScrollContainer.addEventListener('touchmove', function (e) {
-            if (isPinching && e.touches.length === 2) {
-                e.preventDefault(); // Lock viewport scrolling while pinching map
-                
-                const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
-                const scale = currentDistance / startDistance;
-                
-                let targetZoom = Math.round(startZoom * scale);
-                
-                if (targetZoom < 50) targetZoom = 50;
-                if (targetZoom > 1000) targetZoom = 1000; 
-                
-                currentZoom = targetZoom;
-                updateZoom();
-            }
-        }, { passive: false });
-
-        mapScrollContainer.addEventListener('touchend', function (e) {
-            if (e.touches.length < 2) {
-                isPinching = false;
-                mapWrapper.classList.remove('no-transition'); 
-            }
-        });
-
-        function getTouchDistance(touch1, touch2) {
-            const dx = touch1.clientX - touch2.clientX;
-            const dy = touch1.clientY - touch2.clientY;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        // ZOOM BUTTON CONTROLS 
-        function zoomIn() {
-            if (currentZoom < 1000) { 
-                currentZoom += 25;
-                updateZoom();
-            }
-        }
-        function zoomOut() {
-            if (currentZoom > 50) {
-                currentZoom -= 25;
-                updateZoom();
-            }
-        }
-        function zoomReset() {
-            currentZoom = 100;
-            updateZoom();
-        }
-        function updateZoom() {
-            mapWrapper.style.width = `${currentZoom}%`;
-            zoomText.innerText = `${currentZoom}%`;
-        }
-
-        // CUSTOM ASYNCHRONOUS HTML DIALOG HANDLERS
-        function showCustomAlert(message, title = "Notification") {
-            return new Promise((resolve) => {
-                dialogTitle.innerText = title;
-                dialogMessage.innerText = message;
-                dialogCancel.style.display = 'none'; 
-                customDialog.style.display = 'flex';
-
-                const onOk = () => {
-                    customDialog.style.display = 'none';
-                    dialogOk.removeEventListener('click', onOk);
-                    resolve(true);
-                };
-                dialogOk.addEventListener('click', onOk);
-            });
-        }
-
-        // ASYNC CONFIRM (Used during delete prompts)
-        function showCustomConfirm(message, title = "Confirmation") {
-            return new Promise((resolve) => {
-                dialogTitle.innerText = title;
-                dialogMessage.innerText = message;
-                dialogCancel.style.display = 'inline-block'; 
-                customDialog.style.display = 'flex';
-
-                const onOk = () => {
-                    cleanup();
-                    resolve(true);
-                };
-                const onCancel = () => {
-                    cleanup();
-                    resolve(false);
-                };
-                function cleanup() {
-                    customDialog.style.display = 'none';
-                    dialogOk.removeEventListener('click', onOk);
-                    dialogCancel.removeEventListener('click', onCancel);
-                }
-
-                dialogOk.addEventListener('click', onOk);
-                dialogCancel.addEventListener('click', onCancel);
-            });
-        }
-
-        // BUSY PROGRESS (spinner removed, only bar and % animate)
-        function showBusyProgress(title, onFinishedAction) {
-            loadingOverlay.style.display = 'flex';
-            statusText.innerText = title;
-            progressBar.style.width = '0%';
-            percentageText.innerText = '0%';
-            
-            let percent = 0;
-            const interval = setInterval(() => {
-                if (percent < 95) {
-                    const remaining = 98 - percent;
-                    percent += Math.max(0.2, remaining * 0.08); 
-                    progressBar.style.width = `${percent}%`;
-                    percentageText.innerText = `${Math.round(percent)}%`;
-                }
-            }, 80);
-
-            return onFinishedAction().then(() => {
-                clearInterval(interval);
-                // Micro-interpolation animation glides instantly to 100% upon success
-                let completePercent = percent;
-                const completeInterval = setInterval(() => {
-                    if (completePercent < 100) {
-                        completePercent += 5;
-                        if (completePercent > 100) completePercent = 100;
-                        progressBar.style.width = `${completePercent}%`;
-                        percentageText.innerText = `${Math.round(completePercent)}%`;
-                    } else {
-                        clearInterval(completeInterval);
-                        setTimeout(() => {
-                            loadingOverlay.style.display = 'none';
-                        }, 150); 
-                    }
-                }, 15);
-            }).catch((err) => {
-                clearInterval(interval);
-                loadingOverlay.style.display = 'none';
-                showCustomAlert("Operation failed: " + err, "Error");
-            });
-        }
-
-        // SINGLE-PAGE PRINT UTILITY
-        function triggerPrint(sizeClass, pageSize) {
-            const printStyle = document.createElement('style');
-            printStyle.id = "print-page-style";
-            printStyle.innerHTML = `@media print { @page { size: ${pageSize} portrait; margin: 5mm; } }`;
-            document.head.appendChild(printStyle);
-
-            document.body.classList.add(sizeClass);
-
-            setTimeout(() => {
-                window.print();
-                document.body.classList.remove(sizeClass);
-                const styleToRemove = document.getElementById("print-page-style");
-                if (styleToRemove) styleToRemove.remove();
-            }, 250);
-        }
-
-        async function printA4() {
-            const isValid = await validateAllFields();
-            if (!isValid) return;
-            triggerPrint('print-mode-a4', 'A4');
-        }
-
-        function printA3() {
-            triggerPrint('print-mode-a3', 'A3');
-        }
-
-        // FORCE UPPERCASE INPUT FIELDS AT CODE LEVEL
-        formName.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        formBuildingNo.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        formRoadLabelInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-        
-        // Strict Numeric filter for Phone Number input
-        formPhone.addEventListener('input', (e) => {
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        });
-
-        // TOGGLE MOVE MODE (DRAG & DROP)
-        function toggleMoveMode() {
-            isMoveMode = !isMoveMode;
-            if (isMoveMode) {
-                // Deactivate styles on normal buttons
-                btnModeBuilding.style.backgroundColor = "#64748b";
-                btnModeRoad.style.backgroundColor = "#64748b";
-                roadTools.style.display = "none";
-                
-                // Active color indicator
-                btnModeMove.style.backgroundColor = "#e67e22";
-                instructionHint.innerText = "MOVE BUILDINGS TOOL ACTIVE: Hold and drag markers on the map to reposition. Press 'Move Buildings' again to stop.";
-            } else {
-                btnModeMove.style.backgroundColor = "#64748b";
-                setToolMode(currentToolMode);
-            }
-            render();
-        }
-
-        // INTERACTIVE TOOL MODE CONTROLLER
-        function setToolMode(mode) {
-            if (isMoveMode) {
-                isMoveMode = false;
-                btnModeMove.style.backgroundColor = "#64748b";
-            }
-            currentToolMode = mode;
-            if (mode === "building") {
-                btnModeBuilding.style.backgroundColor = "var(--success)";
-                btnModeRoad.style.backgroundColor = "#64748b";
-                roadTools.style.display = "none";
-                instructionHint.innerText = "Click map to register a building. Use two-finger pinch to zoom (Up to 1000%). Press-and-hold marker for options.";
-            } else {
-                btnModeBuilding.style.backgroundColor = "#64748b";
-                btnModeRoad.style.backgroundColor = "var(--danger)";
-                roadTools.style.display = "flex";
-                instructionHint.innerText = "Click sequential points on the map to draw roads/paths. Click 'New Road' to draw separate segments.";
-            }
-            renderRoads(); 
-            render();
-        }
-
-        // ROAD DRAWING UTILITIES
-        function startNewRoad() {
-            if (roads.length === 0 || roads[roads.length - 1].length > 0) {
-                roads.push([]); 
-            }
-        }
-
-        function undoLastRoadNode() {
-            if (roads.length > 0) {
-                const active = roads[roads.length - 1];
-                if (active.length > 0) {
-                    active.pop();
-                } else {
-                    roads.pop(); 
-                    undoLastRoadNode(); 
-                }
-                renderRoads();
-            }
-        }
-
-        async function clearRoads() {
-            const confirmed = await showCustomConfirm("Are you sure you want to clear all drawn roads?", "Reset Roads");
-            if (confirmed) {
-                roads = [];
-                saveDataLocally();
-                renderRoads();
-            }
-        }
-
-        function renderRoads() {
-            svgRoads.innerHTML = '';
-            roads.forEach(road => {
-                if (road.length >= 2) {
-                    const polyline = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-                    const pointsStr = road.map(pt => `${pt.x},${pt.y}`).join(' ');
-                    polyline.setAttribute("points", pointsStr);
-                    polyline.setAttribute("stroke", "#34495e"); 
-                    polyline.setAttribute("stroke-width", "0.35");
-                    polyline.setAttribute("fill", "none");
-                    polyline.setAttribute("stroke-linejoin", "round");
-                    polyline.setAttribute("stroke-linecap", "round");
-                    svgRoads.appendChild(polyline); // Correctly appends to svgRoads ONLY
-                }
-
-                if (currentToolMode === "road") {
-                    road.forEach(pt => {
-                        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-                        circle.setAttribute("cx", pt.x);
-                        circle.setAttribute("cy", pt.y);
-                        circle.setAttribute("r", "0.4");
-                        circle.setAttribute("fill", "#7f8c8d");
-                        svgRoads.appendChild(circle);
-                    });
-                }
-            });
-        }
-
-        // CALCULATE TOTAL HOUSES IN THE ACTIVE SESSION
-        function countTotalHousesInSession(excludeId = -1) {
-            let count = 0;
-            markers.forEach(m => {
-                if (m.id !== excludeId && !m.isRoadLabel) {
-                    count += (m.censusHouses ? m.censusHouses.length : 1);
-                }
-            });
-            return count;
-        }
-
-        // ALWAYS-INCREMENTING CN FINDER ENGINE
-        function getNextGlobalCNNo() {
-            let maxCN = 0;
-            markers.forEach(m => {
-                if (m.isRoadLabel) return;
-                const houses = m.censusHouses || [];
-                houses.forEach(ch => {
-                    const val = parseInt(ch.cnNo);
-                    if (!isNaN(val) && val > maxCN) {
-                        maxCN = val;
-                    }
-                });
-                const flatVal = parseInt(m.cnNo);
-                if (!isNaN(flatVal) && flatVal > maxCN) {
-                    maxCN = flatVal;
-                }
-            });
-            return String(maxCN + 1).padStart(4, '0');
-        }
-
-        // DYNAMIC NESTED BUILDING STATISTICS CALCULATOR WITH CN NO AND REMARKS
-        function updateStatistics() {
-            let homeCount = 0;
-            let otherBuildingCount = 0;
-
-            markers.forEach(m => {
-                if (m.isRoadLabel) return;
-
-                const houses = m.censusHouses || [];
-                if (houses.length === 0) {
-                    // Fallback for flat fields if census houses array is empty
-                    const remarkText = String(m.remarks || "").toUpperCase().trim();
-                    if (remarkText.startsWith("HOME-")) {
-                        homeCount++;
-                    } else {
-                        otherBuildingCount++;
-                    }
-                } else {
-                    // Consider each single census house row as an independent building
-                    houses.forEach(h => {
-                        const remarkText = String(h.remarks || "").toUpperCase().trim();
-                        if (remarkText.startsWith("HOME-")) {
-                            homeCount++;
-                        } else {
-                            otherBuildingCount++;
-                        }
-                    });
-                }
-            });
-
-            document.getElementById('stat-homes').innerText = homeCount;
-            document.getElementById('stat-others').innerText = otherBuildingCount;
-            document.getElementById('stat-total').innerText = homeCount + otherBuildingCount;
-        }
-
-        // RENDER INTERACTIVE CENSUS HOUSE ROWS INSIDE POPUP MODAL
-        function renderModalHouses(isViewOnly) {
-            housesSection.innerHTML = '';
-            
-            modalHouses.forEach((house, index) => {
-                const row = document.createElement('div');
-                row.className = 'house-row';
-
-                // 1. Visual sequential index badge
-                const badge = document.createElement('span');
-                badge.className = 'house-row-num';
-                badge.innerText = index + 1;
-                row.appendChild(badge);
-
-                // 2. CN No Input
-                const inputCN = document.createElement('input');
-                inputCN.type = 'text';
-                inputCN.className = 'input-cell';
-                inputCN.style.width = "22%";
-                inputCN.style.padding = "6px";
-                inputCN.placeholder = 'CN NO';
-                inputCN.value = house.cnNo || '';
-                inputCN.disabled = isViewOnly;
-                inputCN.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.toUpperCase();
-                    house.cnNo = e.target.value;
-                });
-                row.appendChild(inputCN);
-
-                // 3. Building Type dropdown select
-                const selectType = document.createElement('select');
-                selectType.className = 'input-cell';
-                selectType.style.width = "28%";
-                selectType.style.padding = "6px";
-                selectType.disabled = isViewOnly;
-                
-                const optDefault = document.createElement('option');
-                optDefault.value = '';
-                optDefault.innerText = 'TYPE';
-                selectType.appendChild(optDefault);
-
-                ['PUCCA', 'KATCHA', 'OTHERS'].forEach(val => {
-                    const opt = document.createElement('option');
-                    opt.value = val;
-                    opt.innerText = val;
-                    if (house.type === val) opt.selected = true;
-                    selectType.appendChild(opt);
-                });
-                selectType.addEventListener('change', (e) => {
-                    house.type = e.target.value;
-                });
-                row.appendChild(selectType);
-
-                // 4. Remarks text datalist lookup
-                const inputRemarks = document.createElement('input');
-                inputRemarks.type = 'text';
-                inputRemarks.className = 'input-cell';
-                inputRemarks.style.width = "40%";
-                inputRemarks.style.padding = "6px";
-                inputRemarks.setAttribute('list', 'remarks-options');
-                inputRemarks.placeholder = 'REMARKS / USE';
-                inputRemarks.value = house.remarks || '';
-                inputRemarks.disabled = isViewOnly;
-                inputRemarks.addEventListener('input', (e) => {
-                    e.target.value = e.target.value.toUpperCase();
-                    house.remarks = e.target.value;
-                });
-                row.appendChild(inputRemarks);
-
-                // 5. Delete button
-                if (modalHouses.length > 1 && !isViewOnly) {
-                    const btnDelete = document.createElement('button');
-                    btnDelete.type = 'button';
-                    btnDelete.className = 'btn-clear';
-                    btnDelete.style.padding = '6px 10px';
-                    btnDelete.style.fontSize = '12px';
-                    btnDelete.style.borderRadius = '4px';
-                    btnDelete.style.margin = '0';
-                    btnDelete.innerText = '✕';
-                    btnDelete.title = 'Remove Row';
-                    btnDelete.addEventListener('click', () => {
-                        modalHouses.splice(index, 1);
-                        renderModalHouses(isViewOnly);
-                    });
-                    row.appendChild(btnDelete);
-                }
-
-                housesSection.appendChild(row);
-            });
-        }
-
-        // ROAD LABELING MODAL CONTROLLER
-        function openRoadLabelModal(markerData, slNo, isViewOnly = false) {
-            return new Promise((resolve) => {
-                roadLabelTitle.innerText = isViewOnly ? `Road Label Details` : `Name Road`;
-                formRoadLabelInput.value = markerData.name || '';
-                formRoadLabelInput.disabled = isViewOnly;
-
-                roadLabelSave.style.display = isViewOnly ? 'none' : 'inline-block';
-                roadLabelCancel.innerText = isViewOnly ? 'Close' : 'Cancel';
-
-                roadLabelModal.style.display = 'flex';
-
-                const onSave = () => {
-                    const roadName = formRoadLabelInput.value.trim();
-                    if (roadName === "") {
-                        showCustomAlert("Please enter a road name.", "Validation Error");
-                        return;
-                    }
-                    markerData.name = roadName;
-                    markerData.cnNo = "ROAD_LABEL"; 
-                    cleanup();
-                    resolve(true);
-                };
-
-                const onCancel = () => {
-                    cleanup();
-                    resolve(false);
-                };
-
-                function cleanup() {
-                    roadLabelModal.style.display = 'none';
-                    roadLabelSave.removeEventListener('click', onSave);
-                    roadLabelCancel.removeEventListener('click', onCancel);
-                }
-
-                roadLabelSave.addEventListener('click', onSave);
-                roadLabelCancel.addEventListener('click', onCancel);
-            });
-        }
-
-        // POPUP FORM DIALOG CONTROLLER (Handles creating and editing building objects)
-        function openEntryModal(markerData, slNo, isViewOnly = false) {
-            return new Promise((resolve) => {
-                entryTitle.innerText = isViewOnly ? `Sl No ${slNo} Details` : `Register Building Sl No ${slNo}`;
-                
-                // Populate inputs
-                formName.value = markerData.name || '';
-                formPhone.value = markerData.phone || '';
-                formBuildingNo.value = markerData.buildingNo || '';
-
-                // Load existing dynamic census houses or fallback to default
-                if (markerData.censusHouses && markerData.censusHouses.length > 0) {
-                    modalHouses = JSON.parse(JSON.stringify(markerData.censusHouses));
-                } else {
-                    modalHouses = [{
-                        cnNo: markerData.cnNo || getNextGlobalCNNo(),
-                        type: markerData.note || '',
-                        remarks: markerData.remarks || ''
-                    }];
-                }
-
-                // Render dynamic houses rows
-                renderModalHouses(isViewOnly);
-
-                // DYNAMIC QUERY RESOLVES DETACHMENT BUG COMPULSORILY
-                const btnAddHouseElement = document.getElementById('btn-add-house');
-                btnAddHouseElement.style.display = isViewOnly ? 'none' : 'inline-block';
-                
-                // Clone the active element currently inside the DOM
-                const newBtnAddHouse = btnAddHouseElement.cloneNode(true);
-                btnAddHouseElement.parentNode.replaceChild(newBtnAddHouse, btnAddHouseElement);
-                
-                newBtnAddHouse.addEventListener('click', () => {
-                    // Find the maximum CN number globally across other markers AND currently active popup form inputs
-                    let maxCN = 0;
-                    markers.forEach(m => {
-                        if (m.id === markerData.id || m.isRoadLabel) return;
-                        (m.censusHouses || []).forEach(ch => {
-                            const val = parseInt(ch.cnNo);
-                            if (!isNaN(val) && val > maxCN) maxCN = val;
-                        });
-                    });
-                    modalHouses.forEach(ch => {
-                        const val = parseInt(ch.cnNo);
-                        if (!isNaN(val) && val > maxCN) maxCN = val;
-                    });
-                    
-                    const formattedCN = String(maxCN + 1).padStart(4, '0');
-                    modalHouses.push({
-                        cnNo: formattedCN,
-                        type: '',
-                        remarks: ''
-                    });
-                    renderModalHouses(isViewOnly);
-                });
-
-                // Toggle Read-Only State for View mode
-                formName.disabled = isViewOnly;
-                formPhone.disabled = isViewOnly;
-                formBuildingNo.disabled = isViewOnly;
-
-                entrySave.style.display = isViewOnly ? 'none' : 'inline-block';
-                entryCancel.innerText = isViewOnly ? 'Close' : 'Cancel';
-
-                entryModal.style.display = 'flex';
-
-                const onSave = async () => {
-                    const name = formName.value.trim();
-                    const phone = formPhone.value.trim();
-
-                    // Map values back to object (All constraints completely removed, blank saving allowed)
-                    markerData.name = name;
-                    markerData.phone = phone;
-                    markerData.buildingNo = formBuildingNo.value.trim();
-                    
-                    // Save back the serialized census houses array
-                    markerData.censusHouses = JSON.parse(JSON.stringify(modalHouses));
-
-                    // Keep flat fields populated with first house value for compatibility checks (Fixes FormCNNo reference error)
-                    markerData.cnNo = modalHouses[0].cnNo;
-                    markerData.note = modalHouses[0].type;
-                    markerData.remarks = modalHouses[0].remarks;
-
-                    cleanup();
-                    resolve(true);
-                };
-
-                const onCancel = () => {
-                    cleanup();
-                    resolve(false);
-                };
-
-                function cleanup() {
-                    entryModal.style.display = 'none';
-                    entrySave.removeEventListener('click', onSave);
-                    entryCancel.removeEventListener('click', onCancel);
-                }
-
-                entrySave.addEventListener('click', onSave);
-                entryCancel.addEventListener('click', onCancel);
-            });
-        }
-
-        // INTERACTIVE MAP CLICK DISTRIBUTOR
-        mapImage.addEventListener('click', async function(e) {
-            if (isMoveMode) return; // Do not register buildings when Move Mode is enabled
-
-            const rect = mapImage.getBoundingClientRect();
-            const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
-            const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
-
-            if (currentToolMode === "building") {
-                // Show action choice dialog
-                clickChoiceDialog.style.display = "flex";
-
-                const onChoiceBuilding = async () => {
-                    cleanupChoice();
-                    const nextIndex = markers.length + 1;
-                    const nextCN = getNextGlobalCNNo();
-
-                    const draftMarker = {
-                        id: markerCounter,
-                        x: xPercent,
-                        y: yPercent,
-                        slNo: 0, // Assigned sequentially in render()
-                        name: '',
-                        phone: '',
-                        buildingNo: `${markers.filter(m => !m.isRoadLabel).length + 1}`,
-                        censusHouses: [{
-                            cnNo: nextCN, // Set dynamically to next available global CN No
-                            type: '',
-                            remarks: ''
-                        }]
-                    };
-
-                    const saved = await openEntryModal(draftMarker, nextIndex, false);
-                    if (saved) {
-                        markers.push(draftMarker);
-                        markerCounter++;
-                        render();
-                        saveDataLocally(); // Local persistence is always instantaneous
-                        syncDataWithBackendSilently(); // Background silent sync
-                    }
-                };
-
-                const onChoiceRoadname = async () => {
-                    cleanupChoice();
-                    const nextIndex = markers.length + 1;
-                    const draftMarker = {
-                        id: markerCounter,
-                        x: xPercent,
-                        y: yPercent,
-                        slNo: "", // Road labels bypass sequential building serials completely
-                        isRoadLabel: true,
-                        name: '',
-                        cnNo: "ROAD_LABEL"
-                    };
-
-                    const saved = await openRoadLabelModal(draftMarker, nextIndex, false);
-                    if (saved) {
-                        markers.push(draftMarker);
-                        markerCounter++;
-                        render();
-                        saveDataLocally();
-                        syncDataWithBackendSilently();
-                    }
-                };
-
-                const onChoiceCancel = () => {
-                    cleanupChoice();
-                };
-
-                function cleanupChoice() {
-                    clickChoiceDialog.style.display = "none";
-                    btnChoiceBuilding.removeEventListener('click', onChoiceBuilding);
-                    btnChoiceRoadname.removeEventListener('click', onChoiceRoadname);
-                    btnChoiceCancel.removeEventListener('click', onChoiceCancel);
-                }
-
-                btnChoiceBuilding.addEventListener('click', onChoiceBuilding);
-                btnChoiceRoadname.addEventListener('click', onChoiceRoadname);
-                btnChoiceCancel.addEventListener('click', onChoiceCancel);
-
-            } else {
-                if (roads.length === 0) {
-                    roads.push([]); 
-                }
-                const active = roads[roads.length - 1];
-                active.push({ x: xPercent, y: yPercent });
-                saveDataLocally();
-                renderRoads();
-            }
-        });
-
-        // VALIDATION BYPASSED
-        async function validateAllFields() {
-            return true;
-        }
-
-        // HELPER TO REMOVE MARKER AND AUTO-SAVE TO SHEET
-        async function removeMarkerAndSave(index) {
-            markers.splice(index, 1);
-            render();
-            saveDataLocally();
-            syncDataWithBackendSilently();
-        }
-
-        // OPTIONS MENU CONTROLLER (View / Edit / Delete)
-        function openOptionsMenu(index) {
-            const m = markers[index];
-            optionsTitle.innerText = m.isRoadLabel ? `Road Label Options` : `Building Sl No ${m.slNo} Options`;
-            optionsModal.style.display = 'flex';
-
-            const onView = async () => {
-                optionsModal.style.display = 'none';
-                cleanup();
-                if (m.isRoadLabel) {
-                    await openRoadLabelModal(m, m.slNo, true);
-                } else {
-                    await openEntryModal(m, m.slNo, true);
-                }
-            };
-
-            const onEdit = async () => {
-                optionsModal.style.display = 'none';
-                cleanup();
-                let saved = false;
-                if (m.isRoadLabel) {
-                    saved = await openRoadLabelModal(m, m.slNo, false);
-                } else {
-                    saved = await openEntryModal(m, m.slNo, false);
-                }
-                if (saved) {
-                    render();
-                    saveDataLocally();
-                    syncDataWithBackendSilently(); 
-                }
-            };
-
-            const onDelete = async () => {
-                optionsModal.style.display = 'none';
-                cleanup();
-                const titleText = m.isRoadLabel ? `Do you want to delete Road Label "${m.name}"?` : `Do you want to delete Sl No ${m.slNo}?`;
-                const confirmed = await showCustomConfirm(titleText, "Confirm Delete");
-                if (confirmed) {
-                    await removeMarkerAndSave(index); 
-                }
-            };
-
-            const onClose = () => {
-                optionsModal.style.display = 'none';
-                cleanup();
-            };
-
-            function cleanup() {
-                optionsView.removeEventListener('click', onView);
-                optionsEdit.removeEventListener('click', onEdit);
-                optionsDelete.removeEventListener('click', onDelete);
-                optionsClose.removeEventListener('click', onClose);
-            }
-
-            optionsView.addEventListener('click', onView);
-            optionsEdit.addEventListener('click', onEdit);
-            optionsDelete.addEventListener('click', onDelete);
-            optionsClose.addEventListener('click', onClose);
-        }
-
-        // CLASSIFY MARKERS FOR GEOMETRIC PLOT LAYOUT (Pucca vs Katcha)
-        function getBuildingClassification(marker) {
-            if (!marker.censusHouses || marker.censusHouses.length === 0) {
-                return { isHome: true, type: "PUCCA" };
-            }
-            
-            const primaryHouse = marker.censusHouses[0];
-            const remarkText = String(primaryHouse.remarks || "").toUpperCase().trim();
-            const houseType = String(primaryHouse.type || "").toUpperCase().trim(); // PUCCA, KATCHA, OTHERS
-            
-            // Default to Home if remark is empty OR contains HOME
-            const isOtherType = remarkText !== "" && (
-                remarkText.includes("SHOP") || 
-                remarkText.includes("TEMPLE") || 
-                remarkText.includes("CHURCH") || 
-                remarkText.includes("MOSQUE") || 
-                remarkText.includes("FACTORY") || 
-                remarkText.includes("INSTITUTION") || 
-                remarkText.includes("GROUND")
-            );
-            
-            return { isHome: !isOtherType, type: houseType };
-        }
-
-        // RENDERS THE SEQUENCE ARROWS (SVG paths) ON THE MAP
-        function renderSvgPaths() {
-            svgPaths.innerHTML = '';
-            for (let i = 0; i < markers.length - 1; i++) {
-                const marker = markers[i];
-                const nextMarker = markers[i + 1];
-                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute("x1", marker.x);
-                line.setAttribute("y1", marker.y);
-                line.setAttribute("x2", nextMarker.x);
-                line.setAttribute("y2", nextMarker.y);
-                line.setAttribute("stroke", "#e74c3c");
-                line.setAttribute("stroke-width", "0.2");
-                line.setAttribute("marker-end", "url(#arrow)");
-                svgPaths.appendChild(line);
-            }
-        }
-
-        // DOCK ELEMENT FOR COORDINATE DRAGGING (MOUSE & TOUCH ENGINES)
-        function makeMarkerDraggable(markerEl, markerObj, index) {
-            let isDragging = false;
-
-            const onDragStart = (e) => {
-                if (!isMoveMode) return;
-                isDragging = true;
-                e.preventDefault();
-                e.stopPropagation();
-
-                const onDragMove = (moveEvent) => {
-                    if (!isDragging) return;
-                    const rect = mapImage.getBoundingClientRect();
-                    let clientX, clientY;
-
-                    if (moveEvent.touches && moveEvent.touches.length > 0) {
-                        clientX = moveEvent.touches[0].clientX;
-                        clientY = moveEvent.touches[0].clientY;
-                    } else {
-                        clientX = moveEvent.clientX;
-                        clientY = moveEvent.clientY;
-                    }
-
-                    let xPercent = ((clientX - rect.left) / rect.width) * 100;
-                    let yPercent = ((clientY - rect.top) / rect.height) * 100;
-
-                    // Clamping
-                    if (xPercent < 0) xPercent = 0;
-                    if (xPercent > 100) xPercent = 100;
-                    if (yPercent < 0) yPercent = 0;
-                    if (yPercent > 100) yPercent = 100;
-
-                    markerObj.x = xPercent;
-                    markerObj.y = yPercent;
-
-                    markerEl.style.left = `${xPercent}%`;
-                    markerEl.style.top = `${yPercent}%`;
-
-                    renderSvgPaths(); // Updates route connectors in real-time
-                };
-
-                const onDragEnd = () => {
-                    if (isDragging) {
-                        isDragging = false;
-                        document.removeEventListener('mousemove', onDragMove);
-                        document.removeEventListener('mouseup', onDragEnd);
-                        document.removeEventListener('touchmove', onDragMove);
-                        document.removeEventListener('touchend', onDragEnd);
-
-                        saveDataLocally();
-                        syncDataWithBackendSilently();
-                        render(); // Completes coordinate synchronization in bottom table view
-                    }
-                };
-
-                document.addEventListener('mousemove', onDragMove, { passive: false });
-                document.addEventListener('mouseup', onDragEnd);
-                document.addEventListener('touchmove', onDragMove, { passive: false });
-                document.addEventListener('touchend', onDragEnd);
-            };
-
-            markerEl.addEventListener('mousedown', onDragStart);
-            markerEl.addEventListener('touchstart', onDragStart, { passive: false });
-        }
-
-        // RENDER REGISTER DATA IN SCREEN TABLE AND MAP
-        function render() {
-            markerLayer.innerHTML = '';
-            registerBody.innerHTML = '';
-            
-            // Pre-calculate sequential Sl No strictly bypassing Road Labels
-            let bldgCount = 0;
-            markers.forEach((marker) => {
-                if (marker.isRoadLabel) {
-                    marker.slNo = ""; // Empty serial string for road labels
-                } else {
-                    bldgCount++;
-                    marker.slNo = bldgCount; // Integer sequential count representing buildings only
-                }
-            });
-
-            // Update realtime statistics block
-            updateStatistics();
-
-            // Render SVG connection paths
-            renderSvgPaths();
-
-            markers.forEach((marker, index) => {
-                // 1. Draw Map Element (Geometric markers vs Horizontal road label pill badge)
-                const markerEl = document.createElement('div');
-                
-                if (marker.isRoadLabel) {
-                    markerEl.className = 'marker-road-label';
-                    markerEl.innerText = marker.name || 'UNNAMED ROAD';
-                } else {
-                    // Determine Building Shape/Design
-                    const classification = getBuildingClassification(marker);
-                    markerEl.innerText = marker.slNo;
-
-                    if (classification.isHome) {
-                        // Home styles (Squares)
-                        if (classification.type === "PUCCA") {
-                            markerEl.className = 'marker-base marker-home-pucca';
-                        } else if (classification.type === "KATCHA") {
-                            markerEl.className = 'marker-base marker-home-katcha';
-                        } else {
-                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
-                        }
-                    } else {
-                        // Other building styles (Triangles drawn with high performance SVG nodes)
-                        if (classification.type === "PUCCA") {
-                            markerEl.className = 'marker-base marker-other-pucca';
-                            markerEl.innerHTML = `
-                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
-                                    <polygon points="12,2 2,22 22,22"/>
-                                </svg>
-                                ${marker.slNo}
-                            `;
-                        } else if (classification.type === "KATCHA") {
-                            markerEl.className = 'marker-base marker-other-katcha';
-                            markerEl.innerHTML = `
-                                <svg width="24" height="24" viewBox="0 0 24 24" style="position:absolute; top:0; left:0; z-index:-1;">
-                                    <polygon points="12,2 2,22 22,22"/>
-                                </svg>
-                                ${marker.slNo}
-                            `;
-                        } else {
-                            markerEl.className = 'marker-base marker-circle'; // Fallback circle
-                        }
-                    }
-                }
-                
-                markerEl.style.left = `${marker.x}%`;
-                markerEl.style.top = `${marker.y}%`;
-                
-                if (isMoveMode) {
-                    markerEl.title = `Drag to move this marker`;
-                    makeMarkerDraggable(markerEl, marker, index);
-                } else {
-                    markerEl.title = `Press and hold for options`;
-                    
-                    // PRESS-AND-HOLD DETECTOR (Triggers Options Menu after 600ms)
-                    let pressTimer;
-
-                    const startPress = (e) => {
-                        if (isMoveMode) return;
-                        e.stopPropagation(); 
-                        pressTimer = setTimeout(() => {
-                            openOptionsMenu(index);
-                        }, 600); 
-                    };
-
-                    const cancelPress = () => {
-                        clearTimeout(pressTimer);
-                    };
-
-                    // Mouse inputs
-                    markerEl.addEventListener('mousedown', startPress);
-                    markerEl.addEventListener('mouseup', cancelPress);
-                    markerEl.addEventListener('mouseleave', cancelPress);
-
-                    // Touch inputs
-                    markerEl.addEventListener('touchstart', startPress);
-                    markerEl.addEventListener('touchend', cancelPress);
-                    markerEl.addEventListener('touchcancel', cancelPress);
-                }
-
-                markerLayer.appendChild(markerEl);
-
-                // 2. Create Table Row 
-                const row = document.createElement('tr');
-
-                const cellSl = document.createElement('td');
-                cellSl.style.fontWeight = "bold";
-                cellSl.innerText = marker.isRoadLabel ? "ROAD" : marker.slNo; // Label display in register table
-
-                const cellName = document.createElement('td');
-                const cellPhone = document.createElement('td');
-                const cellBldg = document.createElement('td');
-                const cellCN = document.createElement('td');
-                const cellNote = document.createElement('td');
-                const cellRemarks = document.createElement('td');
-
-                if (marker.isRoadLabel) {
-                    // Stylized row layout in table for Road Labels
-                    cellName.innerHTML = `<span style="font-weight:bold; color:var(--primary);">ROAD: ${marker.name || 'UNNAMED'}</span>`;
-                    cellPhone.innerText = '-';
-                    cellBldg.innerText = '-';
-                    cellCN.innerText = 'ROAD_LABEL';
-                    cellNote.innerText = '-';
-                    cellRemarks.innerText = '-';
-                } else {
-                    cellName.innerText = marker.name || '-';
-                    cellPhone.innerText = marker.phone || '-';
-                    cellBldg.innerText = marker.buildingNo || '-';
-
-                    // Display multiple Census Houses split cleanly by line-breaks (same row)
-                    if (marker.censusHouses && marker.censusHouses.length > 0) {
-                        cellCN.innerHTML = marker.censusHouses.map(ch => ch.cnNo || '-').join('<br>');
-                        cellNote.innerHTML = marker.censusHouses.map(ch => ch.type || '-').join('<br>');
-                        cellRemarks.innerHTML = marker.censusHouses.map(ch => ch.remarks || '-').join('<br>');
-                    } else {
-                        cellCN.innerText = marker.cnNo || '-';
-                        cellNote.innerText = marker.note || '-';
-                        cellRemarks.innerText = marker.remarks || '-';
-                    }
-                }
-
-                row.appendChild(cellSl);
-                row.appendChild(cellName);
-                row.appendChild(cellPhone);
-                row.appendChild(cellBldg);
-                row.appendChild(cellCN);
-                row.appendChild(cellNote);
-                row.appendChild(cellRemarks);
-
-                registerBody.appendChild(row);
-            });
-        }
-
-        function removeMarker(index) {
-            markers.splice(index, 1);
-            render();
-        }
-
-        async function clearAll() {
-            const confirmed = await showCustomConfirm("Reset local modifications? This clears your screen. Database remains unchanged unless you push to save.", "Reset Progress");
-            if (confirmed) {
-                markers = [];
-                markerCounter = 1;
-                roads = []; 
-                localStorage.removeItem('census_markers');
-                localStorage.removeItem('census_roads');
-                localStorage.removeItem('census_marker_counter');
-                updateSyncStatus('pending');
-                renderRoads();
-                render();
-            }
-        }
-
-        // SAVE DATA MANUAL (CORS-safe simple cross-origin write layout)
-        async function saveToCloudManual() {
-            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") {
-                await showCustomAlert("Please write your Apps Script URL into the constant variable first.", "Setup Required");
-                return;
-            }
-
-            const isValid = await validateAllFields();
-            if (!isValid) return; 
-
-            const payload = JSON.parse(JSON.stringify(markers));
-            payload.forEach(m => {
-                if (m.isRoadLabel) {
-                    m.cnNo = "ROAD_LABEL";
-                    m.note = "";
-                    m.remarks = "";
-                } else if (m.censusHouses && m.censusHouses.length > 0) {
-                    m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
-                    m.note = m.censusHouses.map(ch => ch.type).join("\n");
-                    m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
-                }
-            });
-
-            if (roads.length > 0) {
-                payload.push({
-                    id: "ROADS_DATA",
-                    x: 0,
-                    y: 0,
-                    slNo: 0,
-                    name: "",
-                    phone: "",
-                    buildingNo: "",
-                    cnNo: "",
-                    note: "",
-                    remarks: JSON.stringify(roads) 
-                });
-            }
-
-            const sendAction = () => {
-                return fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    body: JSON.stringify(payload)
-                });
-            };
-
-            await showBusyProgress("Pushing Changes to Google Sheets...", sendAction);
-            updateSyncStatus('synced');
-        }
-
-        // FETCH DATA (GET - loads directly from sheet with spinner progress)
-        async function loadFromCloud(showProgress = true) {
-            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
-
-            const fetchAction = () => {
-                return fetch(GOOGLE_SCRIPT_URL)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data && data.length > 0) {
-                            const roadsRecord = data.find(m => m.id === "ROADS_DATA");
-                            if (roadsRecord) {
-                                try {
-                                    roads = JSON.parse(roadsRecord.remarks);
-                                } catch(e) {
-                                    roads = [];
-                                }
-                            } else {
-                                roads = [];
-                            }
-
-                            const cleanMarkers = data.filter(m => m.id !== "ROADS_DATA");
-
-                            cleanMarkers.forEach(m => {
-                                if (m.cnNo === "ROAD_LABEL") {
-                                    m.isRoadLabel = true;
-                                } else {
-                                    const cns = String(m.cnNo || "").split("\n");
-                                    const types = String(m.note || "").split("\n");
-                                    const remarks = String(m.remarks || "").split("\n");
-
-                                    const count = Math.max(cns.length, types.length, remarks.length, 1);
-                                    m.censusHouses = [];
-                                    for (let j = 0; j < count; j++) {
-                                        m.censusHouses.push({
-                                            cnNo: cns[j] || "",
-                                            type: types[j] || "",
-                                            remarks: remarks[j] || ""
-                                        });
-                                    }
-
-                                    m.cnNo = cns[0] || "";
-                                    m.note = types[0] || "";
-                                    m.remarks = remarks[0] || "";
-                                }
-                            });
-
-                            markers = cleanMarkers;
-                            markerCounter = Math.max(...markers.map(m => parseInt(m.id) || 0)) + 1;
-                            saveDataLocally();
-                            renderRoads();
-                            render();
-                            updateSyncStatus('synced');
-                        }
-                    });
-            };
-
-            if (showProgress) {
-                await showBusyProgress("Syncing Data from Google Sheets...", fetchAction);
-            } else {
-                await fetchAction();
-            }
-        }
-
-        // OFFLINE-FIRST PERSISTENCE LOADER
-        function saveDataLocally() {
-            try {
-                localStorage.setItem('census_markers', JSON.stringify(markers));
-                localStorage.setItem('census_roads', JSON.stringify(roads));
-                localStorage.setItem('census_marker_counter', markerCounter);
-                updateSyncStatus('pending');
-            } catch(e) {
-                console.error("Local storage write failed:", e);
-            }
-        }
-
-        function loadDataLocally() {
-            const localMarkers = localStorage.getItem('census_markers');
-            const localRoads = localStorage.getItem('census_roads');
-            const localCounter = localStorage.getItem('census_marker_counter');
-
-            if (localMarkers) {
-                try {
-                    markers = JSON.parse(localMarkers);
-                    roads = localRoads ? JSON.parse(localRoads) : [];
-                    markerCounter = parseInt(localCounter) || 1;
-                    renderRoads();
-                    render();
-                    return true;
-                } catch(e) {
-                    console.error("Local storage load parse failed:", e);
-                    return false;
-                }
-            }
-            return false;
-        }
-
-        // REAL-TIME CLOUD STATUS LED INDICATOR
-        function updateSyncStatus(state) {
-            const led = document.getElementById('sync-led');
-            const text = document.getElementById('sync-text');
-            if (!led || !text) return;
-
-            // Clear existing indicator classes
-            led.className = 'led-indicator';
-
-            if (state === 'synced') {
-                led.classList.add('led-green');
-                text.innerText = 'Online & Synced';
-                text.style.color = '#065f46';
-            } else if (state === 'syncing') {
-                led.classList.add('led-orange');
-                text.innerText = 'Data Backup Running...';
-                text.style.color = '#d35400';
-            } else if (state === 'pending' || state === 'offline') {
-                led.classList.add('led-red');
-                text.innerText = 'Offline / Sync Pending';
-                text.style.color = '#991b1b';
-            }
-        }
-
-        // IMMEDATE BACKGROUND SYNC CONTROLLER (Simple CORS payload transmission)
-        async function syncDataWithBackendSilently() {
-            if (GOOGLE_SCRIPT_URL === "YOUR_DEPLOYED_WEB_APP_URL_HERE") return;
-            if (isSyncingSilently) return;
-
-            isSyncingSilently = true;
-            updateSyncStatus('syncing');
-
-            const payload = JSON.parse(JSON.stringify(markers));
-
-            payload.forEach(m => {
-                if (m.isRoadLabel) {
-                    m.cnNo = "ROAD_LABEL";
-                    m.note = "";
-                    m.remarks = "";
-                } else if (m.censusHouses && m.censusHouses.length > 0) {
-                    m.cnNo = m.censusHouses.map(ch => ch.cnNo || m.cnNo).join("\n"); 
-                    m.note = m.censusHouses.map(ch => ch.type).join("\n");
-                    m.remarks = m.censusHouses.map(ch => ch.remarks).join("\n");
-                }
-            });
-
-            if (roads.length > 0) {
-                payload.push({
-                    id: "ROADS_DATA",
-                    x: 0,
-                    y: 0,
-                    slNo: 0,
-                    name: "",
-                    phone: "",
-                    buildingNo: "",
-                    cnNo: "",
-                    note: "",
-                    remarks: JSON.stringify(roads) 
-                });
-            }
-
-            try {
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: "POST",
-                    mode: "no-cors",
-                    body: JSON.stringify(payload),
-                    signal: controller.signal
-                });
-
-                clearTimeout(timeoutId);
-                isSyncingSilently = false;
-                updateSyncStatus('synced');
-            } catch (err) {
-                isSyncingSilently = false;
-                updateSyncStatus('offline');
-                console.warn("Background sync failed. Attempting background retry in 10 seconds...", err);
-                setTimeout(syncDataWithBackendSilently, 10000); 
-            }
-        }
-
-        // Initialize state on window load
-        window.onload = () => {
-            const hasLocal = loadDataLocally();
-            if (!hasLocal) {
-                loadFromCloud(false);
-            } else {
-                updateSyncStatus('pending');
-                syncDataWithBackendSilently();
-            }
-        };
-    </script>
+              `;
+            }).join("")}
+          </div>
+        `;
+        qWithAnsContainer.appendChild(item2);
+      });
+    }
+
+    function triggerPrint(printClass) {
+      if (printClass === 'print-rank') {
+        const rankTableHtml = document.querySelector("#teacherScreen table").outerHTML;
+        document.getElementById("printRankTableContainer").innerHTML = rankTableHtml;
+      }
+      
+      document.body.className = printClass;
+      window.print();
+
+      setTimeout(() => {
+        document.body.className = '';
+      }, 500);
+    }
+
+    window.onafterprint = function() {
+      document.body.className = '';
+    };
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    document.getElementById("pinInput").addEventListener("keyup", function(e) {
+      if (e.key === "Enter") verifyPin();
+    });
+  </script>
 </body>
 </html>
